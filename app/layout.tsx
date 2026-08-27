@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "../components/SmoothScroll";
@@ -13,6 +13,13 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+export const viewport: Viewport = {
+  themeColor: "#000000",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(BAND_INFO.url),
@@ -30,6 +37,12 @@ export const metadata: Metadata = {
     "Deathcore",
   ],
   authors: [{ name: "Skydiving From Hell" }],
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "S.D.F.H.",
+  },
   openGraph: {
     type: "website",
     locale: "pt_BR",
@@ -53,6 +66,10 @@ export const metadata: Metadata = {
     description:
       "Guitarras de 8 cordas, bumbos duplos e breakdowns. Quatro singles, agenda de shows e loja oficial.",
     images: ["/opengraph-image"],
+  },
+  icons: {
+    icon: "/logo_sdfh_square.png",
+    apple: "/logo_sdfh_square.png",
   },
 };
 
@@ -120,6 +137,13 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#000000" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="S.D.F.H." />
+        <link rel="apple-touch-icon" href="/logo_sdfh_square.png" />
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdMusicGroup) }}
