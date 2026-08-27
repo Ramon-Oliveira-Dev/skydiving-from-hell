@@ -13,10 +13,10 @@ gsap.registerPlugin(ScrollTrigger);
  * FASE 1: Hero com vídeo em loop (hero_page.mp4 / hero1-mobile.mp4)
  *   → Ocupa 100vh, rola normalmente revelando a Fase 2.
  *
- * FASE 2: Scrollytelling com vídeo oficial (hero_page2_scroll.mp4)
+ * FASE 2: Scrollytelling de Altíssimo Desempenho (hero_page2_scroll.mp4)
  *   → Pinned pelo GSAP, timeline 100% sincronizada com o scroll vertical.
- *   → O vídeo roda de 0:00 até o final absoluto (100% da duração) conforme a rolagem.
- *   → "A Máquina Rítmica" no canto inferior esquerdo para visão desobstruída.
+ *   → Algoritmo anti-stutter (isSeeking lock + seeked event dispatcher) que impede travamentos do decodificador.
+ *   → "A Máquina Rítmica" no canto inferior esquerdo.
  *   → Efeito de fumaça e escurecimento no fim absoluto para entrar em Manifesto e História.
  */
 export default function HeroScrollytelling() {
@@ -45,7 +45,7 @@ export default function HeroScrollytelling() {
 
     if (!section || !video) return;
 
-    // Configurações críticas para scrubbing sem travamento
+    // Configurações críticas para scrubbing fluido e sem travamento
     video.muted       = true;
     video.playsInline = true;
     video.pause();
@@ -57,25 +57,35 @@ export default function HeroScrollytelling() {
       gsap.set([smokeOverlay, darkFade], { opacity: 0 });
 
       let targetTime = 0;
-      let rafId = null;
+      let isSeeking = false;
 
-      const applySeek = () => {
-        rafId = null;
-        if (!video) return;
+      // Executa a busca de quadro somente quando o decodificador estiver livre
+      const performSeek = () => {
+        if (!video || isSeeking) return;
+
         if (Math.abs(video.currentTime - targetTime) > 0.02) {
-          if (typeof video.fastSeek === "function") {
-            try {
+          isSeeking = true;
+          try {
+            if (typeof video.fastSeek === "function") {
               video.fastSeek(targetTime);
-            } catch (_) {
+            } else {
               video.currentTime = targetTime;
             }
-          } else {
-            try {
-              video.currentTime = targetTime;
-            } catch (_) {}
+          } catch (_) {
+            isSeeking = false;
           }
         }
       };
+
+      // Quando o decodificador de hardware conclui o quadro, verifica se há nova posição pendente
+      const handleSeeked = () => {
+        isSeeking = false;
+        if (video && Math.abs(video.currentTime - targetTime) > 0.02) {
+          performSeek();
+        }
+      };
+
+      video.addEventListener("seeked", handleSeeked);
 
       // Função que constrói a timeline
       const buildTimeline = () => {
@@ -83,8 +93,8 @@ export default function HeroScrollytelling() {
           scrollTrigger: {
             trigger: section,
             start: "top top",
-            end: "+=5200",         // Distância cinematográfica
-            scrub: 0.35,           // Scrubbing suave e responsivo
+            end: "+=5000",         // Distância ideal para controle cinematográfico
+            scrub: 0.4,            // Amortecimento suave para desaceleração contínua
             pin: true,
             anticipatePin: 1,
             invalidateOnRefresh: true,
@@ -95,13 +105,11 @@ export default function HeroScrollytelling() {
                   ? video.duration
                   : 10;
 
-              // Roda até o final absoluto (100% da duração do vídeo)
+              // Roda de 0:00 até o final absoluto (100% da duração do vídeo)
               const maxSeekTime = Math.max(0.1, totalDur - 0.02);
               targetTime = Math.min(maxSeekTime, Math.max(0, self.progress * maxSeekTime));
 
-              if (!rafId) {
-                rafId = requestAnimationFrame(applySeek);
-              }
+              performSeek();
             },
           },
         });
@@ -198,7 +206,7 @@ export default function HeroScrollytelling() {
           8.2
         );
 
-        // ── TRANSIÇÃO FINAL: O vídeo alcança o fim (soldado salta) e fumaça dissolve para Manifesto (8.8 -> 10.0) ──
+        // ── TRANSIÇÃO FINAL: O vídeo alcança o fim e fumaça dissolve para Manifesto (8.8 -> 10.0) ──
         tl.to(
           [smokeOverlay, darkFade],
           {
@@ -248,7 +256,7 @@ export default function HeroScrollytelling() {
           preload="metadata"
           aria-hidden="true"
           className="hero__video absolute inset-0 w-full h-full object-cover object-center z-0 pointer-events-none"
-          style={{ filter: "contrast(1.1) brightness(0.95)" }}
+          style={{ willChange: "transform", transform: "translate3d(0,0,0)" }}
         >
           <source src="/hero1-mobile.mp4" media="(max-width: 767px)" type="video/mp4" />
           <source src="/hero_page.mp4" media="(min-width: 768px)" type="video/mp4" />
@@ -293,7 +301,7 @@ export default function HeroScrollytelling() {
       {/* ================================================================
           FASE 2 — Scrollytelling Cinematográfico (hero_page2_scroll.mp4)
           Pinned pelo GSAP. Legendas cinematográficas sequenciais.
-          O soldado salta e o vídeo corre 100% até o fim com a rolagem vertical.
+          Vídeo acelerado por hardware sem travamento.
          ================================================================ */}
       <section
         ref={phase2Ref}
@@ -307,8 +315,8 @@ export default function HeroScrollytelling() {
             playsInline
             preload="auto"
             aria-hidden="true"
-            className="w-full h-full object-cover md:object-cover scale-105 sm:scale-100 transition-transform duration-700 select-none pointer-events-none"
-            style={{ filter: "contrast(1.05) brightness(0.92)" }}
+            className="w-full h-full object-cover select-none pointer-events-none"
+            style={{ willChange: "transform", transform: "translate3d(0,0,0)" }}
           >
             <source src="/hero_page2_scroll.mp4" type="video/mp4" />
             Seu navegador não suporta vídeos HTML5.
