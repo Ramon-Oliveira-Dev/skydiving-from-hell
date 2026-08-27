@@ -80,54 +80,63 @@ export function AudioProvider({ children }) {
 
   const track = TRACKS[currentIndex] || TRACKS[0];
 
-  // Início da reprodução de Unpatriot assim que o usuário começar a rolar a página
+  // Início da reprodução de Unpatriot na rolagem ou no primeiro gesto
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
     const unpatriotTrack = TRACKS[initialIdx !== -1 ? initialIdx : 2];
-    audio.src = unpatriotTrack.src;
+    if (!audio.src || !audio.src.includes(unpatriotTrack.src)) {
+      audio.src = unpatriotTrack.src;
+    }
     audio.load();
 
-    let triggered = false;
+    let isStarted = false;
 
-    const triggerPlay = () => {
-      if (triggered) return;
-      triggered = true;
-
-      audio
-        .play()
-        .then(() => {
-          setIsPlaying(true);
-        })
-        .catch(() => {
-          triggered = false; // Permite tentar novamente no próximo gesto caso seja bloqueado
-        });
-
-      // Remove os listeners após o primeiro disparo
-      window.removeEventListener("scroll", triggerPlay);
-      window.removeEventListener("wheel", triggerPlay);
-      window.removeEventListener("touchmove", triggerPlay);
-      window.removeEventListener("pointerdown", triggerPlay);
-      window.removeEventListener("keydown", triggerPlay);
-      document.removeEventListener("scroll", triggerPlay);
+    const removeListeners = () => {
+      window.removeEventListener("scroll", triggerAudio);
+      window.removeEventListener("wheel", triggerAudio);
+      window.removeEventListener("touchmove", triggerAudio);
+      window.removeEventListener("touchstart", triggerAudio);
+      window.removeEventListener("pointerdown", triggerAudio);
+      window.removeEventListener("click", triggerAudio);
+      window.removeEventListener("keydown", triggerAudio);
+      document.removeEventListener("scroll", triggerAudio);
     };
 
-    // Escuta eventos de rolagem do mouse, touch e teclado
-    window.addEventListener("scroll", triggerPlay, { passive: true });
-    window.addEventListener("wheel", triggerPlay, { passive: true });
-    window.addEventListener("touchmove", triggerPlay, { passive: true });
-    window.addEventListener("pointerdown", triggerPlay, { passive: true });
-    window.addEventListener("keydown", triggerPlay, { passive: true });
-    document.addEventListener("scroll", triggerPlay, { passive: true });
+    const triggerAudio = () => {
+      if (isStarted || !audioRef.current) return;
+
+      const playPromise = audioRef.current.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            isStarted = true;
+            setIsPlaying(true);
+            removeListeners();
+          })
+          .catch(() => {
+            // Se o navegador rejeitar autoplay na rolagem pura, mantém os listeners
+            // para ativar no primeiro clique ou toque
+          });
+      }
+    };
+
+    // Tenta tocar imediatamente
+    triggerAudio();
+
+    // Escuta rolagem, roda do mouse, toque, clique e teclado
+    window.addEventListener("scroll", triggerAudio, { passive: true });
+    window.addEventListener("wheel", triggerAudio, { passive: true });
+    window.addEventListener("touchmove", triggerAudio, { passive: true });
+    window.addEventListener("touchstart", triggerAudio, { passive: true });
+    window.addEventListener("pointerdown", triggerAudio, { passive: true });
+    window.addEventListener("click", triggerAudio, { passive: true });
+    window.addEventListener("keydown", triggerAudio, { passive: true });
+    document.addEventListener("scroll", triggerAudio, { passive: true });
 
     return () => {
-      window.removeEventListener("scroll", triggerPlay);
-      window.removeEventListener("wheel", triggerPlay);
-      window.removeEventListener("touchmove", triggerPlay);
-      window.removeEventListener("pointerdown", triggerPlay);
-      window.removeEventListener("keydown", triggerPlay);
-      document.removeEventListener("scroll", triggerPlay);
+      removeListeners();
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
