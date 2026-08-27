@@ -15,7 +15,7 @@ gsap.registerPlugin(ScrollTrigger);
  *
  * FASE 2: Scrollytelling de alto desempenho com scrubbing otimizado (rAF throttle)
  *   → Pinned pelo GSAP, timeline controlada pelo scroll.
- *   → Legendas cinematográficas surgem/somem sequencialmente SEM sobreposição.
+ *   → Legendas cinematográficas e cards com efeitos Dark Glassmorphism 100% ativos no mobile.
  *   → Vídeo mobile vertical leve para eliminar travamentos e consumo de GPU.
  */
 export default function HeroScrollytelling() {
@@ -98,7 +98,7 @@ export default function HeroScrollytelling() {
           scrollTrigger: {
             trigger: section,
             start: "top top",
-            end: isMobile ? "+=2600" : "+=5200", // Distância otimizada para mobile
+            end: isMobile ? "+=2800" : "+=5200", // Distância otimizada para mobile
             scrub: isMobile ? 0.2 : 0.35,        // Scrubbing ultra responsivo no mobile
             pin: true,
             anticipatePin: 1,
@@ -115,9 +115,9 @@ export default function HeroScrollytelling() {
         // ── LEGENDA 1: A ORIGEM ─────────────────────────────────────────
         tl.fromTo(
           panel1,
-          { opacity: 0, y: 50 },
+          { opacity: 0, y: isMobile ? 30 : 50, scale: isMobile ? 0.95 : 1 },
           {
-            opacity: 1, y: 0,
+            opacity: 1, y: 0, scale: 1,
             duration: 1.2,
             ease: "power3.out",
             pointerEvents: "auto",
@@ -137,7 +137,7 @@ export default function HeroScrollytelling() {
         tl.to(
           panel1,
           {
-            opacity: 0, y: -30,
+            opacity: 0, y: isMobile ? -20 : -30, scale: isMobile ? 0.95 : 1,
             duration: 0.8,
             ease: "power2.in",
             pointerEvents: "none",
@@ -148,9 +148,9 @@ export default function HeroScrollytelling() {
         // ── LEGENDA 2: A MÁQUINA RÍTMICA ────────────────────────────────
         tl.fromTo(
           panel2,
-          { opacity: 0, x: -40 },
+          { opacity: 0, x: isMobile ? 0 : -40, y: isMobile ? 30 : 0, scale: isMobile ? 0.95 : 1 },
           {
-            opacity: 1, x: 0,
+            opacity: 1, x: 0, y: 0, scale: 1,
             duration: 1.2,
             ease: "power3.out",
             pointerEvents: "auto",
@@ -170,7 +170,7 @@ export default function HeroScrollytelling() {
         tl.to(
           panel2,
           {
-            opacity: 0, x: 40,
+            opacity: 0, x: isMobile ? 0 : 40, y: isMobile ? -20 : 0, scale: isMobile ? 0.95 : 1,
             duration: 0.7,
             ease: "power2.in",
             pointerEvents: "none",
@@ -249,7 +249,7 @@ export default function HeroScrollytelling() {
           }}
         />
 
-        {/* UPGRADE VISUAL 3: Indicador de Scroll na Base — ÚNICO INDICADOR */}
+        {/* UPGRADE VISUAL 3: Indicador de Scroll na Base */}
         <div className="hero__titulo absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2 sm:gap-3 pointer-events-none w-full px-4 text-center">
           <p className="text-zinc-300 text-[11px] sm:text-xs font-mono font-bold tracking-[0.35em] uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
             ROLE PARA INICIAR A QUEDA
@@ -275,11 +275,11 @@ export default function HeroScrollytelling() {
       {/* ================================================================
           FASE 2 — Scrollytelling Cinematográfico (hero_page2_scroll.mp4)
           Pinned pelo GSAP. Legendas cinematográficas sequenciais.
-          O soldado salta SOMENTE após a última legenda desaparecer.
+          Cards com efeito Dark Glassmorphism 100% responsivos no Mobile.
          ================================================================ */}
       <section
         ref={phase2Ref}
-        className="relative w-full h-[75vh] sm:h-[85vh] md:h-screen overflow-hidden overflow-x-hidden bg-black select-none flex items-center justify-center"
+        className="relative w-full h-[100svh] min-h-[100svh] overflow-hidden overflow-x-hidden bg-black select-none flex items-center justify-center"
       >
         <div className="absolute inset-0 w-full h-full overflow-hidden bg-black">
           <video
@@ -311,19 +311,19 @@ export default function HeroScrollytelling() {
           }}
         />
 
-        {/* ── LEGENDA 1: A ORIGEM (Estilo Subtítulo Cinematográfico) ──── */}
+        {/* ── LEGENDA 1: A ORIGEM (Card Dark Glassmorphism no Mobile e Desktop) ──── */}
         <div
           ref={panel1Ref}
-          className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6 sm:px-8 pointer-events-none"
+          className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 sm:px-8 pointer-events-none"
         >
-          <div className="max-w-2xl flex flex-col items-center">
+          <div className="max-w-2xl w-full flex flex-col items-center bg-zinc-950/75 sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none p-5 sm:p-0 rounded-2xl border border-white/10 sm:border-none shadow-[0_0_40px_rgba(0,0,0,0.85)] sm:shadow-none">
             {/* Tag de contexto */}
-            <span className="font-mono text-[10px] sm:text-xs font-bold tracking-[0.4em] uppercase text-red-500/90 mb-4 sm:mb-5 block drop-shadow-[0_0_12px_rgba(220,38,38,0.5)]">
+            <span className="font-mono text-[10px] sm:text-xs font-bold tracking-[0.4em] uppercase text-red-500 mb-3 sm:mb-5 block drop-shadow-[0_0_12px_rgba(220,38,38,0.7)]">
               // A ORIGEM
             </span>
 
             {/* Título principal */}
-            <h2 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase text-white tracking-tight leading-[1.05] mb-4 sm:mb-5 drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)]">
+            <h2 className="text-2xl sm:text-5xl md:text-6xl font-black uppercase text-white tracking-tight leading-[1.1] mb-3 sm:mb-5 drop-shadow-[0_4px_25px_rgba(0,0,0,0.95)]">
               O Peso Brutal do{" "}
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-orange-400 drop-shadow-none">
                 Metal Moderno
@@ -333,29 +333,29 @@ export default function HeroScrollytelling() {
             {/* Linha de acento animada */}
             <div
               ref={accent1Ref}
-              className="w-20 sm:w-28 h-1 bg-gradient-to-r from-red-600 to-orange-500 rounded-full mb-5 sm:mb-6 shadow-[0_0_15px_rgba(220,38,38,0.8)]"
+              className="w-20 sm:w-28 h-1 bg-gradient-to-r from-red-600 to-orange-500 rounded-full mb-4 sm:mb-6 shadow-[0_0_15px_rgba(220,38,38,0.9)]"
             />
 
             {/* Parágrafo */}
-            <p className="font-mono text-xs sm:text-sm md:text-base text-zinc-300 font-bold max-w-xl leading-relaxed tracking-wider uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+            <p className="font-mono text-xs sm:text-sm md:text-base text-zinc-300 font-bold max-w-xl leading-relaxed tracking-wider uppercase drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
               Riffs cortantes, afinações pesadas e a energia crua do underground capixaba.
             </p>
           </div>
         </div>
 
-        {/* ── LEGENDA 2: A MÁQUINA RÍTMICA ────────────────────────────── */}
+        {/* ── LEGENDA 2: A MÁQUINA RÍTMICA (Card Dark Glassmorphism) ──────────── */}
         <div
           ref={panel2Ref}
-          className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6 sm:px-8 pointer-events-none"
+          className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 sm:px-8 pointer-events-none"
         >
-          <div className="max-w-2xl flex flex-col items-center">
+          <div className="max-w-2xl w-full flex flex-col items-center bg-zinc-950/75 sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none p-5 sm:p-0 rounded-2xl border border-white/10 sm:border-none shadow-[0_0_40px_rgba(0,0,0,0.85)] sm:shadow-none">
             {/* Tag de contexto */}
-            <span className="font-mono text-[10px] sm:text-xs font-bold tracking-[0.4em] uppercase text-red-500/90 mb-4 sm:mb-5 block drop-shadow-[0_0_12px_rgba(220,38,38,0.5)]">
+            <span className="font-mono text-[10px] sm:text-xs font-bold tracking-[0.4em] uppercase text-red-500 mb-3 sm:mb-5 block drop-shadow-[0_0_12px_rgba(220,38,38,0.7)]">
               // IDENTIDADE SONORA
             </span>
 
             {/* Título principal */}
-            <h2 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase text-white tracking-tight leading-[1.05] mb-4 sm:mb-5 drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)]">
+            <h2 className="text-2xl sm:text-5xl md:text-6xl font-black uppercase text-white tracking-tight leading-[1.1] mb-3 sm:mb-5 drop-shadow-[0_4px_25px_rgba(0,0,0,0.95)]">
               A Máquina{" "}
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-red-600 drop-shadow-none">
                 Rítmica
@@ -365,29 +365,29 @@ export default function HeroScrollytelling() {
             {/* Linha de acento animada */}
             <div
               ref={accent2Ref}
-              className="w-20 sm:w-28 h-1 bg-gradient-to-r from-orange-500 to-red-600 rounded-full mb-5 sm:mb-6 shadow-[0_0_15px_rgba(239,68,68,0.8)]"
+              className="w-20 sm:w-28 h-1 bg-gradient-to-r from-orange-500 to-red-600 rounded-full mb-4 sm:mb-6 shadow-[0_0_15px_rgba(239,68,68,0.9)]"
             />
 
             {/* Parágrafo */}
-            <p className="font-mono text-xs sm:text-sm md:text-base text-zinc-300 font-bold max-w-xl leading-relaxed tracking-wider uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+            <p className="font-mono text-xs sm:text-sm md:text-base text-zinc-300 font-bold max-w-xl leading-relaxed tracking-wider uppercase drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
               Velocidade, técnica e breakdowns devastadores que definem a essência de cada apresentação.
             </p>
           </div>
         </div>
 
-        {/* ── LEGENDA 3: CTA — ASSUMA O CONTROLE ──────────────────────── */}
+        {/* ── LEGENDA 3: CTA — ASSUMA O CONTROLE (Card Interativo) ────────────── */}
         <div
           ref={panel3Ref}
-          className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6 sm:px-8 pointer-events-none"
+          className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 sm:px-8 pointer-events-none"
         >
-          <div className="max-w-2xl flex flex-col items-center">
+          <div className="max-w-2xl w-full flex flex-col items-center bg-zinc-950/80 sm:bg-transparent backdrop-blur-md sm:backdrop-blur-none p-6 sm:p-0 rounded-2xl border border-white/10 sm:border-none shadow-[0_0_45px_rgba(0,0,0,0.9)] sm:shadow-none">
             {/* Tag de contexto */}
-            <span className="font-mono text-[10px] sm:text-xs font-bold tracking-[0.4em] uppercase text-red-500/90 mb-3 sm:mb-4 block drop-shadow-[0_0_12px_rgba(220,38,38,0.5)]">
+            <span className="font-mono text-[10px] sm:text-xs font-bold tracking-[0.4em] uppercase text-red-500 mb-2 sm:mb-4 block drop-shadow-[0_0_12px_rgba(220,38,38,0.7)]">
               // OUÇA O IMPACTO
             </span>
 
             {/* Título principal */}
-            <h2 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase text-white tracking-tight leading-[1.05] mb-3 sm:mb-4 drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)]">
+            <h2 className="text-2xl sm:text-5xl md:text-6xl font-black uppercase text-white tracking-tight leading-[1.1] mb-2 sm:mb-4 drop-shadow-[0_4px_25px_rgba(0,0,0,0.95)]">
               Skydiving From{" "}
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-orange-400 drop-shadow-none">
                 Hell
@@ -395,16 +395,16 @@ export default function HeroScrollytelling() {
             </h2>
 
             {/* Subtítulo de Origem */}
-            <p className="font-mono text-xs sm:text-sm md:text-base text-zinc-300 font-bold max-w-md leading-relaxed tracking-widest uppercase mb-8 sm:mb-10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+            <p className="font-mono text-[11px] sm:text-sm md:text-base text-zinc-300 font-bold max-w-md leading-relaxed tracking-widest uppercase mb-6 sm:mb-10 drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
               Vila Velha / ES — Brasil
             </p>
 
             {/* Botões CTA com pointer-events-auto */}
-            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 pointer-events-auto">
+            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 pointer-events-auto w-full">
               <BotaoMagnetico>
                 <a
                   href="#player"
-                  className="px-6 sm:px-8 py-3 sm:py-3.5 bg-gradient-to-r from-red-600 via-red-500 to-orange-600 text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-widest rounded-full shadow-[0_0_30px_rgba(220,38,38,0.7)] hover:shadow-[0_0_45px_rgba(220,38,38,0.9)] transition-all duration-300 hover:scale-105 active:scale-95 border border-red-400/40 block text-center"
+                  className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 bg-gradient-to-r from-red-600 via-red-500 to-orange-600 text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-widest rounded-full shadow-[0_0_30px_rgba(220,38,38,0.7)] hover:shadow-[0_0_45px_rgba(220,38,38,0.9)] transition-all duration-300 hover:scale-105 active:scale-95 border border-red-400/40 block text-center"
                 >
                   Ouvir Faixas ♫
                 </a>
@@ -413,7 +413,7 @@ export default function HeroScrollytelling() {
               <BotaoMagnetico>
                 <a
                   href="#videos"
-                  className="px-6 sm:px-8 py-3 sm:py-3.5 bg-black/60 hover:bg-black/90 text-zinc-200 hover:text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-widest rounded-full border border-white/20 hover:border-red-500/60 shadow-[0_4px_20px_rgba(0,0,0,0.6)] transition-all duration-300 hover:scale-105 active:scale-95 backdrop-blur-md block text-center"
+                  className="w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-3.5 bg-black/60 hover:bg-black/90 text-zinc-200 hover:text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-widest rounded-full border border-white/20 hover:border-red-500/60 shadow-[0_4px_20px_rgba(0,0,0,0.6)] transition-all duration-300 hover:scale-105 active:scale-95 backdrop-blur-md block text-center"
                 >
                   Ver Clipes ↗
                 </a>
