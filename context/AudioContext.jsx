@@ -80,7 +80,7 @@ export function AudioProvider({ children }) {
 
   const track = TRACKS[currentIndex] || TRACKS[0];
 
-  // Início da reprodução de Unpatriot na rolagem ou no primeiro gesto
+  // Início da reprodução de Unpatriot na rolagem da tela ou primeiro gesto
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
@@ -94,20 +94,22 @@ export function AudioProvider({ children }) {
     let isStarted = false;
 
     const removeListeners = () => {
-      window.removeEventListener("scroll", triggerAudio);
-      window.removeEventListener("wheel", triggerAudio);
-      window.removeEventListener("touchmove", triggerAudio);
-      window.removeEventListener("touchstart", triggerAudio);
-      window.removeEventListener("pointerdown", triggerAudio);
-      window.removeEventListener("click", triggerAudio);
-      window.removeEventListener("keydown", triggerAudio);
-      document.removeEventListener("scroll", triggerAudio);
+      window.removeEventListener("scroll", triggerAudio, { capture: true });
+      window.removeEventListener("wheel", triggerAudio, { capture: true });
+      window.removeEventListener("touchmove", triggerAudio, { capture: true });
+      window.removeEventListener("touchstart", triggerAudio, { capture: true });
+      window.removeEventListener("pointerdown", triggerAudio, { capture: true });
+      window.removeEventListener("click", triggerAudio, { capture: true });
+      window.removeEventListener("keydown", triggerAudio, { capture: true });
+      document.removeEventListener("scroll", triggerAudio, { capture: true });
     };
 
     const triggerAudio = () => {
       if (isStarted || !audioRef.current) return;
 
-      const playPromise = audioRef.current.play();
+      const currentAudio = audioRef.current;
+      const playPromise = currentAudio.play();
+
       if (playPromise !== undefined) {
         playPromise
           .then(() => {
@@ -116,8 +118,7 @@ export function AudioProvider({ children }) {
             removeListeners();
           })
           .catch(() => {
-            // Se o navegador rejeitar autoplay na rolagem pura, mantém os listeners
-            // para ativar no primeiro clique ou toque
+            // Mantém os listeners caso o navegador exija um toque direto subsequente
           });
       }
     };
@@ -125,20 +126,29 @@ export function AudioProvider({ children }) {
     // Tenta tocar imediatamente
     triggerAudio();
 
-    // Escuta rolagem, roda do mouse, toque, clique e teclado
-    window.addEventListener("scroll", triggerAudio, { passive: true });
-    window.addEventListener("wheel", triggerAudio, { passive: true });
-    window.addEventListener("touchmove", triggerAudio, { passive: true });
-    window.addEventListener("touchstart", triggerAudio, { passive: true });
-    window.addEventListener("pointerdown", triggerAudio, { passive: true });
-    window.addEventListener("click", triggerAudio, { passive: true });
-    window.addEventListener("keydown", triggerAudio, { passive: true });
-    document.addEventListener("scroll", triggerAudio, { passive: true });
+    // Escuta rolagem do mouse, touch, cliques e teclas com capture: true
+    window.addEventListener("scroll", triggerAudio, { capture: true, passive: true });
+    window.addEventListener("wheel", triggerAudio, { capture: true, passive: true });
+    window.addEventListener("touchmove", triggerAudio, { capture: true, passive: true });
+    window.addEventListener("touchstart", triggerAudio, { capture: true, passive: true });
+    window.addEventListener("pointerdown", triggerAudio, { capture: true, passive: true });
+    window.addEventListener("click", triggerAudio, { capture: true, passive: true });
+    window.addEventListener("keydown", triggerAudio, { capture: true, passive: true });
+    document.addEventListener("scroll", triggerAudio, { capture: true, passive: true });
 
     return () => {
       removeListeners();
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Sincroniza estado de play/pause quando o elemento de áudio nativo toca ou pausa
+  const handlePlay = useCallback(() => {
+    setIsPlaying(true);
+  }, []);
+
+  const handlePause = useCallback(() => {
+    setIsPlaying(false);
+  }, []);
 
   // Mudança de faixa
   useEffect(() => {
@@ -279,6 +289,8 @@ export function AudioProvider({ children }) {
       <audio
         ref={audioRef}
         src={track.src}
+        onPlay={handlePlay}
+        onPause={handlePause}
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         onEnded={handleEnded}
