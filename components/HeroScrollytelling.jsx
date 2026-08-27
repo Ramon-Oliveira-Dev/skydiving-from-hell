@@ -9,15 +9,14 @@ gsap.registerPlugin(ScrollTrigger);
 /**
  * HeroScrollytelling — Sequência cinematográfica em duas fases
  *
- * FASE 1: Hero com vídeo em loop (hero_page.mp4 / hero1-mobile.mp4)
- *   → Ocupa 100vh, rola suavemente revelando a Fase 2.
+ * FASE 1: Hero com vídeo em loop (hero_page.mp4 — logo em chamas)
+ *   → Ocupa 100vh, rola normalmente revelando a Fase 2.
  *
- * FASE 2: Scrollytelling de Altíssimo Desempenho (hero_page2_scroll.mp4)
- *   → Motor adaptativo de alta performance calibrado para scroll lento e scroll ultra-rápido sem travamentos.
- *   → Watchdog de 45ms + interpolação dinâmica e fastScrollEnd ativo.
+ * FASE 2: Scrollytelling com vídeo de scrubbing (hero_page2_scroll.mp4)
+ *   → Pinned pelo GSAP, timeline controlada pelo scroll.
  *   → Legenda 1: "A Origem" (Centro).
  *   → Legenda 2: "A Máquina Rítmica" (Canto inferior esquerdo).
- *   → Dissolve final em fumaça e escurecimento para Manifesto & História.
+ *   → Transição de fumaça e escurecimento para Manifesto & História.
  */
 export default function HeroScrollytelling() {
   // ─── Refs ────────────────────────────────────────────────────────────────
@@ -30,7 +29,7 @@ export default function HeroScrollytelling() {
   const smokeOverlayRef = useRef(null); // Efeito de fumaça volumétrica
   const darkFadeRef = useRef(null);     // Efeito de escurecimento transicional
 
-  // ─── GSAP & ADAPTIVE ULTRA-FAST VIDEO SCRUBBING ENGINE ──────────────────
+  // ─── GSAP & HIGH-PERFORMANCE VIDEO SCRUBBING ENGINE ─────────────────────
   useEffect(() => {
     const section      = phase2Ref.current;
     const video        = video2Ref.current;
@@ -43,191 +42,156 @@ export default function HeroScrollytelling() {
 
     if (!section || !video) return;
 
-    // Configurações de hardware para vídeo HTML5
+    // Configurações críticas para scrubbing sem travamento
     video.muted       = true;
     video.playsInline = true;
     video.pause();
 
     const ctx = gsap.context(() => {
-      // Estado inicial — tudo invisível e deslocado
+      // Estado inicial dos painéis
       gsap.set([panel1, panel2], { opacity: 0, pointerEvents: "none" });
       gsap.set([accent1, accent2], { scaleX: 0, transformOrigin: "left center" });
       gsap.set([smokeOverlay, darkFade], { opacity: 0 });
 
       let targetTime = 0;
       let isSeeking = false;
-      let lastSeekTimestamp = 0;
 
-      // Motor de busca adaptativo (responde instantaneamente a scroll lento e rápido)
-      const seekVideo = () => {
-        if (!video || !video.duration || !isFinite(video.duration)) return;
-        const now = performance.now();
-
-        // Watchdog de 45ms: destrava instantaneamente se o browser demorar a emitir seeked
-        if (isSeeking && now - lastSeekTimestamp > 45) {
-          isSeeking = false;
-        }
-
-        const diff = targetTime - video.currentTime;
-        const absDiff = Math.abs(diff);
-
-        if (!isSeeking && absDiff > 0.012) {
-          isSeeking = true;
-          lastSeekTimestamp = now;
-
-          // Em scroll rápido (salto grande), busca diretamente o targetTime
-          // Em scroll lento, interpola 80% do passo para máxima suavidade
-          const seekDestination = absDiff > 0.8 ? targetTime : video.currentTime + diff * 0.8;
-
-          try {
-            if (typeof video.fastSeek === "function") {
-              video.fastSeek(seekDestination);
-            } else {
-              video.currentTime = seekDestination;
-            }
-          } catch (_) {
-            isSeeking = false;
-          }
-        }
+      const handleSeeking = () => {
+        isSeeking = true;
       };
 
       const handleSeeked = () => {
         isSeeking = false;
+        // Se o scroll avançou enquanto buscava o frame, atualiza para o targetTime mais recente
+        if (video && Math.abs(video.currentTime - targetTime) > 0.04) {
+          try {
+            if (typeof video.fastSeek === "function") {
+              video.fastSeek(targetTime);
+            } else {
+              video.currentTime = targetTime;
+            }
+          } catch (_) {}
+        }
       };
 
-      const handleSeeking = () => {
-        lastSeekTimestamp = performance.now();
-      };
-
-      video.addEventListener("seeked", handleSeeked);
       video.addEventListener("seeking", handleSeeking);
+      video.addEventListener("seeked", handleSeeked);
 
-      // Sincronizado diretamente com a taxa de atualização da tela
-      gsap.ticker.add(seekVideo);
-
-      // Função que constrói a timeline
+      // Função que constrói a timeline quando os metadados do vídeo estiverem prontos
       const buildTimeline = () => {
+        // Garante que a duração seja válida
+        const videoDuration =
+          video.duration && isFinite(video.duration) && video.duration > 0
+            ? video.duration
+            : 10;
+
+        // Deixa 0.04s antes do fim absoluto para exibir o último frame nítido sem resetar
+        const maxSeekTime = Math.max(0.1, videoDuration - 0.04);
+
+        // Timeline sincronizada com o ScrollTrigger (Pinning + Smooth Scrub)
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: section,
             start: "top top",
-            end: "+=3600",           // Distância dinâmica e veloz
-            scrub: 0.1,              // Resposta instantânea e precisa ao scroll
+            end: "+=5000",
+            scrub: 0.3, // scrubbing amortecido para suavidade máxima
             pin: true,
             anticipatePin: 1,
-            fastScrollEnd: true,     // Transição perfeita em golpes rápidos de scroll
-            preventOverlaps: true,
             invalidateOnRefresh: true,
             onUpdate: (self) => {
-              // Obtém a duração real do vídeo dinamicamente
-              const totalDur =
-                video && video.duration && isFinite(video.duration) && video.duration > 0
-                  ? video.duration
-                  : 10;
+              targetTime = self.progress * maxSeekTime;
 
-              // Mapeia o progresso (0.0 -> 1.0) para 100% da duração do vídeo
-              const maxSeekTime = Math.max(0.1, totalDur - 0.02);
-              targetTime = Math.min(maxSeekTime, Math.max(0, self.progress * maxSeekTime));
+              // Atualiza o frame do vídeo de forma não-bloqueante
+              if (!isSeeking && video) {
+                try {
+                  if (typeof video.fastSeek === "function") {
+                    video.fastSeek(targetTime);
+                  } else {
+                    video.currentTime = targetTime;
+                  }
+                } catch (_) {}
+              }
             },
           },
         });
 
-        // ── LEGENDA 1: A ORIGEM (Centro: 0.6 -> 3.0) ─────────────────────
+        // ── PAINEL 1: A ORIGEM (Centro: 0.5 até 2.5) ──────────────────────
         tl.fromTo(
           panel1,
-          { opacity: 0, y: 50 },
-          {
-            opacity: 1, y: 0,
-            duration: 0.9,
-            ease: "power2.out",
-            pointerEvents: "auto",
-          },
-          0.6
+          { opacity: 0, y: 50, scale: 0.96 },
+          { opacity: 1, y: 0, scale: 1, duration: 1.2, ease: "power4.out", pointerEvents: "auto" },
+          0.5
         );
         tl.to(
           accent1,
-          { scaleX: 1, duration: 0.7, ease: "power2.out" },
-          0.8
+          { scaleX: 1, duration: 0.8, ease: "power2.out" },
+          0.7
         );
         tl.to(
           accent1,
-          { scaleX: 0, transformOrigin: "right center", duration: 0.35, ease: "power2.in" },
-          2.8
+          { scaleX: 0, transformOrigin: "right center", duration: 0.4, ease: "power2.in" },
+          2.6
         );
         tl.to(
           panel1,
-          {
-            opacity: 0, y: -30,
-            duration: 0.5,
-            ease: "power2.in",
-            pointerEvents: "none",
-          },
-          2.8
+          { opacity: 0, y: -30, scale: 0.98, duration: 0.8, ease: "power2.in", pointerEvents: "none" },
+          2.6
         );
 
-        // ── LEGENDA 2: A MÁQUINA RÍTMICA (Canto Inferior Esquerdo: 3.6 -> 6.4) ───
+        // ── PAINEL 2: A MÁQUINA RÍTMICA (Canto Inferior Esquerdo: 3.8 até 6.5) ──
         tl.fromTo(
           panel2,
           { opacity: 0, x: -50, y: 20 },
-          {
-            opacity: 1, x: 0, y: 0,
-            duration: 0.9,
-            ease: "power2.out",
-            pointerEvents: "auto",
-          },
-          3.6
-        );
-        tl.to(
-          accent2,
-          { scaleX: 1, duration: 0.7, ease: "power2.out" },
+          { opacity: 1, x: 0, y: 0, duration: 1.2, ease: "power4.out", pointerEvents: "auto" },
           3.8
         );
         tl.to(
           accent2,
-          { scaleX: 0, transformOrigin: "left center", duration: 0.35, ease: "power2.in" },
-          6.2
+          { scaleX: 1, duration: 0.8, ease: "power2.out" },
+          4.0
+        );
+        tl.to(
+          accent2,
+          { scaleX: 0, transformOrigin: "left center", duration: 0.4, ease: "power2.in" },
+          6.4
         );
         tl.to(
           panel2,
-          {
-            opacity: 0, x: -30, y: 10,
-            duration: 0.5,
-            ease: "power2.in",
-            pointerEvents: "none",
-          },
-          6.2
+          { opacity: 0, x: -30, y: 10, duration: 0.8, ease: "power2.in", pointerEvents: "none" },
+          6.4
         );
 
-        // ── TRANSIÇÃO FINAL: O vídeo finaliza o salto e a fumaça dissolve para Manifesto (8.4 -> 10.0) ──
+        // ── TRANSIÇÃO FINAL: Fumaça Volumétrica e Escurecimento para Manifesto (8.5 até 10.0) ──
         tl.to(
           [smokeOverlay, darkFade],
           {
             opacity: 1,
-            duration: 1.2,
+            duration: 1.5,
             ease: "power2.inOut",
           },
-          8.4
+          8.5
         );
       };
 
-      // Inicializa timeline imediatamente
-      buildTimeline();
-
-      // Recalcula limites quando os metadados do vídeo forem carregados
+      let hasBuilt = false;
       const handleMetadata = () => {
-        ScrollTrigger.refresh();
+        if (hasBuilt) return;
+        hasBuilt = true;
+        buildTimeline();
       };
-      video.addEventListener("loadedmetadata", handleMetadata);
-      video.addEventListener("canplay", handleMetadata);
-      video.addEventListener("durationchange", handleMetadata);
+
+      if (video.readyState >= 1) {
+        handleMetadata();
+      } else {
+        video.addEventListener("loadedmetadata", handleMetadata, { once: true });
+        video.addEventListener("canplay", handleMetadata, { once: true });
+      }
 
       return () => {
-        gsap.ticker.remove(seekVideo);
-        video.removeEventListener("seeked", handleSeeked);
         video.removeEventListener("seeking", handleSeeking);
+        video.removeEventListener("seeked", handleSeeked);
         video.removeEventListener("loadedmetadata", handleMetadata);
         video.removeEventListener("canplay", handleMetadata);
-        video.removeEventListener("durationchange", handleMetadata);
       };
     }, phase2Ref);
 
@@ -247,7 +211,7 @@ export default function HeroScrollytelling() {
          ================================================================ */}
       <section className="relative w-full h-[100svh] overflow-hidden overflow-x-hidden bg-black select-none flex items-center justify-center">
 
-        {/* Video em loop — logo em chamas com poster LCP e preload metadata */}
+        {/* Video em loop — logo em chamas */}
         <video
           poster="/banner_sdfh_dark.png"
           autoPlay
@@ -257,7 +221,7 @@ export default function HeroScrollytelling() {
           preload="metadata"
           aria-hidden="true"
           className="hero__video absolute inset-0 w-full h-full object-cover object-center z-0 pointer-events-none"
-          style={{ willChange: "transform", transform: "translate3d(0,0,0)" }}
+          style={{ filter: "contrast(1.1) brightness(0.95)" }}
         >
           <source src="/hero1-mobile.mp4" media="(max-width: 767px)" type="video/mp4" />
           <source src="/hero_page.mp4" media="(min-width: 768px)" type="video/mp4" />
@@ -302,7 +266,6 @@ export default function HeroScrollytelling() {
       {/* ================================================================
           FASE 2 — Scrollytelling Cinematográfico (hero_page2_scroll.mp4)
           Pinned pelo GSAP. Legendas cinematográficas sequenciais.
-          Vídeo acelerado por hardware sem travamento.
          ================================================================ */}
       <section
         ref={phase2Ref}
@@ -317,7 +280,7 @@ export default function HeroScrollytelling() {
             preload="auto"
             aria-hidden="true"
             className="w-full h-full object-cover select-none pointer-events-none"
-            style={{ willChange: "transform", transform: "translate3d(0,0,0)" }}
+            style={{ filter: "contrast(1.05) brightness(0.92)" }}
           >
             <source src="/hero_page2_scroll.mp4" type="video/mp4" />
             Seu navegador não suporta vídeos HTML5.
@@ -337,7 +300,7 @@ export default function HeroScrollytelling() {
           }}
         />
 
-        {/* ── LEGENDA 1: A ORIGEM (Estilo Subtítulo Cinematográfico) ──── */}
+        {/* ── PAINEL 1: A ORIGEM (Centro) ─────────────────────────────── */}
         <div
           ref={panel1Ref}
           className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6 sm:px-8 pointer-events-none"
@@ -369,7 +332,7 @@ export default function HeroScrollytelling() {
           </div>
         </div>
 
-        {/* ── LEGENDA 2: A MÁQUINA RÍTMICA (Canto Inferior Esquerdo da Tela) ──────── */}
+        {/* ── PAINEL 2: A MÁQUINA RÍTMICA (Canto Inferior Esquerdo da Tela) ──────── */}
         <div
           ref={panel2Ref}
           className="absolute inset-0 z-20 flex flex-col items-start justify-end text-left p-6 sm:p-12 md:p-16 pb-12 sm:pb-16 md:pb-20 pointer-events-none"
