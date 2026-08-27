@@ -10,13 +10,14 @@ gsap.registerPlugin(ScrollTrigger);
  * HeroScrollytelling — Sequência cinematográfica em duas fases
  *
  * FASE 1: Hero com vídeo em loop (hero_page.mp4 / hero1-mobile.mp4)
- *   → Ocupa 100vh, rola normalmente revelando a Fase 2.
+ *   → Ocupa 100vh, rola suavemente revelando a Fase 2.
  *
  * FASE 2: Scrollytelling de Altíssimo Desempenho (hero_page2_scroll.mp4)
- *   → Pinned pelo GSAP, timeline 100% sincronizada com o scroll vertical.
+ *   → Engine de scrubbing contínuo no GSAP Ticker com watchdog anti-deadlock.
+ *   → 100% fluido em 60/120Hz sem travamento do decodificador de hardware.
  *   → Legenda 1: "A Origem" (Centro).
  *   → Legenda 2: "A Máquina Rítmica" (Canto inferior esquerdo).
- *   → Vídeo roda até o final desobstruído com transição de fumaça e escurecimento para Manifesto.
+ *   → Dissolve final em fumaça e escurecimento para Manifesto & História.
  */
 export default function HeroScrollytelling() {
   // ─── Refs ────────────────────────────────────────────────────────────────
@@ -42,7 +43,7 @@ export default function HeroScrollytelling() {
 
     if (!section || !video) return;
 
-    // Configurações críticas para scrubbing fluido e sem travamento
+    // Configurações essenciais de performance de vídeo HTML5
     video.muted       = true;
     video.playsInline = true;
     video.pause();
@@ -55,13 +56,23 @@ export default function HeroScrollytelling() {
 
       let targetTime = 0;
       let isSeeking = false;
+      let lastSeekTimestamp = 0;
 
-      // Executa a busca de quadro somente quando o decodificador estiver livre
-      const performSeek = () => {
-        if (!video || isSeeking) return;
+      // Função de busca atômica e segura
+      const seekVideo = () => {
+        if (!video) return;
+        const now = performance.now();
 
-        if (Math.abs(video.currentTime - targetTime) > 0.02) {
+        // Watchdog: Se o navegador demorar mais de 65ms para responder o evento seeked, auto-destrava
+        if (isSeeking && now - lastSeekTimestamp > 65) {
+          isSeeking = false;
+        }
+
+        // Executa busca suave somente quando o decodificador estiver disponível
+        if (!isSeeking && Math.abs(video.currentTime - targetTime) > 0.015) {
           isSeeking = true;
+          lastSeekTimestamp = now;
+
           try {
             if (typeof video.fastSeek === "function") {
               video.fastSeek(targetTime);
@@ -74,15 +85,19 @@ export default function HeroScrollytelling() {
         }
       };
 
-      // Quando o decodificador de hardware conclui o quadro, verifica se há nova posição pendente
       const handleSeeked = () => {
         isSeeking = false;
-        if (video && Math.abs(video.currentTime - targetTime) > 0.02) {
-          performSeek();
-        }
+      };
+
+      const handleSeeking = () => {
+        lastSeekTimestamp = performance.now();
       };
 
       video.addEventListener("seeked", handleSeeked);
+      video.addEventListener("seeking", handleSeeking);
+
+      // Conecta o motor de busca diretamente ao Ticker do GSAP (sincronizado com requestAnimationFrame da tela)
+      gsap.ticker.add(seekVideo);
 
       // Função que constrói a timeline
       const buildTimeline = () => {
@@ -90,8 +105,8 @@ export default function HeroScrollytelling() {
           scrollTrigger: {
             trigger: section,
             start: "top top",
-            end: "+=4800",         // Distância ideal para controle cinematográfico
-            scrub: 0.4,            // Amortecimento suave para desaceleração contínua
+            end: "+=4500",         // Distância ideal para controle cinematográfico
+            scrub: 0.15,           // Resposta imediata com inércia natural do Lenis
             pin: true,
             anticipatePin: 1,
             invalidateOnRefresh: true,
@@ -102,11 +117,9 @@ export default function HeroScrollytelling() {
                   ? video.duration
                   : 10;
 
-              // Roda de 0:00 até o final absoluto (100% da duração do vídeo)
+              // Mapeia o progresso (0.0 -> 1.0) para o tempo total exato do vídeo (0:00 -> fim)
               const maxSeekTime = Math.max(0.1, totalDur - 0.02);
               targetTime = Math.min(maxSeekTime, Math.max(0, self.progress * maxSeekTime));
-
-              performSeek();
             },
           },
         });
@@ -199,6 +212,15 @@ export default function HeroScrollytelling() {
       video.addEventListener("loadedmetadata", handleMetadata);
       video.addEventListener("canplay", handleMetadata);
       video.addEventListener("durationchange", handleMetadata);
+
+      return () => {
+        gsap.ticker.remove(seekVideo);
+        video.removeEventListener("seeked", handleSeeked);
+        video.removeEventListener("seeking", handleSeeking);
+        video.removeEventListener("loadedmetadata", handleMetadata);
+        video.removeEventListener("canplay", handleMetadata);
+        video.removeEventListener("durationchange", handleMetadata);
+      };
     }, phase2Ref);
 
     return () => {
