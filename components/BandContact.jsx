@@ -101,27 +101,27 @@ export default function BandContact() {
           </div>
         </ScrollReveal>
 
-        {/* ─── Grid 3 Colunas ─────────────────────────────────────────── */}
+        {/* ─── Grid 3 Colunas com Efeito Slide-in ──────────────────────── */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-10">
 
           {/* ══════════════════════════════════════════════════════════════
-              COLUNA 1: BOOKING & CONTATO DIRETO
+              COLUNA 1: BOOKING & CONTATO DIRETO (Slide da Esquerda)
              ══════════════════════════════════════════════════════════════ */}
-          <ScrollReveal direction="up" delay={0}>
+          <ScrollReveal direction="left" delay={0}>
             <div className="space-y-4">
               <h3 className="text-red-700 text-xs font-bold tracking-[0.2em] uppercase mb-6 flex items-center gap-2 font-mono">
                 <span className="w-1.5 h-1.5 rounded-full bg-red-600 animate-pulse" />
                 // 01. BOOKING & CONTATO
               </h3>
 
-              {/* Card WhatsApp Direto (Dark Glassmorphism Monocromático) */}
+              {/* Card WhatsApp Direto com Slide Hover */}
               <a
                 href="https://wa.me/5527997207037"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative flex items-center gap-4 p-4 rounded-lg bg-zinc-950/40 backdrop-blur-md border border-white/5 overflow-hidden transition-all duration-300 hover:bg-zinc-900/80 hover:border-red-900/50 hover:shadow-[0_0_20px_rgba(220,38,38,0.15)] hover:-translate-y-1"
+                className="group relative flex items-center gap-4 p-4 rounded-lg bg-zinc-950/40 backdrop-blur-md border border-white/5 overflow-hidden transition-all duration-300 hover:bg-zinc-900/80 hover:border-red-900/50 hover:shadow-[0_0_25px_rgba(220,38,38,0.2)] hover:translate-x-2 hover:-translate-y-0.5"
               >
-                <span className="w-10 h-10 rounded-md bg-zinc-900/80 border border-white/10 text-zinc-400 group-hover:text-red-400 group-hover:border-red-600/50 group-hover:bg-red-950/30 transition-all flex items-center justify-center flex-shrink-0">
+                <span className="w-10 h-10 rounded-md bg-zinc-900/80 border border-white/10 text-zinc-400 group-hover:text-red-400 group-hover:border-red-600/50 group-hover:bg-red-950/30 group-hover:scale-110 transition-all flex items-center justify-center flex-shrink-0">
                   {ICONS.whatsapp}
                 </span>
                 <div className="flex-1 min-w-0">
@@ -132,17 +132,17 @@ export default function BandContact() {
                     +55 (27) 99720-7037
                   </span>
                 </div>
-                <span className="text-zinc-600 group-hover:text-red-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300 ml-auto font-mono text-sm font-bold flex-shrink-0">
+                <span className="text-zinc-600 group-hover:text-red-500 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300 ml-auto font-mono text-sm font-bold flex-shrink-0">
                   ↗
                 </span>
               </a>
 
-              {/* Card E-mail Oficial (Dark Glassmorphism) */}
+              {/* Card E-mail Oficial com Slide Hover */}
               <a
                 href="mailto:sdfhband@gmail.com"
-                className="group relative flex items-center gap-4 p-4 rounded-lg bg-zinc-950/40 backdrop-blur-md border border-white/5 overflow-hidden transition-all duration-300 hover:bg-zinc-900/80 hover:border-red-900/50 hover:shadow-[0_0_20px_rgba(220,38,38,0.15)] hover:-translate-y-1"
+                className="group relative flex items-center gap-4 p-4 rounded-lg bg-zinc-950/40 backdrop-blur-md border border-white/5 overflow-hidden transition-all duration-300 hover:bg-zinc-900/80 hover:border-red-900/50 hover:shadow-[0_0_25px_rgba(220,38,38,0.2)] hover:translate-x-2 hover:-translate-y-0.5"
               >
-                <span className="w-10 h-10 rounded-md bg-zinc-900/80 border border-white/10 text-zinc-400 group-hover:text-red-400 group-hover:border-red-600/50 group-hover:bg-red-950/30 transition-all flex items-center justify-center flex-shrink-0">
+                <span className="w-10 h-10 rounded-md bg-zinc-900/80 border border-white/10 text-zinc-400 group-hover:text-red-400 group-hover:border-red-600/50 group-hover:bg-red-950/30 group-hover:scale-110 transition-all flex items-center justify-center flex-shrink-0">
                   {ICONS.mail}
                 </span>
                 <div className="flex-1 min-w-0">
@@ -153,7 +153,7 @@ export default function BandContact() {
                     sdfhband@gmail.com
                   </span>
                 </div>
-                <span className="text-zinc-600 group-hover:text-red-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300 ml-auto font-mono text-sm font-bold flex-shrink-0">
+                <span className="text-zinc-600 group-hover:text-red-500 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300 ml-auto font-mono text-sm font-bold flex-shrink-0">
                   ↗
                 </span>
               </a>
@@ -161,7 +161,7 @@ export default function BandContact() {
           </ScrollReveal>
 
           {/* ══════════════════════════════════════════════════════════════
-              COLUNA 2: STREAMING OFICIAL
+              COLUNA 2: STREAMING OFICIAL (Slide Vertical)
              ══════════════════════════════════════════════════════════════ */}
           <ScrollReveal direction="up" delay={150}>
             <div className="space-y-4">
@@ -177,15 +177,15 @@ export default function BandContact() {
                     href={item.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group relative flex items-center gap-4 p-4 rounded-lg bg-zinc-950/40 backdrop-blur-md border border-white/5 overflow-hidden transition-all duration-300 hover:bg-zinc-900/80 hover:border-red-900/50 hover:shadow-[0_0_20px_rgba(220,38,38,0.15)] hover:-translate-y-1"
+                    className="group relative flex items-center gap-4 p-4 rounded-lg bg-zinc-950/40 backdrop-blur-md border border-white/5 overflow-hidden transition-all duration-300 hover:bg-zinc-900/80 hover:border-red-900/50 hover:shadow-[0_0_25px_rgba(220,38,38,0.2)] hover:translate-x-2 hover:-translate-y-0.5"
                   >
-                    <span className="w-10 h-10 rounded-md bg-zinc-900/80 border border-white/10 text-zinc-400 group-hover:text-red-400 group-hover:border-red-600/50 group-hover:bg-red-950/30 transition-all flex items-center justify-center flex-shrink-0">
+                    <span className="w-10 h-10 rounded-md bg-zinc-900/80 border border-white/10 text-zinc-400 group-hover:text-red-400 group-hover:border-red-600/50 group-hover:bg-red-950/30 group-hover:scale-110 transition-all flex items-center justify-center flex-shrink-0">
                       {item.icon}
                     </span>
                     <span className="font-mono font-bold tracking-wider text-xs text-zinc-400 group-hover:text-white transition-colors uppercase">
                       {item.name}
                     </span>
-                    <span className="text-zinc-600 group-hover:text-red-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300 ml-auto font-mono text-sm font-bold flex-shrink-0">
+                    <span className="text-zinc-600 group-hover:text-red-500 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300 ml-auto font-mono text-sm font-bold flex-shrink-0">
                       ↗
                     </span>
                   </a>
@@ -195,9 +195,9 @@ export default function BandContact() {
           </ScrollReveal>
 
           {/* ══════════════════════════════════════════════════════════════
-              COLUNA 3: REDES SOCIAIS
+              COLUNA 3: REDES SOCIAIS (Slide da Direita)
              ══════════════════════════════════════════════════════════════ */}
-          <ScrollReveal direction="up" delay={300}>
+          <ScrollReveal direction="right" delay={300}>
             <div className="space-y-4">
               <h3 className="text-red-700 text-xs font-bold tracking-[0.2em] uppercase mb-6 flex items-center gap-2 font-mono">
                 <span className="w-1.5 h-1.5 rounded-full bg-red-600" />
@@ -211,15 +211,15 @@ export default function BandContact() {
                     href={item.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group relative flex items-center gap-4 p-4 rounded-lg bg-zinc-950/40 backdrop-blur-md border border-white/5 overflow-hidden transition-all duration-300 hover:bg-zinc-900/80 hover:border-red-900/50 hover:shadow-[0_0_20px_rgba(220,38,38,0.15)] hover:-translate-y-1"
+                    className="group relative flex items-center gap-4 p-4 rounded-lg bg-zinc-950/40 backdrop-blur-md border border-white/5 overflow-hidden transition-all duration-300 hover:bg-zinc-900/80 hover:border-red-900/50 hover:shadow-[0_0_25px_rgba(220,38,38,0.2)] hover:translate-x-2 hover:-translate-y-0.5"
                   >
-                    <span className="w-10 h-10 rounded-md bg-zinc-900/80 border border-white/10 text-zinc-400 group-hover:text-red-400 group-hover:border-red-600/50 group-hover:bg-red-950/30 transition-all flex items-center justify-center flex-shrink-0">
+                    <span className="w-10 h-10 rounded-md bg-zinc-900/80 border border-white/10 text-zinc-400 group-hover:text-red-400 group-hover:border-red-600/50 group-hover:bg-red-950/30 group-hover:scale-110 transition-all flex items-center justify-center flex-shrink-0">
                       {item.icon}
                     </span>
                     <span className="font-mono font-bold tracking-wider text-xs text-zinc-400 group-hover:text-white transition-colors uppercase">
                       {item.name}
                     </span>
-                    <span className="text-zinc-600 group-hover:text-red-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all duration-300 ml-auto font-mono text-sm font-bold flex-shrink-0">
+                    <span className="text-zinc-600 group-hover:text-red-500 group-hover:translate-x-1 group-hover:-translate-y-1 transition-all duration-300 ml-auto font-mono text-sm font-bold flex-shrink-0">
                       ↗
                     </span>
                   </a>

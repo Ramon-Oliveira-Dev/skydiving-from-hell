@@ -15,7 +15,7 @@ gsap.registerPlugin(ScrollTrigger);
  * FASE 2: Scrollytelling com vídeo de scrubbing (hero_page2_scroll.mp4)
  *   → Pinned pelo GSAP, timeline controlada pelo scroll.
  *   → Legenda 1: "A Origem" (Centro).
- *   → Legenda 2: "A Máquina Rítmica" (Canto inferior esquerdo).
+ *   → Legenda 2: "A Máquina Rítmica" (Posicionada mais alta no canto inferior esquerdo com tipografia ampliada).
  *   → Transição de fumaça e escurecimento para Manifesto & História.
  */
 export default function HeroScrollytelling() {
@@ -23,7 +23,7 @@ export default function HeroScrollytelling() {
   const phase2Ref = useRef(null);       // <section> da Fase 2 (trigger do pin)
   const video2Ref = useRef(null);       // <video> do scroll (hero_page2_scroll.mp4)
   const panel1Ref = useRef(null);       // Legenda "A Origem"
-  const panel2Ref = useRef(null);       // Legenda "A Máquina Rítmica" (canto inferior esquerdo)
+  const panel2Ref = useRef(null);       // Legenda "A Máquina Rítmica" (canto inferior esquerdo elevado)
   const accent1Ref = useRef(null);      // Linha de acento painel 1
   const accent2Ref = useRef(null);      // Linha de acento painel 2
   const smokeOverlayRef = useRef(null); // Efeito de fumaça volumétrica
@@ -138,16 +138,16 @@ export default function HeroScrollytelling() {
           2.6
         );
 
-        // ── PAINEL 2: A MÁQUINA RÍTMICA (Canto Inferior Esquerdo: 3.8 até 6.5) ──
+        // ── PAINEL 2: A MÁQUINA RÍTMICA (Canto Inferior Esquerdo Elevado: 3.8 até 6.5) ──
         tl.fromTo(
           panel2,
-          { opacity: 0, x: -50, y: 20 },
-          { opacity: 1, x: 0, y: 0, duration: 1.2, ease: "power4.out", pointerEvents: "auto" },
+          { opacity: 0, x: -60, y: 30 },
+          { opacity: 1, x: 0, y: 0, duration: 1.3, ease: "power4.out", pointerEvents: "auto" },
           3.8
         );
         tl.to(
           accent2,
-          { scaleX: 1, duration: 0.8, ease: "power2.out" },
+          { scaleX: 1, duration: 0.9, ease: "power2.out" },
           4.0
         );
         tl.to(
@@ -157,7 +157,7 @@ export default function HeroScrollytelling() {
         );
         tl.to(
           panel2,
-          { opacity: 0, x: -30, y: 10, duration: 0.8, ease: "power2.in", pointerEvents: "none" },
+          { opacity: 0, x: -40, y: 15, duration: 0.8, ease: "power2.in", pointerEvents: "none" },
           6.4
         );
 
@@ -332,33 +332,33 @@ export default function HeroScrollytelling() {
           </div>
         </div>
 
-        {/* ── PAINEL 2: A MÁQUINA RÍTMICA (Canto Inferior Esquerdo da Tela) ──────── */}
+        {/* ── PAINEL 2: A MÁQUINA RÍTMICA (Canto Inferior Esquerdo Elevado + Tipografia Ampliada) ──────── */}
         <div
           ref={panel2Ref}
-          className="absolute inset-0 z-20 flex flex-col items-start justify-end text-left p-6 sm:p-12 md:p-16 pb-12 sm:pb-16 md:pb-20 pointer-events-none"
+          className="absolute inset-0 z-20 flex flex-col items-start justify-end text-left p-6 sm:p-12 md:p-16 pb-24 sm:pb-36 md:pb-48 pointer-events-none"
         >
-          <div className="max-w-xl flex flex-col items-start bg-gradient-to-tr from-black/85 via-black/40 to-transparent p-5 sm:p-8 rounded-2xl backdrop-blur-[2px] border border-white/5 shadow-2xl">
+          <div className="max-w-2xl flex flex-col items-start bg-gradient-to-tr from-black/90 via-black/50 to-transparent p-6 sm:p-10 rounded-2xl backdrop-blur-[4px] border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.9)]">
             {/* Tag de contexto */}
-            <span className="font-mono text-[10px] sm:text-xs font-bold tracking-[0.4em] uppercase text-red-500/90 mb-3 sm:mb-4 block drop-shadow-[0_0_12px_rgba(220,38,38,0.5)]">
+            <span className="font-mono text-xs sm:text-sm font-bold tracking-[0.45em] uppercase text-red-500 mb-3 sm:mb-4 block drop-shadow-[0_0_15px_rgba(220,38,38,0.6)]">
               // IDENTIDADE SONORA
             </span>
 
-            {/* Título principal */}
-            <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase text-white tracking-tight leading-[1.05] mb-3 sm:mb-4 drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)]">
+            {/* Título principal ampliado */}
+            <h2 className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase text-white tracking-tight leading-[1.05] mb-3 sm:mb-4 drop-shadow-[0_6px_25px_rgba(0,0,0,0.95)]">
               A Máquina{" "}
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-red-600 drop-shadow-none">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 via-red-500 to-red-600 drop-shadow-none">
                 Rítmica
               </span>
             </h2>
 
-            {/* Linha de acento animada */}
+            {/* Linha de acento animada ampliada */}
             <div
               ref={accent2Ref}
-              className="w-20 sm:w-28 h-1 bg-gradient-to-r from-orange-500 to-red-600 rounded-full mb-4 sm:mb-5 shadow-[0_0_15px_rgba(239,68,68,0.8)]"
+              className="w-24 sm:w-36 h-1.5 bg-gradient-to-r from-orange-500 via-red-500 to-red-600 rounded-full mb-4 sm:mb-6 shadow-[0_0_20px_rgba(239,68,68,0.9)]"
             />
 
-            {/* Parágrafo */}
-            <p className="font-mono text-xs sm:text-sm md:text-base text-zinc-300 font-bold max-w-lg leading-relaxed tracking-wider uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+            {/* Parágrafo ampliado */}
+            <p className="font-mono text-sm sm:text-base md:text-lg text-zinc-200 font-bold max-w-xl leading-relaxed tracking-wider uppercase drop-shadow-[0_3px_10px_rgba(0,0,0,0.9)]">
               Velocidade, técnica e breakdowns devastadores que definem a essência de cada apresentação.
             </p>
           </div>
