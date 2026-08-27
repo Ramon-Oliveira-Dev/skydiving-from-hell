@@ -10,13 +10,13 @@ gsap.registerPlugin(ScrollTrigger);
 /**
  * HeroScrollytelling — Sequência cinematográfica em duas fases
  *
- * FASE 1: Hero com vídeo em loop (hero_page.mp4 — logo em chamas)
- *   → Ocupa 100vh, rola normalmente revelando a Fase 2.
+ * FASE 1: Hero com vídeo em loop (hero_page.mp4 / hero1-mobile.mp4)
+ *   → Ocupa 100vh, rola suavemente revelando a Fase 2.
  *
- * FASE 2: Scrollytelling com vídeo de scrubbing (hero_page2_scroll.mp4 — esqueleto)
+ * FASE 2: Scrollytelling de alto desempenho com scrubbing otimizado (rAF throttle)
  *   → Pinned pelo GSAP, timeline controlada pelo scroll.
  *   → Legendas cinematográficas surgem/somem sequencialmente SEM sobreposição.
- *   → O soldado só salta (final do vídeo) depois que a última legenda desaparece.
+ *   → Vídeo mobile vertical leve para eliminar travamentos e consumo de GPU.
  */
 export default function HeroScrollytelling() {
   // ─── Refs ────────────────────────────────────────────────────────────────
@@ -40,10 +40,22 @@ export default function HeroScrollytelling() {
 
     if (!section || !video) return;
 
+    const isMobile = window.innerWidth < 768;
+
     // Configurações críticas para scrubbing sem travamento
     video.muted       = true;
     video.playsInline = true;
     video.pause();
+
+    // Seleciona a fonte mais leve dinamicamente no mobile para economizar decodificação
+    const targetSource = isMobile
+      ? "/hero_page2_scroll_mobile.mp4"
+      : "/hero_page2_scroll.mp4";
+
+    if (!video.src || !video.src.includes(targetSource)) {
+      video.src = targetSource;
+      video.load();
+    }
 
     const ctx = gsap.context(() => {
       // Estado inicial — tudo invisível e deslocado
@@ -51,24 +63,26 @@ export default function HeroScrollytelling() {
       gsap.set([accent1, accent2], { scaleX: 0, transformOrigin: "left center" });
 
       let targetTime = 0;
-      let isSeeking = false;
+      let rafId = null;
 
-      const handleSeeking = () => { isSeeking = true; };
-      const handleSeeked = () => {
-        isSeeking = false;
-        if (video && Math.abs(video.currentTime - targetTime) > 0.04) {
-          try {
-            if (typeof video.fastSeek === "function") {
+      // Throttle com requestAnimationFrame para nunca sobrecarregar a thread de decodificação
+      const applySeek = () => {
+        rafId = null;
+        if (!video) return;
+        if (Math.abs(video.currentTime - targetTime) > 0.03) {
+          if (typeof video.fastSeek === "function") {
+            try {
               video.fastSeek(targetTime);
-            } else {
+            } catch (_) {
               video.currentTime = targetTime;
             }
-          } catch (_) {}
+          } else {
+            try {
+              video.currentTime = targetTime;
+            } catch (_) {}
+          }
         }
       };
-
-      video.addEventListener("seeking", handleSeeking);
-      video.addEventListener("seeked", handleSeeked);
 
       // Função que constrói a timeline
       const buildTimeline = () => {
@@ -84,22 +98,15 @@ export default function HeroScrollytelling() {
           scrollTrigger: {
             trigger: section,
             start: "top top",
-            end: "+=6000",         // Mais espaço = mais controle = mais cinema
-            scrub: 0.4,            // Scrubbing amortecido para suavidade máxima
+            end: isMobile ? "+=2600" : "+=5200", // Distância otimizada para mobile
+            scrub: isMobile ? 0.2 : 0.35,        // Scrubbing ultra responsivo no mobile
             pin: true,
             anticipatePin: 1,
             invalidateOnRefresh: true,
             onUpdate: (self) => {
               targetTime = self.progress * maxSeekTime;
-
-              if (!isSeeking && video) {
-                try {
-                  if (typeof video.fastSeek === "function") {
-                    video.fastSeek(targetTime);
-                  } else {
-                    video.currentTime = targetTime;
-                  }
-                } catch (_) {}
+              if (!rafId) {
+                rafId = requestAnimationFrame(applySeek);
               }
             },
           },
@@ -190,7 +197,7 @@ export default function HeroScrollytelling() {
       // Inicializa timeline imediatamente
       buildTimeline();
 
-      // Recalcula limites se metadados demorarem para carregar
+      // Recalcula limites quando os metadados carregarem
       const handleMetadata = () => {
         ScrollTrigger.refresh();
       };
@@ -208,7 +215,7 @@ export default function HeroScrollytelling() {
   return (
     <>
       {/* ================================================================
-          FASE 1 — Hero Inicial (Loop Estático)
+          FASE 1 — Hero Inicial (Loop Estático Otimizado)
           Vídeo com logo em chamas central sem interferência de texto
          ================================================================ */}
       <section className="relative w-full h-[100svh] overflow-hidden overflow-x-hidden bg-black select-none flex items-center justify-center">
@@ -285,6 +292,8 @@ export default function HeroScrollytelling() {
             className="w-full h-full object-cover md:object-cover scale-105 sm:scale-100 transition-transform duration-700 select-none pointer-events-none"
             style={{ filter: "contrast(1.05) brightness(0.92)" }}
           >
+            <source src="/hero_page2_scroll_mobile.mp4" media="(max-width: 767px)" type="video/mp4" />
+            <source src="/hero_page2_scroll.mp4" media="(min-width: 768px)" type="video/mp4" />
             <source src="/hero_page2_scroll.mp4" type="video/mp4" />
             Seu navegador não suporta vídeos HTML5.
           </video>
@@ -324,92 +333,95 @@ export default function HeroScrollytelling() {
             {/* Linha de acento animada */}
             <div
               ref={accent1Ref}
-              className="w-24 sm:w-32 h-[2px] bg-gradient-to-r from-red-600 to-orange-500 mb-4 sm:mb-5 shadow-[0_0_12px_rgba(220,38,38,0.6)]"
+              className="w-20 sm:w-28 h-1 bg-gradient-to-r from-red-600 to-orange-500 rounded-full mb-5 sm:mb-6 shadow-[0_0_15px_rgba(220,38,38,0.8)]"
             />
 
-            {/* Subtítulo descritivo */}
-            <p className="text-zinc-300 text-sm sm:text-lg md:text-xl leading-relaxed font-sans max-w-lg drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
-              Forjado nas ruas de{" "}
-              <strong className="text-white font-semibold">Vila Velha / ES</strong>, o S.D.F.H.
-              nasceu da colisão entre guitarras de 8 cordas afinadas no abismo e uma
-              produção que não pede licença.
+            {/* Parágrafo */}
+            <p className="font-mono text-xs sm:text-sm md:text-base text-zinc-300 font-bold max-w-xl leading-relaxed tracking-wider uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+              Riffs cortantes, afinações pesadas e a energia crua do underground capixaba.
             </p>
           </div>
         </div>
 
-        {/* ── LEGENDA 2: A MÁQUINA RÍTMICA (Estilo Subtítulo Lateral) ── */}
+        {/* ── LEGENDA 2: A MÁQUINA RÍTMICA ────────────────────────────── */}
         <div
           ref={panel2Ref}
-          className="absolute inset-0 z-20 flex flex-col justify-center items-start text-left px-6 sm:px-12 md:px-20 pointer-events-none"
+          className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6 sm:px-8 pointer-events-none"
         >
-          <div className="max-w-md sm:max-w-lg lg:max-w-xl">
+          <div className="max-w-2xl flex flex-col items-center">
             {/* Tag de contexto */}
-            <span className="font-mono text-[10px] sm:text-xs font-bold tracking-[0.4em] uppercase text-red-500/90 mb-3 sm:mb-4 block drop-shadow-[0_0_12px_rgba(220,38,38,0.5)]">
-              // A MÁQUINA RÍTMICA
+            <span className="font-mono text-[10px] sm:text-xs font-bold tracking-[0.4em] uppercase text-red-500/90 mb-4 sm:mb-5 block drop-shadow-[0_0_12px_rgba(220,38,38,0.5)]">
+              // IDENTIDADE SONORA
             </span>
 
-            {/* Título */}
-            <h2 className="text-2xl sm:text-4xl md:text-5xl font-black uppercase text-white tracking-tight leading-[1.05] mb-3 sm:mb-4 drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)]">
-              Bumbos Duplos.
-              <br />
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-orange-400">
-                Groove Distorcido.
+            {/* Título principal */}
+            <h2 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase text-white tracking-tight leading-[1.05] mb-4 sm:mb-5 drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)]">
+              A Máquina{" "}
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-red-600 drop-shadow-none">
+                Rítmica
               </span>
             </h2>
 
             {/* Linha de acento animada */}
             <div
               ref={accent2Ref}
-              className="w-20 sm:w-28 h-[2px] bg-gradient-to-r from-red-600 to-orange-500 mb-3 sm:mb-4 shadow-[0_0_12px_rgba(220,38,38,0.6)]"
+              className="w-20 sm:w-28 h-1 bg-gradient-to-r from-orange-500 to-red-600 rounded-full mb-5 sm:mb-6 shadow-[0_0_15px_rgba(239,68,68,0.8)]"
             />
 
-            {/* Subtítulo */}
-            <p className="text-zinc-300 text-sm sm:text-lg leading-relaxed font-sans drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)]">
-              O coração da banda bate em{" "}
-              <strong className="text-white font-semibold">blast beats avassaladores</strong> e
-              síncopas que transformam cada breakdown em um colapso sonoro
-              calculado. Nenhum compasso é desperdiçado.
+            {/* Parágrafo */}
+            <p className="font-mono text-xs sm:text-sm md:text-base text-zinc-300 font-bold max-w-xl leading-relaxed tracking-wider uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+              Velocidade, técnica e breakdowns devastadores que definem a essência de cada apresentação.
             </p>
           </div>
         </div>
 
-        {/* ── LEGENDA 3: CTA — ASSUMA O CONTROLE ─────────────────────── */}
+        {/* ── LEGENDA 3: CTA — ASSUMA O CONTROLE ──────────────────────── */}
         <div
           ref={panel3Ref}
-          className="absolute bottom-20 left-0 right-0 z-20 flex flex-col items-center text-center px-6"
+          className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6 sm:px-8 pointer-events-none"
         >
-          {/* Glow de fundo nos botões */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-red-600/20 blur-[100px] rounded-full pointer-events-none -z-10" />
+          <div className="max-w-2xl flex flex-col items-center">
+            {/* Tag de contexto */}
+            <span className="font-mono text-[10px] sm:text-xs font-bold tracking-[0.4em] uppercase text-red-500/90 mb-3 sm:mb-4 block drop-shadow-[0_0_12px_rgba(220,38,38,0.5)]">
+              // OUÇA O IMPACTO
+            </span>
 
-          <span className="font-mono text-xs uppercase tracking-[0.4em] text-red-500/90 font-bold mb-6 block drop-shadow-md">
-            // ASSUMA O CONTROLE
-          </span>
+            {/* Título principal */}
+            <h2 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase text-white tracking-tight leading-[1.05] mb-3 sm:mb-4 drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)]">
+              Skydiving From{" "}
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-orange-400 drop-shadow-none">
+                Hell
+              </span>
+            </h2>
 
-          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 w-full max-w-lg justify-center">
-            
-            {/* Botão Primário — Gradiente + Glow de Alta Conversão com Física Magnética */}
-            <BotaoMagnetico as="a"
-              href="https://spoti.fi/2JmeZmW"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-red-600 via-red-500 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-mono font-bold text-xs uppercase tracking-widest text-center shadow-[0_0_30px_rgba(239,68,68,0.55)] hover:shadow-[0_0_45px_rgba(239,68,68,0.9)] transition-all duration-300 active:scale-95 hover:scale-105 border border-red-400/30 flex items-center justify-center gap-2 group"
-            >
-              <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-              <span>Ouvir Singles</span>
-              <span className="text-white/80 group-hover:translate-x-1 transition-transform">↗</span>
-            </BotaoMagnetico>
+            {/* Subtítulo de Origem */}
+            <p className="font-mono text-xs sm:text-sm md:text-base text-zinc-300 font-bold max-w-md leading-relaxed tracking-widest uppercase mb-8 sm:mb-10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+              Vila Velha / ES — Brasil
+            </p>
 
-            {/* Botão Secundário — Glassmorphism Premium */}
-            <a
-              href="#tour"
-              className="w-full sm:w-auto px-8 py-4 rounded-full bg-white/5 hover:bg-white/15 backdrop-blur-xl border border-white/20 hover:border-red-500/60 text-white hover:text-white font-mono font-bold text-xs uppercase tracking-widest text-center shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] hover:shadow-[0_0_25px_rgba(220,38,38,0.4)] transition-all duration-300 active:scale-95 hover:scale-105 flex items-center justify-center gap-2 group"
-            >
-              <span>Ver Agenda</span>
-              <span className="text-red-500 group-hover:translate-x-1 transition-transform">↗</span>
-            </a>
+            {/* Botões CTA com pointer-events-auto */}
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 pointer-events-auto">
+              <BotaoMagnetico>
+                <a
+                  href="#player"
+                  className="px-6 sm:px-8 py-3 sm:py-3.5 bg-gradient-to-r from-red-600 via-red-500 to-orange-600 text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-widest rounded-full shadow-[0_0_30px_rgba(220,38,38,0.7)] hover:shadow-[0_0_45px_rgba(220,38,38,0.9)] transition-all duration-300 hover:scale-105 active:scale-95 border border-red-400/40 block text-center"
+                >
+                  Ouvir Faixas ♫
+                </a>
+              </BotaoMagnetico>
 
+              <BotaoMagnetico>
+                <a
+                  href="#videos"
+                  className="px-6 sm:px-8 py-3 sm:py-3.5 bg-black/60 hover:bg-black/90 text-zinc-200 hover:text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-widest rounded-full border border-white/20 hover:border-red-500/60 shadow-[0_4px_20px_rgba(0,0,0,0.6)] transition-all duration-300 hover:scale-105 active:scale-95 backdrop-blur-md block text-center"
+                >
+                  Ver Clipes ↗
+                </a>
+              </BotaoMagnetico>
+            </div>
           </div>
         </div>
+
       </section>
     </>
   );

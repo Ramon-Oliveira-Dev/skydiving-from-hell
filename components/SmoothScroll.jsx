@@ -8,21 +8,26 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 /**
  * SmoothScroll - Provedor de Rolagem Suave de Alta Performance (Lenis + GSAP)
  *
- * Aplica inércia ultra-suave na rolagem do mouse e touch, sincronizado a 60+ FPS
- * com as animações de ScrollTrigger e ScrollReveal.
+ * Aplica inércia ultra-suave na rolagem do mouse e touch calibrado para 60+ FPS,
+ * eliminando engasgos em dispositivos móveis e sincronizado com o GSAP ScrollTrigger.
  */
 export default function SmoothScroll({ children }) {
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
+    const isTouchDevice =
+      typeof window !== "undefined" &&
+      ("ontouchstart" in window || navigator.maxTouchPoints > 0);
+
     const lenis = new Lenis({
-      duration: 1.2, // Duração da inércia
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), // Curva de aceleração exponencial
+      duration: isTouchDevice ? 0.8 : 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       orientation: "vertical",
       gestureOrientation: "vertical",
       smoothWheel: true,
       wheelMultiplier: 1.0,
-      touchMultiplier: 1.5,
+      touchMultiplier: 1.0, // Física 1:1 nativa no touch para evitar sobrecarga de frames
+      syncTouch: false,
     });
 
     // Sincronização em tempo real do Lenis com o GSAP
@@ -33,7 +38,7 @@ export default function SmoothScroll({ children }) {
     };
 
     gsap.ticker.add(updateTicker);
-    gsap.ticker.lagSmoothing(0);
+    gsap.ticker.lagSmoothing(500, 33);
 
     return () => {
       gsap.ticker.remove(updateTicker);
