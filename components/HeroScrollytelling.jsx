@@ -3,7 +3,6 @@
 import React, { useRef, useEffect } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import BotaoMagnetico from "./BotaoMagnetico";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -15,9 +14,9 @@ gsap.registerPlugin(ScrollTrigger);
  *
  * FASE 2: Scrollytelling de Altíssimo Desempenho (hero_page2_scroll.mp4)
  *   → Pinned pelo GSAP, timeline 100% sincronizada com o scroll vertical.
- *   → Algoritmo anti-stutter (isSeeking lock + seeked event dispatcher) que impede travamentos do decodificador.
- *   → "A Máquina Rítmica" no canto inferior esquerdo.
- *   → Efeito de fumaça e escurecimento no fim absoluto para entrar em Manifesto e História.
+ *   → Legenda 1: "A Origem" (Centro).
+ *   → Legenda 2: "A Máquina Rítmica" (Canto inferior esquerdo).
+ *   → Vídeo roda até o final desobstruído com transição de fumaça e escurecimento para Manifesto.
  */
 export default function HeroScrollytelling() {
   // ─── Refs ────────────────────────────────────────────────────────────────
@@ -25,7 +24,6 @@ export default function HeroScrollytelling() {
   const video2Ref = useRef(null);       // <video> do scroll (hero_page2_scroll.mp4)
   const panel1Ref = useRef(null);       // Legenda "A Origem"
   const panel2Ref = useRef(null);       // Legenda "A Máquina Rítmica" (canto inferior esquerdo)
-  const panel3Ref = useRef(null);       // Legenda CTA
   const accent1Ref = useRef(null);      // Linha de acento painel 1
   const accent2Ref = useRef(null);      // Linha de acento painel 2
   const smokeOverlayRef = useRef(null); // Efeito de fumaça volumétrica
@@ -37,7 +35,6 @@ export default function HeroScrollytelling() {
     const video        = video2Ref.current;
     const panel1       = panel1Ref.current;
     const panel2       = panel2Ref.current;
-    const panel3       = panel3Ref.current;
     const accent1      = accent1Ref.current;
     const accent2      = accent2Ref.current;
     const smokeOverlay = smokeOverlayRef.current;
@@ -52,7 +49,7 @@ export default function HeroScrollytelling() {
 
     const ctx = gsap.context(() => {
       // Estado inicial — tudo invisível e deslocado
-      gsap.set([panel1, panel2, panel3], { opacity: 0, pointerEvents: "none" });
+      gsap.set([panel1, panel2], { opacity: 0, pointerEvents: "none" });
       gsap.set([accent1, accent2], { scaleX: 0, transformOrigin: "left center" });
       gsap.set([smokeOverlay, darkFade], { opacity: 0 });
 
@@ -93,7 +90,7 @@ export default function HeroScrollytelling() {
           scrollTrigger: {
             trigger: section,
             start: "top top",
-            end: "+=5000",         // Distância ideal para controle cinematográfico
+            end: "+=4800",         // Distância ideal para controle cinematográfico
             scrub: 0.4,            // Amortecimento suave para desaceleração contínua
             pin: true,
             anticipatePin: 1,
@@ -114,7 +111,7 @@ export default function HeroScrollytelling() {
           },
         });
 
-        // ── LEGENDA 1: A ORIGEM (0.6 -> 2.8) ─────────────────────────────
+        // ── LEGENDA 1: A ORIGEM (Centro: 0.8 -> 3.2) ─────────────────────
         tl.fromTo(
           panel1,
           { opacity: 0, y: 50 },
@@ -124,17 +121,17 @@ export default function HeroScrollytelling() {
             ease: "power3.out",
             pointerEvents: "auto",
           },
-          0.6
-        );
-        tl.to(
-          accent1,
-          { scaleX: 1, duration: 0.8, ease: "power2.out" },
           0.8
         );
         tl.to(
           accent1,
+          { scaleX: 1, duration: 0.8, ease: "power2.out" },
+          1.0
+        );
+        tl.to(
+          accent1,
           { scaleX: 0, transformOrigin: "right center", duration: 0.4, ease: "power2.in" },
-          2.6
+          3.0
         );
         tl.to(
           panel1,
@@ -144,10 +141,10 @@ export default function HeroScrollytelling() {
             ease: "power2.in",
             pointerEvents: "none",
           },
-          2.6
+          3.0
         );
 
-        // ── LEGENDA 2: A MÁQUINA RÍTMICA (Canto Inferior Esquerdo: 3.4 -> 5.8) ───
+        // ── LEGENDA 2: A MÁQUINA RÍTMICA (Canto Inferior Esquerdo: 4.0 -> 6.8) ───
         tl.fromTo(
           panel2,
           { opacity: 0, x: -50, y: 20 },
@@ -157,17 +154,17 @@ export default function HeroScrollytelling() {
             ease: "power3.out",
             pointerEvents: "auto",
           },
-          3.4
+          4.0
         );
         tl.to(
           accent2,
           { scaleX: 1, duration: 0.8, ease: "power2.out" },
-          3.6
+          4.2
         );
         tl.to(
           accent2,
           { scaleX: 0, transformOrigin: "left center", duration: 0.4, ease: "power2.in" },
-          5.6
+          6.6
         );
         tl.to(
           panel2,
@@ -177,44 +174,18 @@ export default function HeroScrollytelling() {
             ease: "power2.in",
             pointerEvents: "none",
           },
-          5.6
+          6.6
         );
 
-        // ── LEGENDA 3: CTA — ASSUMA O CONTROLE (6.4 -> 8.4) ──────────────
-        tl.fromTo(
-          panel3,
-          { opacity: 0, scale: 0.9, y: 30 },
-          {
-            opacity: 1,
-            scale: 1,
-            y: 0,
-            duration: 1.0,
-            ease: "power3.out",
-            pointerEvents: "auto",
-          },
-          6.4
-        );
-        tl.to(
-          panel3,
-          {
-            opacity: 0,
-            y: -20,
-            duration: 0.6,
-            ease: "power2.in",
-            pointerEvents: "none",
-          },
-          8.2
-        );
-
-        // ── TRANSIÇÃO FINAL: O vídeo alcança o fim e fumaça dissolve para Manifesto (8.8 -> 10.0) ──
+        // ── TRANSIÇÃO FINAL: O vídeo finaliza o salto desobstruído e a fumaça dissolve para Manifesto (8.6 -> 10.0) ──
         tl.to(
           [smokeOverlay, darkFade],
           {
             opacity: 1,
-            duration: 1.2,
+            duration: 1.4,
             ease: "power2.inOut",
           },
-          8.8
+          8.6
         );
       };
 
@@ -397,53 +368,6 @@ export default function HeroScrollytelling() {
             <p className="font-mono text-xs sm:text-sm md:text-base text-zinc-300 font-bold max-w-lg leading-relaxed tracking-wider uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
               Velocidade, técnica e breakdowns devastadores que definem a essência de cada apresentação.
             </p>
-          </div>
-        </div>
-
-        {/* ── LEGENDA 3: CTA — ASSUMA O CONTROLE ──────────────────────── */}
-        <div
-          ref={panel3Ref}
-          className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6 sm:px-8 pointer-events-none"
-        >
-          <div className="max-w-2xl flex flex-col items-center">
-            {/* Tag de contexto */}
-            <span className="font-mono text-[10px] sm:text-xs font-bold tracking-[0.4em] uppercase text-red-500/90 mb-3 sm:mb-4 block drop-shadow-[0_0_12px_rgba(220,38,38,0.5)]">
-              // OUÇA O IMPACTO
-            </span>
-
-            {/* Título principal */}
-            <h2 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase text-white tracking-tight leading-[1.05] mb-3 sm:mb-4 drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)]">
-              Skydiving From{" "}
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-orange-400 drop-shadow-none">
-                Hell
-              </span>
-            </h2>
-
-            {/* Subtítulo de Origem */}
-            <p className="font-mono text-xs sm:text-sm md:text-base text-zinc-300 font-bold max-w-md leading-relaxed tracking-widest uppercase mb-8 sm:mb-10 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
-              Vila Velha / ES — Brasil
-            </p>
-
-            {/* Botões CTA com pointer-events-auto */}
-            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 pointer-events-auto">
-              <BotaoMagnetico>
-                <a
-                  href="#player"
-                  className="px-6 sm:px-8 py-3 sm:py-3.5 bg-gradient-to-r from-red-600 via-red-500 to-orange-600 text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-widest rounded-full shadow-[0_0_30px_rgba(220,38,38,0.7)] hover:shadow-[0_0_45px_rgba(220,38,38,0.9)] transition-all duration-300 hover:scale-105 active:scale-95 border border-red-400/40 block text-center"
-                >
-                  Ouvir Faixas ♫
-                </a>
-              </BotaoMagnetico>
-
-              <BotaoMagnetico>
-                <a
-                  href="#videos"
-                  className="px-6 sm:px-8 py-3 sm:py-3.5 bg-black/60 hover:bg-black/90 text-zinc-200 hover:text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-widest rounded-full border border-white/20 hover:border-red-500/60 shadow-[0_4px_20px_rgba(0,0,0,0.6)] transition-all duration-300 hover:scale-105 active:scale-95 backdrop-blur-md block text-center"
-                >
-                  Ver Clipes ↗
-                </a>
-              </BotaoMagnetico>
-            </div>
           </div>
         </div>
 
