@@ -13,10 +13,11 @@ gsap.registerPlugin(ScrollTrigger);
  * FASE 1: Hero com vídeo em loop (hero_page.mp4 / hero1-mobile.mp4)
  *   → Ocupa 100vh, rola normalmente revelando a Fase 2.
  *
- * FASE 2: Scrollytelling com vídeo de scrubbing oficial (hero_page2_scroll.mp4)
- *   → Pinned pelo GSAP, timeline controlada pelo scroll.
- *   → "A Máquina Rítmica" posicionada no canto inferior esquerdo para livre visualização do vídeo.
- *   → Efeito de fumaça densa e escurecimento transicional para a seção de Manifesto e História.
+ * FASE 2: Scrollytelling com vídeo oficial (hero_page2_scroll.mp4)
+ *   → Pinned pelo GSAP, timeline 100% sincronizada com o scroll vertical.
+ *   → O vídeo roda de 0:00 até o final absoluto (100% da duração) conforme a rolagem.
+ *   → "A Máquina Rítmica" no canto inferior esquerdo para visão desobstruída.
+ *   → Efeito de fumaça e escurecimento no fim absoluto para entrar em Manifesto e História.
  */
 export default function HeroScrollytelling() {
   // ─── Refs ────────────────────────────────────────────────────────────────
@@ -61,7 +62,7 @@ export default function HeroScrollytelling() {
       const applySeek = () => {
         rafId = null;
         if (!video) return;
-        if (Math.abs(video.currentTime - targetTime) > 0.03) {
+        if (Math.abs(video.currentTime - targetTime) > 0.02) {
           if (typeof video.fastSeek === "function") {
             try {
               video.fastSeek(targetTime);
@@ -78,25 +79,26 @@ export default function HeroScrollytelling() {
 
       // Função que constrói a timeline
       const buildTimeline = () => {
-        const videoDuration =
-          video.duration && isFinite(video.duration) && video.duration > 0
-            ? video.duration
-            : 10;
-
-        // Deixa 0.04s antes do fim absoluto para exibir o último frame nítido
-        const maxSeekTime = Math.max(0.1, videoDuration - 0.04);
-
         const tl = gsap.timeline({
           scrollTrigger: {
             trigger: section,
             start: "top top",
-            end: "+=5000",         // Distância ideal para controle cinematográfico
-            scrub: 0.35,           // Scrubbing amortecido para suavidade máxima
+            end: "+=5200",         // Distância cinematográfica
+            scrub: 0.35,           // Scrubbing suave e responsivo
             pin: true,
             anticipatePin: 1,
             invalidateOnRefresh: true,
             onUpdate: (self) => {
-              targetTime = self.progress * maxSeekTime;
+              // Obtém a duração real do vídeo dinamicamente
+              const totalDur =
+                video && video.duration && isFinite(video.duration) && video.duration > 0
+                  ? video.duration
+                  : 10;
+
+              // Roda até o final absoluto (100% da duração do vídeo)
+              const maxSeekTime = Math.max(0.1, totalDur - 0.02);
+              targetTime = Math.min(maxSeekTime, Math.max(0, self.progress * maxSeekTime));
+
               if (!rafId) {
                 rafId = requestAnimationFrame(applySeek);
               }
@@ -104,73 +106,73 @@ export default function HeroScrollytelling() {
           },
         });
 
-        // ── LEGENDA 1: A ORIGEM (Centro da Tela) ────────────────────────
+        // ── LEGENDA 1: A ORIGEM (0.6 -> 2.8) ─────────────────────────────
         tl.fromTo(
           panel1,
           { opacity: 0, y: 50 },
           {
             opacity: 1, y: 0,
-            duration: 1.2,
+            duration: 1.0,
             ease: "power3.out",
             pointerEvents: "auto",
           },
+          0.6
+        );
+        tl.to(
+          accent1,
+          { scaleX: 1, duration: 0.8, ease: "power2.out" },
           0.8
         );
         tl.to(
           accent1,
-          { scaleX: 1, duration: 1.0, ease: "power2.out" },
-          1.0
-        );
-        tl.to(
-          accent1,
-          { scaleX: 0, transformOrigin: "right center", duration: 0.5, ease: "power2.in" },
-          3.2
+          { scaleX: 0, transformOrigin: "right center", duration: 0.4, ease: "power2.in" },
+          2.6
         );
         tl.to(
           panel1,
           {
             opacity: 0, y: -30,
-            duration: 0.8,
+            duration: 0.6,
             ease: "power2.in",
             pointerEvents: "none",
           },
-          3.2
+          2.6
         );
 
-        // ── LEGENDA 2: A MÁQUINA RÍTMICA (Canto Inferior Esquerdo) ───────
+        // ── LEGENDA 2: A MÁQUINA RÍTMICA (Canto Inferior Esquerdo: 3.4 -> 5.8) ───
         tl.fromTo(
           panel2,
           { opacity: 0, x: -50, y: 20 },
           {
             opacity: 1, x: 0, y: 0,
-            duration: 1.2,
+            duration: 1.0,
             ease: "power3.out",
             pointerEvents: "auto",
           },
-          4.5
+          3.4
         );
         tl.to(
           accent2,
-          { scaleX: 1, duration: 1.0, ease: "power2.out" },
-          4.7
+          { scaleX: 1, duration: 0.8, ease: "power2.out" },
+          3.6
         );
         tl.to(
           accent2,
-          { scaleX: 0, transformOrigin: "left center", duration: 0.5, ease: "power2.in" },
-          6.8
+          { scaleX: 0, transformOrigin: "left center", duration: 0.4, ease: "power2.in" },
+          5.6
         );
         tl.to(
           panel2,
           {
             opacity: 0, x: -30, y: 10,
-            duration: 0.7,
+            duration: 0.6,
             ease: "power2.in",
             pointerEvents: "none",
           },
-          6.8
+          5.6
         );
 
-        // ── LEGENDA 3: CTA — ASSUMA O CONTROLE ──────────────────────────
+        // ── LEGENDA 3: CTA — ASSUMA O CONTROLE (6.4 -> 8.4) ──────────────
         tl.fromTo(
           panel3,
           { opacity: 0, scale: 0.9, y: 30 },
@@ -178,33 +180,46 @@ export default function HeroScrollytelling() {
             opacity: 1,
             scale: 1,
             y: 0,
-            duration: 1.2,
+            duration: 1.0,
             ease: "power3.out",
             pointerEvents: "auto",
           },
-          8.0
+          6.4
+        );
+        tl.to(
+          panel3,
+          {
+            opacity: 0,
+            y: -20,
+            duration: 0.6,
+            ease: "power2.in",
+            pointerEvents: "none",
+          },
+          8.2
         );
 
-        // ── TRANSIÇÃO: Fumaça Densa & Escurecimento para Manifesto ───────
+        // ── TRANSIÇÃO FINAL: O vídeo alcança o fim (soldado salta) e fumaça dissolve para Manifesto (8.8 -> 10.0) ──
         tl.to(
           [smokeOverlay, darkFade],
           {
             opacity: 1,
-            duration: 1.4,
+            duration: 1.2,
             ease: "power2.inOut",
           },
-          8.6
+          8.8
         );
       };
 
       // Inicializa timeline imediatamente
       buildTimeline();
 
-      // Recalcula limites se metadados demorarem para carregar
+      // Recalcula limites quando os metadados do vídeo forem carregados
       const handleMetadata = () => {
         ScrollTrigger.refresh();
       };
-      video.addEventListener("loadedmetadata", handleMetadata, { once: true });
+      video.addEventListener("loadedmetadata", handleMetadata);
+      video.addEventListener("canplay", handleMetadata);
+      video.addEventListener("durationchange", handleMetadata);
     }, phase2Ref);
 
     return () => {
@@ -278,7 +293,7 @@ export default function HeroScrollytelling() {
       {/* ================================================================
           FASE 2 — Scrollytelling Cinematográfico (hero_page2_scroll.mp4)
           Pinned pelo GSAP. Legendas cinematográficas sequenciais.
-          O soldado salta SOMENTE após a última legenda desaparecer.
+          O soldado salta e o vídeo corre 100% até o fim com a rolagem vertical.
          ================================================================ */}
       <section
         ref={phase2Ref}
