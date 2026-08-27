@@ -15,28 +15,32 @@ gsap.registerPlugin(ScrollTrigger);
  *
  * FASE 2: Scrollytelling com vídeo de scrubbing oficial (hero_page2_scroll.mp4)
  *   → Pinned pelo GSAP, timeline controlada pelo scroll.
- *   → Legendas cinematográficas sequenciais sem sobreposição.
- *   → O soldado só salta (final do vídeo) depois que a última legenda desaparece.
+ *   → "A Máquina Rítmica" posicionada no canto inferior esquerdo para livre visualização do vídeo.
+ *   → Efeito de fumaça densa e escurecimento transicional para a seção de Manifesto e História.
  */
 export default function HeroScrollytelling() {
   // ─── Refs ────────────────────────────────────────────────────────────────
-  const phase2Ref = useRef(null);   // <section> da Fase 2 (trigger do pin)
-  const video2Ref = useRef(null);   // <video> do scroll (hero_page2_scroll.mp4)
-  const panel1Ref = useRef(null);   // Legenda "A Origem"
-  const panel2Ref = useRef(null);   // Legenda "A Máquina Rítmica"
-  const panel3Ref = useRef(null);   // Legenda CTA
-  const accent1Ref = useRef(null);  // Linha de acento painel 1
-  const accent2Ref = useRef(null);  // Linha de acento painel 2
+  const phase2Ref = useRef(null);       // <section> da Fase 2 (trigger do pin)
+  const video2Ref = useRef(null);       // <video> do scroll (hero_page2_scroll.mp4)
+  const panel1Ref = useRef(null);       // Legenda "A Origem"
+  const panel2Ref = useRef(null);       // Legenda "A Máquina Rítmica" (canto inferior esquerdo)
+  const panel3Ref = useRef(null);       // Legenda CTA
+  const accent1Ref = useRef(null);      // Linha de acento painel 1
+  const accent2Ref = useRef(null);      // Linha de acento painel 2
+  const smokeOverlayRef = useRef(null); // Efeito de fumaça volumétrica
+  const darkFadeRef = useRef(null);     // Efeito de escurecimento transicional
 
   // ─── GSAP & HIGH-PERFORMANCE VIDEO SCRUBBING ENGINE ─────────────────────
   useEffect(() => {
-    const section = phase2Ref.current;
-    const video   = video2Ref.current;
-    const panel1  = panel1Ref.current;
-    const panel2  = panel2Ref.current;
-    const panel3  = panel3Ref.current;
-    const accent1 = accent1Ref.current;
-    const accent2 = accent2Ref.current;
+    const section      = phase2Ref.current;
+    const video        = video2Ref.current;
+    const panel1       = panel1Ref.current;
+    const panel2       = panel2Ref.current;
+    const panel3       = panel3Ref.current;
+    const accent1      = accent1Ref.current;
+    const accent2      = accent2Ref.current;
+    const smokeOverlay = smokeOverlayRef.current;
+    const darkFade     = darkFadeRef.current;
 
     if (!section || !video) return;
 
@@ -49,6 +53,7 @@ export default function HeroScrollytelling() {
       // Estado inicial — tudo invisível e deslocado
       gsap.set([panel1, panel2, panel3], { opacity: 0, pointerEvents: "none" });
       gsap.set([accent1, accent2], { scaleX: 0, transformOrigin: "left center" });
+      gsap.set([smokeOverlay, darkFade], { opacity: 0 });
 
       let targetTime = 0;
       let rafId = null;
@@ -99,7 +104,7 @@ export default function HeroScrollytelling() {
           },
         });
 
-        // ── LEGENDA 1: A ORIGEM ─────────────────────────────────────────
+        // ── LEGENDA 1: A ORIGEM (Centro da Tela) ────────────────────────
         tl.fromTo(
           panel1,
           { opacity: 0, y: 50 },
@@ -132,12 +137,12 @@ export default function HeroScrollytelling() {
           3.2
         );
 
-        // ── LEGENDA 2: A MÁQUINA RÍTMICA ────────────────────────────────
+        // ── LEGENDA 2: A MÁQUINA RÍTMICA (Canto Inferior Esquerdo) ───────
         tl.fromTo(
           panel2,
-          { opacity: 0, x: -40 },
+          { opacity: 0, x: -50, y: 20 },
           {
-            opacity: 1, x: 0,
+            opacity: 1, x: 0, y: 0,
             duration: 1.2,
             ease: "power3.out",
             pointerEvents: "auto",
@@ -151,13 +156,13 @@ export default function HeroScrollytelling() {
         );
         tl.to(
           accent2,
-          { scaleX: 0, transformOrigin: "right center", duration: 0.5, ease: "power2.in" },
+          { scaleX: 0, transformOrigin: "left center", duration: 0.5, ease: "power2.in" },
           6.8
         );
         tl.to(
           panel2,
           {
-            opacity: 0, x: 40,
+            opacity: 0, x: -30, y: 10,
             duration: 0.7,
             ease: "power2.in",
             pointerEvents: "none",
@@ -178,6 +183,17 @@ export default function HeroScrollytelling() {
             pointerEvents: "auto",
           },
           8.0
+        );
+
+        // ── TRANSIÇÃO: Fumaça Densa & Escurecimento para Manifesto ───────
+        tl.to(
+          [smokeOverlay, darkFade],
+          {
+            opacity: 1,
+            duration: 1.4,
+            ease: "power2.inOut",
+          },
+          8.6
         );
       };
 
@@ -266,7 +282,7 @@ export default function HeroScrollytelling() {
          ================================================================ */}
       <section
         ref={phase2Ref}
-        className="relative w-full h-[75vh] sm:h-[85vh] md:h-screen overflow-hidden overflow-x-hidden bg-black select-none flex items-center justify-center"
+        className="relative w-full h-[100svh] min-h-[100svh] overflow-hidden overflow-x-hidden bg-black select-none flex items-center justify-center"
       >
         <div className="absolute inset-0 w-full h-full overflow-hidden bg-black">
           <video
@@ -287,6 +303,7 @@ export default function HeroScrollytelling() {
           <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black pointer-events-none opacity-90 z-10" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-black/30 to-black pointer-events-none z-10" />
         </div>
+
         <div
           className="absolute inset-0 z-10 pointer-events-none opacity-30"
           style={{
@@ -328,19 +345,19 @@ export default function HeroScrollytelling() {
           </div>
         </div>
 
-        {/* ── LEGENDA 2: A MÁQUINA RÍTMICA ────────────────────────────── */}
+        {/* ── LEGENDA 2: A MÁQUINA RÍTMICA (Canto Inferior Esquerdo da Tela) ──────── */}
         <div
           ref={panel2Ref}
-          className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6 sm:px-8 pointer-events-none"
+          className="absolute inset-0 z-20 flex flex-col items-start justify-end text-left p-6 sm:p-12 md:p-16 pb-12 sm:pb-16 md:pb-20 pointer-events-none"
         >
-          <div className="max-w-2xl flex flex-col items-center">
+          <div className="max-w-xl flex flex-col items-start bg-gradient-to-tr from-black/85 via-black/40 to-transparent p-5 sm:p-8 rounded-2xl backdrop-blur-[2px] border border-white/5 shadow-2xl">
             {/* Tag de contexto */}
-            <span className="font-mono text-[10px] sm:text-xs font-bold tracking-[0.4em] uppercase text-red-500/90 mb-4 sm:mb-5 block drop-shadow-[0_0_12px_rgba(220,38,38,0.5)]">
+            <span className="font-mono text-[10px] sm:text-xs font-bold tracking-[0.4em] uppercase text-red-500/90 mb-3 sm:mb-4 block drop-shadow-[0_0_12px_rgba(220,38,38,0.5)]">
               // IDENTIDADE SONORA
             </span>
 
             {/* Título principal */}
-            <h2 className="text-3xl sm:text-5xl md:text-6xl font-black uppercase text-white tracking-tight leading-[1.05] mb-4 sm:mb-5 drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)]">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase text-white tracking-tight leading-[1.05] mb-3 sm:mb-4 drop-shadow-[0_4px_20px_rgba(0,0,0,0.9)]">
               A Máquina{" "}
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-orange-400 to-red-600 drop-shadow-none">
                 Rítmica
@@ -350,11 +367,11 @@ export default function HeroScrollytelling() {
             {/* Linha de acento animada */}
             <div
               ref={accent2Ref}
-              className="w-20 sm:w-28 h-1 bg-gradient-to-r from-orange-500 to-red-600 rounded-full mb-5 sm:mb-6 shadow-[0_0_15px_rgba(239,68,68,0.8)]"
+              className="w-20 sm:w-28 h-1 bg-gradient-to-r from-orange-500 to-red-600 rounded-full mb-4 sm:mb-5 shadow-[0_0_15px_rgba(239,68,68,0.8)]"
             />
 
             {/* Parágrafo */}
-            <p className="font-mono text-xs sm:text-sm md:text-base text-zinc-300 font-bold max-w-xl leading-relaxed tracking-wider uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
+            <p className="font-mono text-xs sm:text-sm md:text-base text-zinc-300 font-bold max-w-lg leading-relaxed tracking-wider uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">
               Velocidade, técnica e breakdowns devastadores que definem a essência de cada apresentação.
             </p>
           </div>
@@ -406,6 +423,20 @@ export default function HeroScrollytelling() {
             </div>
           </div>
         </div>
+
+        {/* ── TRANSIÇÃO CINEMATOGRÁFICA: Fumaça Volumétrica & Escurecimento ──── */}
+        <div
+          ref={smokeOverlayRef}
+          className="absolute inset-0 z-30 pointer-events-none opacity-0"
+          style={{
+            backgroundImage: `radial-gradient(ellipse at bottom, rgba(180, 20, 20, 0.25) 0%, rgba(20, 20, 25, 0.7) 40%, rgba(0, 0, 0, 0.95) 80%), url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.15'/%3E%3C/svg%3E")`,
+          }}
+        />
+
+        <div
+          ref={darkFadeRef}
+          className="absolute inset-0 z-35 pointer-events-none bg-gradient-to-b from-transparent via-zinc-950/80 to-zinc-950 opacity-0"
+        />
 
       </section>
     </>
