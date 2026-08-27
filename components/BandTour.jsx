@@ -1,22 +1,17 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import { MapPin, Clock, Gift, Sparkles, Disc, Share2, X, ExternalLink, Ticket } from "lucide-react";
 import ScrollReveal from "./ScrollReveal";
+import ParallaxLayer from "./ParallaxLayer";
+import ParallaxWatermark from "./ParallaxWatermark";
+import { FEATURED_SHOW } from "../lib/band-data";
 
-const FEATURED_SHOW = {
-  title: "Vila Velha Hardcore",
-  date: "05/09",
-  time: "16:00H ÀS 21:00H",
-  place: "Correria Music Bar • Praia de Itaparica / ES",
-  flyer: "/arte_show_05_10_26.jpeg",
-  bands: ["S.D.F.H.", "Lítígio", "Doggbite", "Gritos", "Srta Karen"],
-  maps: "https://maps.google.com/?q=Correria+Music+Bar+Vila+Velha",
-  attractions: [
-    { label: "Sorteio de Tattoo", icon: Sparkles },
-    { label: "Camisas Oficiais", icon: Gift },
-    { label: "CDs & Adesivos", icon: Disc },
-  ],
+const ATTRACTION_ICONS = {
+  tattoo: Sparkles,
+  merch: Gift,
+  disc: Disc,
 };
 
 export default function BandTour() {
@@ -55,46 +50,46 @@ export default function BandTour() {
       url: window.location.href,
     };
 
-    if (navigator.share) {
+    if (typeof navigator !== "undefined" && navigator.share) {
       try {
         await navigator.share(shareData);
-      } catch (err) {
-        if (err.name !== "AbortError") {
-          console.log("Compartilhamento cancelado");
-        }
+      } catch {
+        // Compartilhamento cancelado pelo usuário
       }
     } else {
-      try {
-        await navigator.clipboard.writeText(window.location.href);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2500);
-      } catch (e) {
-        console.error("Falha ao copiar link:", e);
-      }
+      const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(
+        `${shareData.text}\n${shareData.url}`
+      )}`;
+      window.open(whatsappUrl, "_blank", "noopener,noreferrer");
     }
   };
 
   return (
     <section
       id="tour"
-      className="relative w-full bg-[url('/bg-placeholder.jpg')] bg-fixed bg-cover bg-center border-t border-white/10 scroll-mt-20 overflow-hidden py-12 sm:py-16 md:py-24 px-4 sm:px-8 lg:px-16 min-h-0"
+      className="relative w-full bg-[url('/bg-placeholder.jpg')] bg-fixed bg-cover bg-center border-t border-white/10 scroll-mt-20 overflow-hidden py-20 sm:py-32 md:py-48 px-4 sm:px-8 lg:px-16 min-h-0"
     >
       {/* Overlay Escuro Profundo */}
       <div className="absolute inset-0 bg-black/90 pointer-events-none" />
 
-      {/* Iluminação Ambiente */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] sm:w-[600px] h-[350px] sm:h-[600px] bg-red-600/10 blur-[150px] rounded-full pointer-events-none -z-10" />
+      {/* Marca d'água Parallax Monumental */}
+      <ParallaxWatermark text="AO VIVO" speed={0.4} position="center" />
+
+      {/* Iluminação Ambiente em Parallax */}
+      <ParallaxLayer speed={0.35} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none -z-10">
+        <div className="w-[350px] sm:w-[600px] h-[350px] sm:h-[600px] bg-red-600/10 blur-[150px] rounded-full" />
+      </ParallaxLayer>
 
       <div className="relative z-10 w-full">
         
         {/* Header da Seção */}
         <ScrollReveal direction="up" delay={0}>
-          <div className="mb-8 sm:mb-12 md:mb-16 text-center">
-            <span className="font-mono text-xs uppercase tracking-[0.4em] text-red-500/90 font-bold block mb-2 sm:mb-3">
-              // 03. TURNÊ & DATAS OFICIAIS
+          <div className="mb-12 sm:mb-16 md:mb-24 text-center">
+            <span className="font-mono text-xs uppercase tracking-[0.4em] text-red-500 font-bold block mb-2 sm:mb-3">
+              // AGENDA DE SHOWS
             </span>
-            <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-red-500">
-              Agenda de Shows
+            <h2 className="linha-mask text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-red-500 pb-2 leading-tight overflow-visible">
+              <span className="inline-block pb-1">Datas & Festivais</span>
             </h2>
             <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-red-600 to-orange-500 mx-auto mt-3 rounded-full shadow-[0_0_12px_rgba(239,68,68,0.6)]" />
           </div>
@@ -114,9 +109,13 @@ export default function BandTour() {
               onClick={() => setSelectedFlyer(FEATURED_SHOW.flyer)}
               className="w-full h-80 lg:h-[380px] rounded-2xl border-2 border-red-500/30 hover:border-red-500/80 shadow-[0_0_30px_rgba(220,38,38,0.2)] hover:shadow-[0_0_45px_rgba(220,38,38,0.4)] cursor-pointer group/poster relative overflow-hidden bg-black/40 transition-all duration-500 hover:scale-[1.015]"
             >
-              <img
+              <Image
                 src={FEATURED_SHOW.flyer}
-                alt="Cartaz do Show Vila Velha Hardcore"
+                alt="Cartaz oficial do show Vila Velha Hardcore no Correria Music Bar"
+                width={480}
+                height={600}
+                loading="lazy"
+                sizes="(max-width: 1024px) 100vw, 33vw"
                 className="w-full h-full object-cover group-hover/poster:scale-105 transition-transform duration-700"
               />
 
@@ -204,26 +203,26 @@ export default function BandTour() {
                 </span>
               </div>
 
-              {/* Lista de Atrações do Evento */}
-              <div className="space-y-2.5">
-                <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 font-bold block">
-                  // ATRAÇÕES EXTRAS:
-                </span>
-                <div className="flex flex-col gap-2">
-                  {FEATURED_SHOW.attractions.map((attr) => {
-                    const IconComp = attr.icon;
-                    return (
-                      <div
-                        key={attr.label}
-                        className="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-3 text-xs text-zinc-300 font-mono"
-                      >
-                        <IconComp className="w-3.5 h-3.5 text-red-500 flex-shrink-0" />
-                        <span>{attr.label}</span>
-                      </div>
-                    );
-                  })}
+                {/* Lista de Atrações do Evento */}
+                <div className="space-y-2.5">
+                  <span className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 font-bold block">
+                    ATRAÇÕES EXTRAS:
+                  </span>
+                  <div className="flex flex-col gap-2">
+                    {FEATURED_SHOW.attractions.map((attr) => {
+                      const IconComp = ATTRACTION_ICONS[attr.type] || Sparkles;
+                      return (
+                        <div
+                          key={attr.label}
+                          className="p-3 rounded-xl bg-white/[0.02] border border-white/5 flex items-center gap-3 text-xs text-zinc-300 font-mono"
+                        >
+                          <IconComp className="w-3.5 h-3.5 text-red-500 flex-shrink-0" aria-hidden="true" />
+                          <span>{attr.label}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
             </div>
 
             {/* Ações: Hierarquia de Botões */}
@@ -243,7 +242,7 @@ export default function BandTour() {
                 className="w-full py-2.5 bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-zinc-300 hover:text-white font-mono text-xs rounded-xl transition-all flex items-center justify-center gap-2 active:scale-95"
               >
                 <Share2 className="w-3.5 h-3.5 text-red-400" />
-                <span>{copied ? "Link Copiado!" : "Compartilhar Show"}</span>
+                <span>Compartilhar Show</span>
               </button>
             </div>
           </div>
@@ -274,9 +273,12 @@ export default function BandTour() {
             onClick={(e) => e.stopPropagation()}
             className="relative max-w-full max-h-[85vh] flex flex-col items-center gap-4"
           >
-            <img
+            <Image
               src={selectedFlyer}
-              alt="Cartaz Oficial Ampliado"
+              alt="Cartaz Oficial Ampliado do show Vila Velha Hardcore"
+              width={800}
+              height={1000}
+              loading="lazy"
               className="max-h-[72vh] w-auto max-w-[92vw] object-contain rounded-2xl border border-red-500/40 shadow-[0_0_60px_rgba(220,38,38,0.4)]"
             />
 
@@ -287,7 +289,7 @@ export default function BandTour() {
                 className="px-6 py-3 rounded-full bg-gradient-to-r from-red-600 via-red-500 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-mono text-xs font-bold uppercase tracking-widest transition-all duration-300 shadow-[0_0_20px_rgba(239,68,68,0.5)] active:scale-95 flex items-center gap-2 border border-red-400/30"
               >
                 <Share2 className="w-3.5 h-3.5" />
-                <span>{copied ? "Link Copiado!" : "Compartilhar Show"}</span>
+                <span>Compartilhar Show</span>
               </button>
               
               <button

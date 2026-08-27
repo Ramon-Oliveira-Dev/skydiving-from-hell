@@ -1,7 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
 import ScrollReveal from "./ScrollReveal";
+import ParallaxLayer from "./ParallaxLayer";
+import ParallaxWatermark from "./ParallaxWatermark";
 import TiltCard, { TiltLayer } from "./TiltCard";
 import {
   X,
@@ -32,133 +35,7 @@ function IconInstagram({ className = "w-4 h-4" }) {
   );
 }
 
-const MEMBERS = [
-  {
-    id: "jeffao",
-    name: "Jeffão",
-    role: "Vocal / Frontman",
-    images: [
-      "/member_jeffao.jpg",
-      "/live_jeffao_ingrid.jpg",
-      "/band_live_color.jpg",
-    ],
-    desc: "Liderando os palcos desde 2016. Vocais viscerais, presença intimidadora e guturais que comandam as multidões.",
-    tagColor: "from-red-600 to-orange-600",
-    fullHistory:
-      "Fundador e voz da S.D.F.H., Jeffão transformou angústias urbanas e críticas sociais em linhas vocais devastadoras. Com técnicas de gutural profundo, false cord e vocal screams, comanda a banda com energia inesgotável em palcos de todo o Espírito Santo.",
-    setup: "Vocal Dinâmico & Processamento de Efeitos em Tempo Real",
-    equipment: [
-      "Microfone Shure SM7B & Beta 58A",
-      "Processador TC Helicon VoiceLive",
-      "Transmissor Sem Fio Shure GLXD4+",
-      "In-Ear KZ ZS10 Pro",
-    ],
-    socials: {
-      instagram: "https://instagram.com/bigjeff.hates",
-      handle: "@bigjeff.hates",
-    },
-  },
-  {
-    id: "ingrid",
-    name: "Ingrid",
-    role: "Guitarra 8 Cordas",
-    images: [
-      "/member_ingrid.jpg",
-      "/live_jeffao_ingrid.jpg",
-      "/band_live_bw.jpg",
-    ],
-    desc: "Arquiteta de riffs pesados, velocidade e precisão cirúrgica. Traz influências progressivas para o peso extremo.",
-    tagColor: "from-purple-600 to-red-600",
-    fullHistory:
-      "Referência no metal moderno capixaba, Ingrid conduz a afinação estendida de 8 cordas com agressividade técnica e sofisticação harmônica. É a mente por trás de breakdowns assimétricos e timbres hiper-definidos gravados nos singles da banda.",
-    setup: "Afinação Drop E / E Standard (8 Cordas)",
-    equipment: [
-      "Guitarra Ibanez RG8 8-String Custom",
-      "Modelador Neural DSP Quad Cortex",
-      "Captadores Fishman Fluence Modern",
-      "Cordas D'Addario NYXL (.009 - .080)",
-    ],
-    socials: {
-      instagram: "https://instagram.com/ingridguitar",
-      handle: "@ingridguitar",
-    },
-  },
-  {
-    id: "davier",
-    name: "Davier",
-    role: "Guitarra 8 Cordas",
-    images: [
-      "/member_davier.jpg",
-      "/live_red_stage.jpg",
-      "/band_group.jpg",
-    ],
-    desc: "Harmonia pesada e parede sonora, modelando a atmosfera com distorções massivas e texturas industriais.",
-    tagColor: "from-blue-600 to-cyan-600",
-    fullHistory:
-      "Davier constrói a muralha rítmica e a camada densa da S.D.F.H. Com domínio de timbres de alto ganho e passagens dinâmicas, sincroniza com precisão milimétrica cada palhetada aos bumbos da bateria.",
-    setup: "Afinação Drop E / Double Drop (8 Cordas)",
-    equipment: [
-      "Guitarra Schecter Omen-8 Custom",
-      "Line 6 Helix LT / Cab IRs Fortin",
-      "Captadores Seymour Duncan Nazgûl/Sentient",
-      "Cordas Ernie Ball Skinny Top Heavy Bottom 8",
-    ],
-    socials: {
-      instagram: "https://instagram.com/davier.cirino",
-      handle: "@davier.cirino",
-    },
-  },
-  {
-    id: "trevas",
-    name: "Trevas",
-    role: "Baixo / Groove",
-    images: [
-      "/band_group.jpg",
-      "/live_red_stage.jpg",
-      "/band_live_bw.jpg",
-    ],
-    desc: "Pilar do ritmo e sustentação sonora. Linhas distorcidas, ataque direto e o groove brutal que faz tremer o chão.",
-    tagColor: "from-emerald-600 to-teal-600",
-    fullHistory:
-      "A espinha dorsal das frequências sub-graves da S.D.F.H. Trevas funde distorção Darkglass com ataque rítmico percussivo, garantindo que cada acorde de 8 cordas tenha impacto físico na plateia.",
-    setup: "Afinação Drop E / F# (5 Cordas Super Low)",
-    equipment: [
-      "Baixo Dingwall NG3 5-String Multi-Scale",
-      "Pré-amp Darkglass Microtubes B7K Ultra",
-      "Compressor Darkglass Hyper Luminal",
-      "In-Ear Shure SE215",
-    ],
-    socials: {
-      instagram: "https://instagram.com/philserpa",
-      handle: "@philserpa",
-    },
-  },
-  {
-    id: "ramon",
-    name: "Ramon",
-    role: "Bateria / Máquina Rítmica",
-    images: [
-      "/member_ramon.jpg",
-      "/live_ramon_blue.jpg",
-      "/live_ramon_bw.jpg",
-    ],
-    desc: "Máquina rítmica de alta precisão. Bumbos duplos avassaladores, blast beats velozes e dinamismo destrutivo.",
-    tagColor: "from-amber-600 to-orange-600",
-    fullHistory:
-      "Baterista de técnica fulminante, Ramon é o motor propulsor da banda. Especialista em polirritmias, pedal duplo de alta velocidade e viradas métricas complexas que sustentam a identidade brutal da S.D.F.H.",
-    setup: "Kit Custom Double Bass & Pratos Dark / Raw",
-    equipment: [
-      "Bateria Tama Superstar Hyper-Drive",
-      "Pedais Duplos Trick Pro 1-V BigFoot",
-      "Pratos Meinl Byzance Extra Dry & Dual",
-      "Triggers Roland TM-2 & Baquetas ProMark 5B",
-    ],
-    socials: {
-      instagram: "https://instagram.com/ramonlucasdedeoliveira",
-      handle: "@ramonlucasdedeoliveira",
-    },
-  },
-];
+import { MEMBERS } from "../lib/band-data";
 
 export default function BandLineup() {
   const [selectedMember, setSelectedMember] = useState(null);
@@ -166,15 +43,31 @@ export default function BandLineup() {
   const [isPaused, setIsPaused] = useState(false);
 
   const openMember = (member) => {
-    setSelectedMember(member);
-    setCurrentImgIndex(0);
-    setIsPaused(false);
+    if (typeof document !== "undefined" && document.startViewTransition) {
+      document.startViewTransition(() => {
+        setSelectedMember(member);
+        setCurrentImgIndex(0);
+        setIsPaused(false);
+      });
+    } else {
+      setSelectedMember(member);
+      setCurrentImgIndex(0);
+      setIsPaused(false);
+    }
   };
 
   const closeModal = useCallback(() => {
-    setSelectedMember(null);
-    setCurrentImgIndex(0);
-    setIsPaused(false);
+    if (typeof document !== "undefined" && document.startViewTransition) {
+      document.startViewTransition(() => {
+        setSelectedMember(null);
+        setCurrentImgIndex(0);
+        setIsPaused(false);
+      });
+    } else {
+      setSelectedMember(null);
+      setCurrentImgIndex(0);
+      setIsPaused(false);
+    }
   }, []);
 
   // Fechar com a tecla ESC e travar rolagem da página
@@ -231,101 +124,124 @@ export default function BandLineup() {
   return (
     <section
       id="lineup"
-      className="relative w-full bg-[url('/bg-placeholder.jpg')] bg-fixed bg-cover bg-center border-t border-white/10 scroll-mt-20 overflow-hidden py-12 sm:py-16 md:py-24 px-4 sm:px-8 lg:px-16 min-h-0"
+      className="relative w-full bg-[url('/bg-placeholder.jpg')] bg-fixed bg-cover bg-center border-t border-white/10 scroll-mt-20 overflow-hidden py-20 sm:py-32 md:py-48 px-4 sm:px-8 lg:px-16 min-h-0"
     >
       {/* Overlay Escuro Profundo */}
       <div className="absolute inset-0 bg-black/90 pointer-events-none" />
 
-      {/* Iluminação Ambiente */}
-      <div className="absolute top-1/4 left-1/4 w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] bg-red-600/10 blur-[140px] rounded-full pointer-events-none -z-10" />
-      <div className="absolute bottom-1/4 right-1/4 w-[300px] sm:w-[450px] h-[300px] sm:h-[450px] bg-orange-600/10 blur-[140px] rounded-full pointer-events-none -z-10" />
+      {/* Marca d'água Parallax Monumental */}
+      <ParallaxWatermark text="OPERADORES" speed={0.45} position="center" />
+
+      {/* Iluminação Ambiente em Parallax */}
+      <ParallaxLayer speed={0.4} className="absolute top-1/4 left-1/4 pointer-events-none -z-10">
+        <div className="w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] bg-red-600/10 blur-[140px] rounded-full" />
+      </ParallaxLayer>
+      <ParallaxLayer speed={-0.35} className="absolute bottom-1/4 right-1/4 pointer-events-none -z-10">
+        <div className="w-[300px] sm:w-[450px] h-[300px] sm:h-[450px] bg-orange-600/10 blur-[140px] rounded-full" />
+      </ParallaxLayer>
 
       <div className="relative z-10 w-full">
         
         {/* Header da Seção */}
         <ScrollReveal direction="up" delay={0}>
-          <div className="mb-10 sm:mb-14 text-center">
-            <span className="font-mono text-xs uppercase tracking-[0.4em] text-red-500/90 font-bold block mb-2 sm:mb-3">
-              // 02. INTEGRANTES & DOSSIÊS
+          <div className="mb-12 sm:mb-16 md:mb-24 text-center">
+            <span className="font-mono text-xs uppercase tracking-[0.4em] text-zinc-400 font-bold block mb-2 sm:mb-3">
+              FORMAÇÃO OFICIAL
             </span>
-            <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-red-500">
-              Formação Oficial
+            <h2 className="linha-mask text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-red-500 pb-2 leading-tight overflow-visible">
+              <span className="inline-block pb-1">Formação Oficial</span>
             </h2>
             <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-red-600 to-orange-500 mx-auto mt-3 rounded-full shadow-[0_0_12px_rgba(239,68,68,0.6)]" />
           </div>
         </ScrollReveal>
 
-        {/* Grid de Cards dos Integrantes */}
+        <ScrollReveal direction="up" stagger={0.25} duration={1500} threshold="top 80%">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-8">
-          {MEMBERS.map((member, idx) => (
-            <ScrollReveal key={member.name} direction="up" delay={idx * 120}>
+          {MEMBERS.map((member) => {
+            const hasIndividualPortrait = member.id !== "trevas" && member.images && member.images[0] && !member.images[0].includes("band_group");
+
+            return (
               <TiltCard
-                  onClick={() => openMember(member)}
-                  className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-red-500/60 transition-all duration-500 hover:shadow-[0_16px_40px_rgba(220,38,38,0.3)] cursor-pointer h-full"
-                >
-                  <div>
-                    {/* Foto / Visual do Integrante em 3D (20px Z) */}
-                    <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-zinc-900">
-                      {member.images && member.images[0] ? (
-                        <img
-                          src={member.images[0]}
-                          alt={member.name}
-                          className="w-full h-full object-cover object-top group-hover:scale-108 transition-transform duration-700 filter grayscale group-hover:grayscale-0"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-zinc-900 via-black to-zinc-950 text-zinc-600 group-hover:text-red-500 transition-colors">
-                          <Music className="w-14 h-14 mb-2 opacity-50" />
-                          <span className="font-mono text-xs uppercase tracking-widest text-zinc-500">S.D.F.H. OPERADOR</span>
-                        </div>
-                      )}
-
-                      {/* Gradiente de Fusão na Base da Imagem */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent" />
-
-                      {/* Badge de Função em 3D (25px Z) */}
-                      <TiltLayer depth={25} className="absolute top-3 left-3 pointer-events-none z-10">
-                        <span
-                          className={`inline-block px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider text-white bg-gradient-to-r ${member.tagColor} shadow-md`}
+                key={member.id}
+                onClick={() => openMember(member)}
+                data-ativo={selectedMember?.id === member.id ? "true" : "false"}
+                className="card-membro group bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-red-500/60 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_60px_rgba(220,38,38,0.45),_0_0_20px_rgba(220,38,38,0.15)] cursor-pointer h-full"
+              >
+                <div>
+                  {/* Foto / Visual do Integrante em 3D (20px Z) */}
+                  <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-zinc-950 flex items-center justify-center">
+                    {hasIndividualPortrait ? (
+                      <Image
+                        src={member.images[0]}
+                        alt={`Retrato oficial de ${member.name} — ${member.role}`}
+                        width={320}
+                        height={380}
+                        loading="lazy"
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
+                        className="foto w-full h-full object-cover object-top group-hover:scale-110 transition-all duration-700 filter grayscale group-hover:grayscale-0 group-hover:brightness-110 group-hover:contrast-110"
+                      />
+                    ) : (
+                      /* Fallback consistente de silhueta para Trevas (Tarefa 1.4) */
+                      <div className="foto w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-zinc-900 via-zinc-950 to-black text-zinc-600 group-hover:text-red-500 transition-colors relative p-6 text-center">
+                        <svg
+                          viewBox="0 0 24 24"
+                          fill="currentColor"
+                          className="w-20 h-20 opacity-30 group-hover:opacity-60 transition-opacity mb-2 text-zinc-500 group-hover:text-red-500"
+                          aria-hidden="true"
                         >
-                          {member.role}
+                          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
+                        </svg>
+                        <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 font-bold bg-black/60 px-2.5 py-1 rounded-full border border-white/10">
+                          RETRATO EM BREVE
                         </span>
-                      </TiltLayer>
-
-                      {/* Overlay ao Passar o Mouse em 3D (30px Z) */}
-                      <TiltLayer depth={30} className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-3 pointer-events-none z-10">
-                        <span className="px-3.5 py-1.5 rounded-full bg-red-600 text-white font-mono text-[11px] font-black uppercase tracking-widest shadow-xl">
-                          Ver Dossiê ▶
-                        </span>
-                      </TiltLayer>
-                    </div>
-
-                    {/* Conteúdo do Card em 3D (15px Z) */}
-                    <TiltLayer depth={15} className="p-5 sm:p-6 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-xl sm:text-2xl font-black uppercase text-white tracking-tight group-hover:text-red-400 transition-colors">
-                          {member.name}
-                        </h3>
                       </div>
+                    )}
 
-                      <p className="text-xs text-zinc-400 leading-relaxed font-sans line-clamp-3">
-                        {member.desc}
-                      </p>
+                    {/* Gradiente de Fusão na Base da Imagem */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent pointer-events-none" />
+
+                    {/* Overlay avermelhado agressivo no hover */}
+                    <div className="absolute inset-0 bg-red-600/0 group-hover:bg-red-600/15 transition-colors duration-500 pointer-events-none mix-blend-overlay" />
+
+                    {/* Badge de Função em 3D (25px Z) */}
+                    <TiltLayer depth={25} className="absolute top-3 left-3 pointer-events-none z-10">
+                      <span
+                        className={`inline-block px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider text-white bg-gradient-to-r ${member.tagColor} shadow-md`}
+                      >
+                        {member.role}
+                      </span>
                     </TiltLayer>
                   </div>
 
-                  {/* Rodapé do Card com Ação em 3D (20px Z) */}
-                  <TiltLayer depth={20} className="px-5 sm:px-6 pb-5 pt-2 border-t border-white/5 flex items-center justify-between">
-                    <span className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
-                      Dossiê Oficial
-                    </span>
-                    <span className="text-xs font-mono font-bold text-red-500 group-hover:translate-x-1 transition-transform">
-                      +
-                    </span>
+                  {/* Conteúdo do Card em 3D (15px Z) */}
+                  <TiltLayer depth={15} className="p-5 sm:p-6 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h3 className="text-xl sm:text-2xl font-black uppercase text-white tracking-tight group-hover:text-red-400 transition-colors">
+                        {member.name}
+                      </h3>
+                    </div>
+
+                    <p className="text-xs text-zinc-400 leading-relaxed font-sans line-clamp-3">
+                      {member.desc}
+                    </p>
                   </TiltLayer>
-                </TiltCard>
-            </ScrollReveal>
-          ))}
+                </div>
+
+                {/* Único CTA por Card em 3D (Tarefa 1.5) */}
+                <TiltLayer depth={20} className="px-5 sm:px-6 pb-5 pt-3 border-t border-white/5 flex items-center justify-between">
+                  <span className="font-mono text-xs text-zinc-300 group-hover:text-white font-bold uppercase tracking-wider transition-colors duration-300 flex items-center gap-1.5">
+                    <span>Ver dossiê</span>
+                    <span className="text-red-500 group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
+                  </span>
+                  <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
+                    S.D.F.H.
+                  </span>
+                </TiltLayer>
+              </TiltCard>
+            );
+          })}
         </div>
+        </ScrollReveal>
       </div>
 
       {/* ================================================================
@@ -364,10 +280,13 @@ export default function BandLineup() {
                 >
                   {/* Foto Atual com Transição Suave */}
                   {selectedMember.images && selectedMember.images.length > 0 ? (
-                    <img
+                    <Image
                       key={currentImgIndex}
                       src={selectedMember.images[currentImgIndex]}
-                      alt={`${selectedMember.name} - Foto ${currentImgIndex + 1}`}
+                      alt={`Foto de palco de ${selectedMember.name} (${currentImgIndex + 1} de ${selectedMember.images.length})`}
+                      width={600}
+                      height={600}
+                      loading="lazy"
                       className="w-full h-full object-cover object-top transition-opacity duration-700 animate-fadeIn"
                     />
                   ) : (
@@ -452,7 +371,7 @@ export default function BandLineup() {
                   <div className="flex items-center gap-2 mb-1">
                     <span className="w-2 h-2 rounded-full bg-red-500 animate-ping inline-block" />
                     <span className="font-mono text-xs text-red-500 uppercase tracking-[0.3em] font-bold">
-                      // DOSSIÊ DE INTEGRANTE OFICIAL
+                      DOSSIÊ DE INTEGRANTE OFICIAL
                     </span>
                   </div>
                   <h3 className="text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-white">

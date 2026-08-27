@@ -1,6 +1,11 @@
 "use client";
 
-import React, { useRef, useState, useEffect, useCallback } from "react";
+import ScrollReveal from "./ScrollReveal";
+import ParallaxLayer from "./ParallaxLayer";
+import ParallaxWatermark from "./ParallaxWatermark";
+import Image from "next/image";
+
+import React, { useRef, useCallback } from "react";
 import {
   Play,
   Pause,
@@ -13,196 +18,50 @@ import {
   Volume1,
   VolumeX,
 } from "lucide-react";
-
-// Tracklist oficial com capas reais em /public
-const TRACKS = [
-  {
-    id: 1,
-    title: "Amethyst",
-    src: "/amethyst.mp3",
-    cover: "/cover-amethyst.jpg",
-    accent: "text-purple-400",
-    tag: "Single Oficial // 2019",
-  },
-  {
-    id: 2,
-    title: "Indigente",
-    src: "/indigente.mp3",
-    cover: "/cover-indigente.jpg",
-    accent: "text-red-400",
-    tag: "Single Oficial // 2020",
-  },
-  {
-    id: 3,
-    title: "Unpatriot",
-    src: "/unpatriot.mp3",
-    cover: "/cover-unpatriot.jpg",
-    accent: "text-zinc-300",
-    tag: "Single Oficial // 2021",
-  },
-  {
-    id: 4,
-    title: "Black Flag",
-    src: "/black_flag.mp3",
-    cover: "/cover-blackflag.jpg",
-    accent: "text-orange-400",
-    tag: "Single Oficial // 2022",
-  },
-];
-
-function formatTime(s) {
-  if (isNaN(s) || !s) return "0:00";
-  const m = Math.floor(s / 60);
-  const sec = Math.floor(s % 60);
-  return m + ":" + String(sec).padStart(2, "0");
-}
+import { useAudio, formatTime } from "../context/AudioContext";
 
 export default function BandPlayer() {
-  const audioRef = useRef(null);
   const progressRef = useRef(null);
 
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [duration, setDuration] = useState(0);
-
-  // Novos Estados: Shuffle, Repeat e Volume
-  const [isShuffle, setIsShuffle] = useState(false);
-  const [repeatMode, setRepeatMode] = useState("all"); // 'off' | 'all' | 'one'
-  const [volume, setVolume] = useState(0.8);
-  const [isMuted, setIsMuted] = useState(false);
-
-  const track = TRACKS[currentIndex];
-
-  // Carregar e tocar faixa ao mudar de índice
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    const shouldPlay = isPlaying;
-    audio.src = track.src;
-    audio.load();
-    if (shouldPlay) {
-      audio.play().catch(() => setIsPlaying(false));
-    }
-    setCurrentTime(0);
-  }, [currentIndex]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Sincronizar Volume e Mute no elemento <audio>
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = isMuted ? 0 : volume;
-    }
-  }, [volume, isMuted]);
-
-  const handleTimeUpdate = useCallback(() => {
-    if (audioRef.current) setCurrentTime(audioRef.current.currentTime);
-  }, []);
-
-  const handleLoadedMetadata = useCallback(() => {
-    if (audioRef.current) setDuration(audioRef.current.duration);
-  }, []);
-
-  // Obter índice aleatório diferente do atual para o Shuffle
-  const getRandomIndex = useCallback(() => {
-    if (TRACKS.length <= 1) return 0;
-    let nextIdx;
-    do {
-      nextIdx = Math.floor(Math.random() * TRACKS.length);
-    } while (nextIdx === currentIndex);
-    return nextIdx;
-  }, [currentIndex]);
-
-  // Avançar faixa (com suporte a Shuffle e Repeat)
-  const handleNext = useCallback(() => {
-    if (isShuffle) {
-      setCurrentIndex(getRandomIndex());
-    } else {
-      setCurrentIndex((prev) => (prev + 1) % TRACKS.length);
-    }
-    setIsPlaying(true);
-  }, [isShuffle, getRandomIndex]);
-
-  // Faixa anterior
-  const handlePrev = useCallback(() => {
-    if (isShuffle) {
-      setCurrentIndex(getRandomIndex());
-    } else {
-      setCurrentIndex((prev) => (prev - 1 + TRACKS.length) % TRACKS.length);
-    }
-    setIsPlaying(true);
-  }, [isShuffle, getRandomIndex]);
-
-  // Fim da faixa: Lógica de Reprodução Contínua, Shuffle e Repeat
-  const handleEnded = useCallback(() => {
-    if (repeatMode === "one") {
-      if (audioRef.current) {
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(() => {});
-      }
-    } else if (isShuffle) {
-      setCurrentIndex(getRandomIndex());
-      setIsPlaying(true);
-    } else if (repeatMode === "all") {
-      setCurrentIndex((prev) => (prev + 1) % TRACKS.length);
-      setIsPlaying(true);
-    } else if (repeatMode === "off") {
-      if (currentIndex < TRACKS.length - 1) {
-        setCurrentIndex((prev) => prev + 1);
-        setIsPlaying(true);
-      } else {
-        setIsPlaying(false);
-      }
-    }
-  }, [repeatMode, isShuffle, currentIndex, getRandomIndex]);
-
-  // Play / Pause
-  const togglePlay = useCallback(() => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    if (audio.paused) {
-      audio.play().catch(() => {});
-      setIsPlaying(true);
-    } else {
-      audio.pause();
-      setIsPlaying(false);
-    }
-  }, []);
-
-  // Alternar Shuffle
-  const toggleShuffle = useCallback(() => {
-    setIsShuffle((prev) => !prev);
-  }, []);
-
-  // Alternar Repeat ('off' -> 'all' -> 'one' -> 'off')
-  const toggleRepeat = useCallback(() => {
-    setRepeatMode((prev) => {
-      if (prev === "off") return "all";
-      if (prev === "all") return "one";
-      return "off";
-    });
-  }, []);
+  const {
+    TRACKS,
+    currentIndex,
+    setCurrentIndex,
+    track,
+    isPlaying,
+    currentTime,
+    duration,
+    isShuffle,
+    repeatMode,
+    volume,
+    setVolume,
+    isMuted,
+    togglePlay,
+    handleNext,
+    handlePrev,
+    seekToPercent,
+    toggleShuffle,
+    toggleRepeat,
+    toggleMute,
+  } = useAudio();
 
   // Controle de Volume
   const handleVolumeChange = (e) => {
     const val = parseFloat(e.target.value);
     setVolume(val);
-    if (val > 0 && isMuted) setIsMuted(false);
-    if (val === 0) setIsMuted(true);
-  };
-
-  // Mudo / Desmudo
-  const toggleMute = () => {
-    setIsMuted((prev) => !prev);
   };
 
   // Seek na Barra de Progresso
-  const handleSeek = useCallback((e) => {
-    const bar = progressRef.current;
-    const audio = audioRef.current;
-    if (!bar || !audio || !audio.duration) return;
-    const rect = bar.getBoundingClientRect();
-    audio.currentTime = ((e.clientX - rect.left) / rect.width) * audio.duration;
-  }, []);
+  const handleSeek = useCallback(
+    (e) => {
+      const bar = progressRef.current;
+      if (!bar) return;
+      const rect = bar.getBoundingClientRect();
+      const percent = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+      seekToPercent(percent);
+    },
+    [seekToPercent]
+  );
 
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
   const currentVol = isMuted ? 0 : volume;
@@ -210,28 +69,38 @@ export default function BandPlayer() {
   return (
     <section
       id="player"
-      className="relative w-full bg-[url('/bg-placeholder.jpg')] bg-fixed bg-cover bg-center border-t border-white/10 scroll-mt-20 overflow-hidden py-12 sm:py-16 md:py-24 px-4 sm:px-8 lg:px-16 min-h-0"
+      className="relative w-full bg-[url('/bg-placeholder.jpg')] bg-fixed bg-cover bg-center border-t border-white/10 scroll-mt-20 overflow-hidden py-20 sm:py-32 md:py-48 px-4 sm:px-8 lg:px-16 min-h-0"
     >
       {/* Overlay de Fundo com Blur Atmosférico */}
       <div className="absolute inset-0 bg-black/85 backdrop-blur-sm" />
 
-      {/* Luzes Gradientes de Fundo (Glow Effect) */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-600/15 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl pointer-events-none" />
+      {/* Marca d'água Parallax Monumental */}
+      <ParallaxWatermark text="DISCOGRAFIA" speed={0.4} position="center" />
+
+      {/* Luzes Gradientes de Fundo em Parallax (Glow Effect) */}
+      <ParallaxLayer speed={0.45} className="absolute top-1/4 left-1/4 pointer-events-none -z-0">
+        <div className="w-96 h-96 bg-red-600/15 rounded-full blur-3xl" />
+      </ParallaxLayer>
+      <ParallaxLayer speed={-0.35} className="absolute bottom-1/4 right-1/4 pointer-events-none -z-0">
+        <div className="w-96 h-96 bg-orange-600/10 rounded-full blur-3xl" />
+      </ParallaxLayer>
 
       <div className="relative z-10 w-full">
 
         {/* Header da Seção com Texto em Gradiente */}
-        <div className="mb-8 sm:mb-12 md:mb-16 text-center">
-          <span className="font-mono text-xs uppercase tracking-[0.4em] text-red-500 font-bold block mb-2 sm:mb-3">
-            // STREAMING OFICIAL
-          </span>
-          <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-red-500">
-            Discografia & Player
-          </h2>
-          <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-red-600 to-orange-500 mx-auto mt-3 rounded-full shadow-[0_0_12px_rgba(239,68,68,0.6)]" />
-        </div>
+        <ScrollReveal direction="up" delay={0}>
+          <div className="mb-12 sm:mb-16 md:mb-24 text-center">
+            <span className="font-mono text-xs uppercase tracking-[0.4em] text-zinc-400 font-bold block mb-2 sm:mb-3">
+              DISCOGRAFIA & PLAYER
+            </span>
+            <h2 className="linha-mask text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-red-500 pb-2 leading-tight overflow-visible">
+              <span className="inline-block pb-1">Discografia & Player</span>
+            </h2>
+            <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-red-600 to-orange-500 mx-auto mt-3 rounded-full shadow-[0_0_12px_rgba(239,68,68,0.6)]" />
+          </div>
+        </ScrollReveal>
 
+        <ScrollReveal direction="up" delay={150}>
         <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 items-stretch">
 
           {/* ================================================================
@@ -250,14 +119,17 @@ export default function BandPlayer() {
                       : "ring-1 ring-white/10"
                   }`}
                 >
-                  <img
+                  <Image
                     src={track.cover}
-                    alt={track.title}
+                    alt={`Capa oficial do single ${track.title} da banda Skydiving From Hell`}
+                    width={224}
+                    height={224}
+                    priority
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                   />
                   
                   {/* Overlay sutil na capa */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 pointer-events-none" />
                 </div>
 
                 {/* Equalizador animado sobre a capa */}
@@ -279,32 +151,32 @@ export default function BandPlayer() {
               </div>
 
               {/* Informações da Faixa Atual */}
-              <div className="flex-1 text-center sm:text-left flex flex-col justify-center">
+              <div className={`flex-1 text-center sm:text-left flex flex-col justify-center ${isPlaying ? "faixa-tocando" : ""}`}>
                 <span className="font-mono text-xs uppercase tracking-widest text-red-400 font-bold mb-1">
                   {track.tag}
                 </span>
-                <h3 className="text-3xl sm:text-4xl font-black uppercase tracking-tight text-white drop-shadow-md">
+                <h3 className="titulo text-3xl sm:text-4xl font-black uppercase tracking-tight text-white drop-shadow-md transition-colors duration-300">
                   {track.title}
                 </h3>
                 <p className="text-sm text-zinc-400 font-mono tracking-wider mt-1">
                   SKYDIVING FROM HELL
                 </p>
 
-                {/* Badges de Faixa e Modo de Reprodução */}
-                <div className="mt-4 flex flex-wrap gap-2 justify-center sm:justify-start items-center">
-                  <span className="px-3 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-mono uppercase tracking-widest text-zinc-300">
-                    Faixa 0{currentIndex + 1} de 0{TRACKS.length}
+                {/* Badges de Faixa e Modo de Reprodução com Hierarquia e Espaçamento Claros */}
+                <div className="mt-5 flex flex-wrap gap-2.5 justify-center sm:justify-start items-center">
+                  <span className="px-3.5 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-mono uppercase tracking-widest text-zinc-300 shadow-sm">
+                    Faixa {track.number} de 0{TRACKS.length}
                   </span>
-                  <span className="px-3 py-1 bg-red-950/60 border border-red-800/60 rounded-full text-[10px] font-mono uppercase tracking-widest text-red-400 font-bold">
+                  <span className="px-3.5 py-1 bg-red-950/60 border border-red-800/60 rounded-full text-[10px] font-mono uppercase tracking-widest text-red-400 font-bold shadow-sm">
                     FLAC / HD
                   </span>
                   {isShuffle && (
-                    <span className="px-2.5 py-0.5 bg-red-600/20 border border-red-500/40 rounded-full text-[9px] font-mono uppercase tracking-widest text-red-400 font-bold">
+                    <span className="px-3 py-1 bg-red-600/20 border border-red-500/40 rounded-full text-[10px] font-mono uppercase tracking-widest text-red-400 font-bold shadow-sm">
                       Shuffle Ativo
                     </span>
                   )}
                   {repeatMode !== "off" && (
-                    <span className="px-2.5 py-0.5 bg-orange-600/20 border border-orange-500/40 rounded-full text-[9px] font-mono uppercase tracking-widest text-orange-400 font-bold">
+                    <span className="px-3 py-1 bg-orange-600/20 border border-orange-500/40 rounded-full text-[10px] font-mono uppercase tracking-widest text-orange-400 font-bold shadow-sm">
                       {repeatMode === "one" ? "Repetir Faixa" : "Repetir Tudo"}
                     </span>
                   )}
@@ -326,7 +198,7 @@ export default function BandPlayer() {
               </div>
               <div className="flex justify-between text-xs font-mono text-zinc-400 px-1">
                 <span>{formatTime(currentTime)}</span>
-                <span>{formatTime(duration)}</span>
+                <span>{track.durationStr || formatTime(duration)}</span>
               </div>
             </div>
 
@@ -442,15 +314,6 @@ export default function BandPlayer() {
               </div>
 
             </div>
-
-            <audio
-              ref={audioRef}
-              controlsList="nodownload"
-              preload="metadata"
-              onTimeUpdate={handleTimeUpdate}
-              onLoadedMetadata={handleLoadedMetadata}
-              onEnded={handleEnded}
-            />
           </div>
 
           {/* ================================================================
@@ -459,8 +322,8 @@ export default function BandPlayer() {
           <div className="lg:w-80 bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_0_rgba(255,0,0,0.1)] rounded-2xl overflow-hidden flex flex-col justify-between hover:border-red-500/30 transition-all duration-500">
             <div>
               <div className="px-6 py-4 border-b border-white/10 bg-white/5 flex items-center justify-between">
-                <span className="font-mono text-xs uppercase tracking-[0.3em] text-red-400 font-bold">
-                  // TRACKLIST
+                <span className="font-mono text-xs uppercase tracking-[0.3em] text-zinc-400 font-bold">
+                  TRACKLIST
                 </span>
                 <span className="font-mono text-[10px] text-zinc-400 uppercase">
                   {TRACKS.length} FAIXAS
@@ -475,7 +338,6 @@ export default function BandPlayer() {
                       <button
                         onClick={() => {
                           setCurrentIndex(i);
-                          setIsPlaying(true);
                         }}
                         className={`w-full text-left px-5 py-4 flex items-center gap-4 transition-all duration-300 ${
                           isActive
@@ -485,7 +347,14 @@ export default function BandPlayer() {
                       >
                         {/* Miniatura da Capa */}
                         <div className="w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 border border-white/10 shadow-sm relative">
-                          <img src={t.cover} alt={t.title} className="w-full h-full object-cover" />
+                          <Image
+                            src={t.cover}
+                            alt={`Capa de ${t.title}`}
+                            width={40}
+                            height={40}
+                            loading="lazy"
+                            className="w-full h-full object-cover"
+                          />
                           {isActive && isPlaying && (
                             <div className="absolute inset-0 bg-red-600/40 flex items-center justify-center">
                               <span className="w-2 h-2 rounded-full bg-white animate-ping" />
@@ -503,7 +372,7 @@ export default function BandPlayer() {
                         </div>
 
                         <span className="font-mono text-xs text-zinc-500">
-                          0{i + 1}
+                          {t.number}
                         </span>
                       </button>
                     </li>
@@ -528,6 +397,7 @@ export default function BandPlayer() {
           </div>
 
         </div>
+        </ScrollReveal>
       </div>
       <style>{`@keyframes eqBounce { from { transform: scaleY(0.2); } to { transform: scaleY(1); } }`}</style>
     </section>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "../components/SmoothScroll";
+import { BAND_INFO, FEATURED_SHOW, MEMBERS } from "../lib/band-data";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -14,8 +15,45 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Skydiving From Hell - Banda de Metal",
-  description: "Site oficial da banda Skydiving From Hell - Vila Velha / ES",
+  metadataBase: new URL(BAND_INFO.url),
+  title: "Skydiving From Hell — Metal moderno de Vila Velha / ES",
+  description:
+    "Guitarras de 8 cordas, bumbos duplos e breakdowns. Quatro singles, agenda de shows e loja oficial.",
+  keywords: [
+    "Skydiving From Hell",
+    "SDFH",
+    "Metal moderno",
+    "Metal Vila Velha",
+    "Metal ES",
+    "Guitarras de 8 cordas",
+    "Metalcore",
+    "Deathcore",
+  ],
+  authors: [{ name: "Skydiving From Hell" }],
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    url: BAND_INFO.url,
+    title: "Skydiving From Hell — Metal moderno de Vila Velha / ES",
+    description:
+      "Guitarras de 8 cordas, bumbos duplos e breakdowns. Quatro singles, agenda de shows e loja oficial.",
+    siteName: "Skydiving From Hell",
+    images: [
+      {
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "Skydiving From Hell — Metal Moderno",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Skydiving From Hell — Metal moderno de Vila Velha / ES",
+    description:
+      "Guitarras de 8 cordas, bumbos duplos e breakdowns. Quatro singles, agenda de shows e loja oficial.",
+    images: ["/opengraph-image"],
+  },
 };
 
 export default function RootLayout({
@@ -23,12 +61,75 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const jsonLdMusicGroup = {
+    "@context": "https://schema.org",
+    "@type": "MusicGroup",
+    name: BAND_INFO.name,
+    alternateName: BAND_INFO.alternateName,
+    genre: BAND_INFO.genre,
+    foundingDate: BAND_INFO.foundingDate,
+    foundingLocation: {
+      "@type": "Place",
+      name: BAND_INFO.location,
+    },
+    url: BAND_INFO.url,
+    email: BAND_INFO.email,
+    sameAs: [
+      BAND_INFO.socials.instagram,
+      BAND_INFO.socials.youtube,
+      BAND_INFO.socials.facebook,
+      BAND_INFO.socials.tiktok,
+      BAND_INFO.socials.spotify,
+    ],
+    member: MEMBERS.map((m) => ({
+      "@type": "Person",
+      name: m.name,
+      roleName: m.role.split("/")[0].trim(),
+    })),
+  };
+
+  const jsonLdMusicEvent = {
+    "@context": "https://schema.org",
+    "@type": "MusicEvent",
+    name: FEATURED_SHOW.title,
+    startDate: FEATURED_SHOW.isoStartDate,
+    endDate: FEATURED_SHOW.isoEndDate,
+    eventStatus: "https://schema.org/EventScheduled",
+    location: {
+      "@type": "MusicVenue",
+      name: FEATURED_SHOW.venueName,
+      address: FEATURED_SHOW.address,
+    },
+    performer: [
+      {
+        "@type": "MusicGroup",
+        name: BAND_INFO.name,
+      },
+    ],
+    offers: {
+      "@type": "Offer",
+      price: "0",
+      priceCurrency: "BRL",
+      availability: "https://schema.org/InStock",
+    },
+  };
+
   return (
     <html
       lang="pt-BR"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-black">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdMusicGroup) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdMusicEvent) }}
+        />
+      </head>
+      <body className="min-h-full flex flex-col bg-[#08070a] text-[#e8e4dd]">
         <SmoothScroll>{children}</SmoothScroll>
       </body>
     </html>

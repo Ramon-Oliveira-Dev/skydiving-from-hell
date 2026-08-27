@@ -1,19 +1,21 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Image from "next/image";
 
 const NAV_LINKS = [
-  { id: "player", label: "Som",      href: "#player" },
-  { id: "bio",    label: "História", href: "#bio" },
-  { id: "lineup", label: "Lineup",   href: "#lineup" },
-  { id: "videos", label: "Vídeos",   href: "#videos" },
-  { id: "tour",   label: "Agenda",   href: "#tour" },
-  { id: "merch",  label: "Merch",    href: "#merch" },
+  { id: "player",  label: "Som",      href: "#player" },
+  { id: "bio",     label: "História", href: "#bio" },
+  { id: "lineup",  label: "Lineup",   href: "#lineup" },
+  { id: "videos",  label: "Vídeos",   href: "#videos" },
+  { id: "tour",    label: "Agenda",   href: "#tour" },
+  { id: "merch",   label: "Merch",    href: "#merch" },
+  { id: "contato", label: "Contato",  href: "#contato" },
 ];
 
 function IconSpotify({ className = "w-4 h-4" }) {
   return (
-    <svg viewBox="0 0 24 24" fill="currentColor" className={className}>
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
       <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.498 17.306c-.218.358-.684.47-1.042.252-2.855-1.745-6.448-2.14-10.68-1.173-.41.094-.817-.164-.911-.574-.094-.41.164-.817.574-.911 4.636-1.06 8.604-.613 11.807 1.346.358.218.47.684.252 1.06zm1.467-3.26c-.274.446-.856.59-1.302.316-3.269-2.008-8.252-2.59-12.12-1.415-.499.151-1.03-.133-1.181-.632-.151-.499.133-1.03.632-1.181 4.417-1.34 9.907-.692 13.655 1.61.446.274.59.856.316 1.302zm.127-3.41c-3.92-2.327-10.38-2.542-14.137-1.402-.6.182-1.236-.16-1.418-.76-.182-.6.16-1.236.76-1.418 4.316-1.31 11.443-1.06 15.957 1.62.538.32.715 1.018.396 1.556-.32.538-1.018.715-1.558.404z" />
     </svg>
   );
@@ -28,7 +30,7 @@ export default function Header() {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
 
-      const sectionIds = ["player", "bio", "lineup", "videos", "tour", "merch"];
+      const sectionIds = ["player", "bio", "lineup", "videos", "tour", "merch", "contato"];
       const scrollPos = window.scrollY + 250;
 
       for (const id of sectionIds) {
@@ -81,12 +83,16 @@ export default function Header() {
         <a
           href="#"
           onClick={closeMenu}
+          aria-label="Página inicial Skydiving From Hell"
           className="flex items-center gap-3 group cursor-pointer relative"
         >
-          <div className="relative h-11 sm:h-13 md:h-14 overflow-hidden rounded-lg transition-transform duration-300 group-hover:scale-105">
-            <img
+          <div className="relative h-11 sm:h-13 md:h-14 w-auto flex items-center overflow-hidden rounded-lg transition-transform duration-300 group-hover:scale-105">
+            <Image
               src="/logo_cabecalho.png"
-              alt="Skydiving From Hell — S.D.F.H."
+              alt="Logotipo oficial Skydiving From Hell (S.D.F.H.)"
+              width={200}
+              height={56}
+              priority
               className="h-full w-auto object-contain filter drop-shadow-[0_0_15px_rgba(239,68,68,0.4)] group-hover:drop-shadow-[0_0_25px_rgba(239,68,68,0.8)] transition-all duration-300"
             />
           </div>
@@ -130,6 +136,8 @@ export default function Header() {
         <button
           onClick={toggleMenu}
           aria-label={isOpen ? "Fechar menu" : "Abrir menu"}
+          aria-expanded={isOpen}
+          aria-controls="mobile-navigation-menu"
           className="md:hidden relative w-11 h-11 rounded-xl bg-white/5 border border-white/10 flex flex-col items-center justify-center gap-1.5 focus:outline-none z-50 text-white hover:bg-white/10 transition-colors shadow-lg active:scale-95"
         >
           <span
@@ -152,6 +160,9 @@ export default function Header() {
 
       {/* OVERLAY DO MENU MOBILE (FULLSCREEN RESPONSIVO) */}
       <div
+        id="mobile-navigation-menu"
+        aria-hidden={!isOpen}
+        {...(!isOpen ? { inert: "" } : {})}
         className={`fixed inset-0 h-screen w-screen bg-black/95 backdrop-blur-2xl md:hidden flex flex-col items-center justify-between p-6 sm:p-10 transition-all duration-500 ease-in-out z-40 overflow-y-auto ${
           isOpen
             ? "opacity-100 pointer-events-auto translate-y-0"
@@ -159,10 +170,13 @@ export default function Header() {
         }`}
       >
         <div className="w-full flex justify-start pt-2">
-          <div className="h-11 sm:h-13 overflow-hidden rounded-lg">
-            <img
+          <div className="h-11 sm:h-13 w-auto flex items-center overflow-hidden rounded-lg">
+            <Image
               src="/logo_cabecalho.png"
-              alt="S.D.F.H."
+              alt="Logotipo oficial Skydiving From Hell"
+              width={180}
+              height={50}
+              loading="lazy"
               className="h-full w-auto object-contain drop-shadow-[0_0_20px_rgba(239,68,68,0.6)]"
             />
           </div>

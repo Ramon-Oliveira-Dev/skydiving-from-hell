@@ -1,110 +1,119 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useRef, useEffect, Children, cloneElement, isValidElement } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 /**
- * ScrollReveal - Componente de Animação Bidirecional Inteligente por Scroll
+ * ScrollReveal — Componente GSAP ScrollTrigger para Reveal Cinematográfico
  *
- * Suporta animação bidirecional (ao rolar para baixo E ao rolar para cima).
+ * Cada elemento filho surge de baixo para cima (ou outra direção)
+ * com desaceleração pesada (power4.out) quando entra no campo de visão.
  *
- * Ao rolar para BAIXO:
- *  - Entra vindo de baixo (translateY: 45px -> 0, opacity: 0 -> 1)
- *  - Sai subindo pelo topo (translateY: 0 -> -45px, opacity: 1 -> 0)
- *
- * Ao rolar para CIMA (Efeito Inverso):
- *  - Entra vindo de cima (translateY: -45px -> 0, opacity: 0 -> 1)
- *  - Sai caindo pelo fundo (translateY: 0 -> 45px, opacity: 1 -> 0)
+ * Props:
+ *   direction  — 'up' | 'down' | 'left' | 'right' | 'zoom' | 'fade'
+ *   delay      — atraso em ms antes de iniciar (converte para segundos internamente)
+ *   duration   — duração da animação em ms (converte para segundos internamente)
+ *   threshold  — posição do trigger (ex: "top 90%" significa quando o topo do elemento
+ *                atinge 90% da viewport)
+ *   stagger    — atraso escalonado entre filhos diretos (em segundos)
+ *   once       — se true, anima apenas uma vez (padrão: true)
+ *   className  — classes CSS passadas ao wrapper
  */
 export default function ScrollReveal({
   children,
   className = "",
-  direction = "up", // 'up' | 'down' | 'left' | 'right' | 'zoom' | 'fade'
-  delay = 0, // em milissegundos
-  duration = 700, // em milissegundos
-  threshold = 0.12,
-  once = false, // Padrão agora é false para permitir animação bidirecional ao rolar para cima
+  direction = "up",
+  delay = 0,
+  duration = 900,
+  threshold = "top 92%",
+  stagger = 0,
+  once = true,
 }) {
-  const [status, setStatus] = useState("hidden-bottom"); // 'hidden-bottom' | 'visible' | 'hidden-top'
-  const ref = useRef(null);
+  const containerRef = useRef(null);
 
   useEffect(() => {
-    const el = ref.current;
+    const el = containerRef.current;
     if (!el) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setStatus("visible");
-          if (once) observer.unobserve(el);
-        } else if (!once) {
-          // Determina se o elemento saiu pelo topo ou pelo fundo da viewport
-          if (entry.boundingClientRect.top < 0) {
-            setStatus("hidden-top");
-          } else {
-            setStatus("hidden-bottom");
-          }
-        }
-      },
-      { threshold }
-    );
+    // Calcula deslocamento — stagger mode usa y:100 para cascata pesada
+    const isStaggerMode = stagger > 0;
+    const fromVars = { opacity: 0 };
 
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [threshold, once]);
-
-  // Retorna a transformação de acordo com a posição (visível, acima da tela ou abaixo da tela)
-  const getTransform = () => {
-    if (status === "visible") {
-      return "translate3d(0, 0, 0) scale(1)";
+    switch (direction) {
+      case "up":
+        fromVars.y = isStaggerMode ? 100 : 50;
+        break;
+      case "down":
+        fromVars.y = isStaggerMode ? -100 : -50;
+        break;
+      case "left":
+        fromVars.x = 60;
+        break;
+      case "right":
+        fromVars.x = -60;
+        break;
+      case "zoom":
+        fromVars.scale = 0.88;
+        break;
+      case "fade":
+      default:
+        break;
     }
 
-    if (status === "hidden-top") {
-      // Elemento está acima da área visível (saiu pelo topo)
-      switch (direction) {
-        case "up":
-          return "translate3d(0, -45px, 0)";
-        case "down":
-          return "translate3d(0, 45px, 0)";
-        case "left":
-          return "translate3d(-45px, 0, 0)";
-        case "right":
-          return "translate3d(45px, 0, 0)";
-        case "zoom":
-          return "scale(0.92)";
-        case "fade":
-        default:
-          return "translate3d(0, 0, 0)";
+    const toVars = {
+      opacity: 1,
+      x: 0,
+      y: 0,
+      scale: 1,
+      duration: duration / 1000,
+      delay: delay / 1000,
+      ease: isStaggerMode ? "power3.out" : "power4.out",
+      stagger: stagger,
+      scrollTrigger: {
+        trigger: el,
+        start: threshold,
+        toggleActions: once
+          ? "play none none none"
+          : "play reverse play reverse",
+      },
+    };
+
+    // Resolução inteligente de alvos para stagger:
+    //   - Sem stagger → anima o container inteiro
+    //   - Com stagger + múltiplos filhos → anima os filhos diretos
+    //   - Com stagger + 1 filho (grid wrapper) → atravessa e anima os netos (cards)
+    let target = el;
+    if (isStaggerMode) {
+      if (el.children.length > 1) {
+        target = el.children;
+      } else if (el.children.length === 1 && el.children[0].children.length > 1) {
+        target = el.children[0].children;
       }
     }
 
-    // status === 'hidden-bottom' (Elemento está abaixo da área visível - entrou/saiu pelo fundo)
-    switch (direction) {
-      case "up":
-        return "translate3d(0, 45px, 0)";
-      case "down":
-        return "translate3d(0, -45px, 0)";
-      case "left":
-        return "translate3d(45px, 0, 0)";
-      case "right":
-        return "translate3d(-45px, 0, 0)";
-      case "zoom":
-        return "scale(0.92)";
-      case "fade":
-      default:
-        return "translate3d(0, 0, 0)";
-    }
-  };
+    // Define o estado inicial
+    gsap.set(target, fromVars);
+
+    // Anima para o estado final com ScrollTrigger
+    const tween = gsap.to(target, toVars);
+
+    return () => {
+      tween.kill();
+      // Limpa o ScrollTrigger associado
+      if (tween.scrollTrigger) {
+        tween.scrollTrigger.kill();
+      }
+    };
+  }, [direction, delay, duration, threshold, stagger, once]);
 
   return (
     <div
-      ref={ref}
+      ref={containerRef}
       className={className}
-      style={{
-        opacity: status === "visible" ? 1 : 0,
-        transform: getTransform(),
-        transition: `opacity ${duration}ms cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms, transform ${duration}ms cubic-bezier(0.16, 1, 0.3, 1) ${delay}ms`,
-        willChange: "opacity, transform",
-      }}
+      style={{ willChange: "opacity, transform" }}
     >
       {children}
     </div>
