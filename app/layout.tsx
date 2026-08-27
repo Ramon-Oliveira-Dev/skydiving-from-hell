@@ -42,6 +42,7 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "black-translucent",
     title: "S.D.F.H.",
+    startupImage: ["/banner_sdfh_dark.png"],
   },
   openGraph: {
     type: "website",
@@ -68,8 +69,13 @@ export const metadata: Metadata = {
     images: ["/opengraph-image"],
   },
   icons: {
-    icon: "/logo_sdfh_square.png",
-    apple: "/logo_sdfh_square.png",
+    icon: [
+      { url: "/logo_sdfh_square.png", sizes: "192x192", type: "image/png" },
+      { url: "/logo_sdfh_square.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/logo_sdfh_square.png", sizes: "180x180", type: "image/png" },
+    ],
   },
 };
 
@@ -142,6 +148,9 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="S.D.F.H." />
+        <link rel="icon" type="image/png" sizes="192x192" href="/logo_sdfh_square.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/logo_sdfh_square.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/logo_sdfh_square.png" />
         <link rel="apple-touch-icon" href="/logo_sdfh_square.png" />
 
         <script
