@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { MapPin, Clock, Gift, Sparkles, Disc, Share2, X, ExternalLink, Ticket } from "lucide-react";
+import ScrollReveal from "./ScrollReveal";
 
 const FEATURED_SHOW = {
   title: "Vila Velha Hardcore",
@@ -87,20 +88,23 @@ export default function BandTour() {
       <div className="relative z-10 w-full">
         
         {/* Header da Seção */}
-        <div className="mb-8 sm:mb-12 md:mb-16 text-center">
-          <span className="font-mono text-xs uppercase tracking-[0.4em] text-red-500/90 font-bold block mb-2 sm:mb-3">
-            // 03. TURNÊ & DATAS OFICIAIS
-          </span>
-          <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-red-500">
-            Agenda de Shows
-          </h2>
-          <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-red-600 to-orange-500 mx-auto mt-3 rounded-full shadow-[0_0_12px_rgba(239,68,68,0.6)]" />
-        </div>
+        <ScrollReveal direction="up" delay={0}>
+          <div className="mb-8 sm:mb-12 md:mb-16 text-center">
+            <span className="font-mono text-xs uppercase tracking-[0.4em] text-red-500/90 font-bold block mb-2 sm:mb-3">
+              // 03. TURNÊ & DATAS OFICIAIS
+            </span>
+            <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-red-500">
+              Agenda de Shows
+            </h2>
+            <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-red-600 to-orange-500 mx-auto mt-3 rounded-full shadow-[0_0_12px_rgba(239,68,68,0.6)]" />
+          </div>
+        </ScrollReveal>
 
         {/* ================================================================
             CARD PRINCIPAL EM 3 COLUNAS FLUIDAS (GRID LG:GRID-COLS-12)
            ================================================================ */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-stretch bg-zinc-950/60 backdrop-blur-xl border border-white/10 rounded-3xl p-5 sm:p-8 lg:p-10 shadow-[0_8px_32px_0_rgba(220,38,38,0.2)] hover:border-red-500/40 transition-all duration-500">
+        <ScrollReveal direction="up" delay={150}>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-stretch bg-zinc-950/60 backdrop-blur-xl border border-white/10 rounded-3xl p-5 sm:p-8 lg:p-10 shadow-[0_8px_32px_0_rgba(220,38,38,0.2)] hover:border-red-500/40 hover:shadow-[0_16px_50px_rgba(220,38,38,0.25)] transition-all duration-500">
           
           {/* ============================================================
               COLUNA 1: CARTAZ OFICIAL IMPONENTE (LG:COL-SPAN-4)
@@ -242,10 +246,9 @@ export default function BandTour() {
                 <span>{copied ? "Link Copiado!" : "Compartilhar Show"}</span>
               </button>
             </div>
-
           </div>
-
         </div>
+      </ScrollReveal>
 
       </div>
 

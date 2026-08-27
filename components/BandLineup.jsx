@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import ScrollReveal from "./ScrollReveal";
+import TiltCard, { TiltLayer } from "./TiltCard";
 import {
   X,
   ExternalLink,
@@ -241,87 +243,87 @@ export default function BandLineup() {
       <div className="relative z-10 w-full">
         
         {/* Header da Seção */}
-        <div className="mb-8 sm:mb-12 md:mb-16 text-center">
-          <span className="font-mono text-xs uppercase tracking-[0.4em] text-red-500/90 font-bold block mb-2 sm:mb-3">
-            // 02. FORMAÇÃO & OPERADORES
-          </span>
-          <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-red-500">
-            Integrantes & Lineup
-          </h2>
-          <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-red-600 to-orange-500 mx-auto mt-3 rounded-full shadow-[0_0_12px_rgba(239,68,68,0.6)]" />
-        </div>
+        <ScrollReveal direction="up" delay={0}>
+          <div className="mb-10 sm:mb-14 text-center">
+            <span className="font-mono text-xs uppercase tracking-[0.4em] text-red-500/90 font-bold block mb-2 sm:mb-3">
+              // 02. INTEGRANTES & DOSSIÊS
+            </span>
+            <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-red-500">
+              Formação Oficial
+            </h2>
+            <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-red-600 to-orange-500 mx-auto mt-3 rounded-full shadow-[0_0_12px_rgba(239,68,68,0.6)]" />
+          </div>
+        </ScrollReveal>
 
         {/* Grid de Cards dos Integrantes */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-8">
-          {MEMBERS.map((member) => (
-            <div
-              key={member.name}
-              onClick={() => openMember(member)}
-              className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-red-500/60 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_12px_35px_rgba(220,38,38,0.3)] cursor-pointer"
-            >
-              <div>
-                
-                {/* Foto / Visual do Integrante */}
-                <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-zinc-900">
-                  {member.images && member.images[0] ? (
-                    <img
-                      src={member.images[0]}
-                      alt={member.name}
-                      className="w-full h-full object-cover object-top group-hover:scale-108 transition-transform duration-700 filter grayscale group-hover:grayscale-0"
-                    />
-                  ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-zinc-900 via-black to-zinc-950 text-zinc-600 group-hover:text-red-500 transition-colors">
-                      <Music className="w-14 h-14 mb-2 opacity-50" />
-                      <span className="font-mono text-xs uppercase tracking-widest text-zinc-500">S.D.F.H. OPERADOR</span>
+          {MEMBERS.map((member, idx) => (
+            <ScrollReveal key={member.name} direction="up" delay={idx * 120}>
+              <TiltCard
+                  onClick={() => openMember(member)}
+                  className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-red-500/60 transition-all duration-500 hover:shadow-[0_16px_40px_rgba(220,38,38,0.3)] cursor-pointer h-full"
+                >
+                  <div>
+                    {/* Foto / Visual do Integrante em 3D (20px Z) */}
+                    <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-zinc-900">
+                      {member.images && member.images[0] ? (
+                        <img
+                          src={member.images[0]}
+                          alt={member.name}
+                          className="w-full h-full object-cover object-top group-hover:scale-108 transition-transform duration-700 filter grayscale group-hover:grayscale-0"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-zinc-900 via-black to-zinc-950 text-zinc-600 group-hover:text-red-500 transition-colors">
+                          <Music className="w-14 h-14 mb-2 opacity-50" />
+                          <span className="font-mono text-xs uppercase tracking-widest text-zinc-500">S.D.F.H. OPERADOR</span>
+                        </div>
+                      )}
+
+                      {/* Gradiente de Fusão na Base da Imagem */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent" />
+
+                      {/* Badge de Função em 3D (25px Z) */}
+                      <TiltLayer depth={25} className="absolute top-3 left-3 pointer-events-none z-10">
+                        <span
+                          className={`inline-block px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider text-white bg-gradient-to-r ${member.tagColor} shadow-md`}
+                        >
+                          {member.role}
+                        </span>
+                      </TiltLayer>
+
+                      {/* Overlay ao Passar o Mouse em 3D (30px Z) */}
+                      <TiltLayer depth={30} className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-3 pointer-events-none z-10">
+                        <span className="px-3.5 py-1.5 rounded-full bg-red-600 text-white font-mono text-[11px] font-black uppercase tracking-widest shadow-xl">
+                          Ver Dossiê ▶
+                        </span>
+                      </TiltLayer>
                     </div>
-                  )}
 
-                  {/* Gradiente de Fusão na Base da Imagem */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent" />
+                    {/* Conteúdo do Card em 3D (15px Z) */}
+                    <TiltLayer depth={15} className="p-5 sm:p-6 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-xl sm:text-2xl font-black uppercase text-white tracking-tight group-hover:text-red-400 transition-colors">
+                          {member.name}
+                        </h3>
+                      </div>
 
-                  {/* Badge de Função */}
-                  <div className="absolute top-3 left-3">
-                    <span
-                      className={`inline-block px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider text-white bg-gradient-to-r ${member.tagColor} shadow-md`}
-                    >
-                      {member.role}
+                      <p className="text-xs text-zinc-400 leading-relaxed font-sans line-clamp-3">
+                        {member.desc}
+                      </p>
+                    </TiltLayer>
+                  </div>
+
+                  {/* Rodapé do Card com Ação em 3D (20px Z) */}
+                  <TiltLayer depth={20} className="px-5 sm:px-6 pb-5 pt-2 border-t border-white/5 flex items-center justify-between">
+                    <span className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
+                      Dossiê Oficial
                     </span>
-                  </div>
-
-                  {/* Overlay ao Passar o Mouse */}
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-3">
-                    <span className="px-3.5 py-1.5 rounded-full bg-red-600 text-white font-mono text-[11px] font-black uppercase tracking-widest shadow-xl">
-                      Ver Dossiê ↗
+                    <span className="text-xs font-mono font-bold text-red-500 group-hover:translate-x-1 transition-transform">
+                      +
                     </span>
-                  </div>
-                </div>
-
-                {/* Conteúdo do Card */}
-                <div className="p-5 sm:p-6 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h3 className="text-xl sm:text-2xl font-black uppercase text-white tracking-tight group-hover:text-red-400 transition-colors">
-                      {member.name}
-                    </h3>
-                  </div>
-
-                  <p className="text-xs text-zinc-400 leading-relaxed font-sans line-clamp-3">
-                    {member.desc}
-                  </p>
-                </div>
-
-              </div>
-
-              {/* Rodapé do Card com Ação */}
-              <div className="px-5 sm:px-6 pb-5 pt-2 border-t border-white/5 flex items-center justify-between">
-                <span className="font-mono text-[10px] text-zinc-500 uppercase tracking-widest">
-                  {member.socials.handle}
-                </span>
-
-                <span className="font-mono text-xs font-bold text-red-400 group-hover:text-white group-hover:translate-x-1 transition-all flex items-center gap-1">
-                  Dossiê <span>→</span>
-                </span>
-              </div>
-            </div>
+                  </TiltLayer>
+                </TiltCard>
+            </ScrollReveal>
           ))}
         </div>
       </div>

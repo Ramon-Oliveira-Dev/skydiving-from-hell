@@ -1,6 +1,8 @@
 "use client";
 
 import React from "react";
+import ScrollReveal from "./ScrollReveal";
+import TiltCard, { TiltLayer } from "./TiltCard";
 
 const PRODUCTS = [
   {
@@ -45,38 +47,44 @@ export default function BandMerch() {
       <div className="relative z-10 w-full">
         
         {/* Header da Seção */}
-        <div className="mb-8 sm:mb-12 md:mb-16 text-center">
-          <span className="font-mono text-xs uppercase tracking-[0.4em] text-red-500/90 font-bold block mb-2 sm:mb-3">
-            // 04. MERCHANDISING & LOJA
-          </span>
-          <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-red-500">
-            Equipamento Oficial
-          </h2>
-          <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-red-600 to-orange-500 mx-auto mt-3 rounded-full shadow-[0_0_12px_rgba(239,68,68,0.6)]" />
-        </div>
+        <ScrollReveal direction="up" delay={0}>
+          <div className="mb-8 sm:mb-12 md:mb-16 text-center">
+            <span className="font-mono text-xs uppercase tracking-[0.4em] text-red-500/90 font-bold block mb-2 sm:mb-3">
+              // 04. MERCHANDISING & LOJA
+            </span>
+            <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-red-500">
+              Equipamento Oficial
+            </h2>
+            <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-red-600 to-orange-500 mx-auto mt-3 rounded-full shadow-[0_0_12px_rgba(239,68,68,0.6)]" />
+          </div>
+        </ScrollReveal>
 
         {/* Grid Adaptativo (Mobile: 1 | Tablet: 2 | Desktop: 3 colunas) */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
-          {PRODUCTS.map((prod) => (
-            <div
-              key={prod.id}
-              className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.6)] hover:-translate-y-2 hover:border-red-500/40 hover:shadow-[0_16px_48px_0_rgba(220,38,38,0.22)] transition-all duration-500 flex flex-col justify-between"
-            >
+          {PRODUCTS.map((prod, idx) => (
+            <ScrollReveal key={prod.id} direction="up" delay={idx * 150}>
+              <TiltCard
+                className="group bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-[0_8px_32px_0_rgba(0,0,0,0.6)] hover:border-red-500/50 hover:shadow-[0_18px_50px_0_rgba(220,38,38,0.25)] transition-all duration-500 flex flex-col justify-between h-full"
+              >
               <div>
-                {/* Imagem do Produto */}
+                {/* Imagem do Produto em 3D (25px Z) */}
                 <div className="relative h-64 sm:h-80 w-full bg-black/40 p-5 sm:p-6 flex items-center justify-center border-b border-white/10 rounded-t-2xl overflow-hidden">
-                  <img
-                    src={prod.image}
-                    alt={prod.title}
-                    className="max-h-full max-w-full object-contain grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
-                  />
-                  <div className="absolute top-3 right-3 px-2.5 sm:px-3 py-1 bg-black/80 backdrop-blur-md border border-white/10 rounded-full font-mono text-[9px] sm:text-[10px] text-red-500/90 font-bold uppercase tracking-wider">
-                    {prod.specs}
-                  </div>
+                  <TiltLayer depth={25} className="w-full h-full flex items-center justify-center pointer-events-none">
+                    <img
+                      src={prod.image}
+                      alt={prod.title}
+                      className="max-h-full max-w-full object-contain grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-500"
+                    />
+                  </TiltLayer>
+                  <TiltLayer depth={30} className="absolute top-3 right-3 pointer-events-none z-10">
+                    <div className="px-2.5 sm:px-3 py-1 bg-black/80 backdrop-blur-md border border-white/10 rounded-full font-mono text-[9px] sm:text-[10px] text-red-500/90 font-bold uppercase tracking-wider">
+                      {prod.specs}
+                    </div>
+                  </TiltLayer>
                 </div>
 
-                {/* Informações do Produto */}
-                <div className="p-5 sm:p-6">
+                {/* Informações do Produto em 3D (15px Z) */}
+                <TiltLayer depth={15} className="p-5 sm:p-6">
                   <div className="flex items-baseline justify-between gap-2 mb-2">
                     <h3 className="text-lg sm:text-xl font-black uppercase tracking-tight text-white group-hover:bg-clip-text group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-white group-hover:via-zinc-200 group-hover:to-red-500 transition-all duration-300">
                       {prod.title}
@@ -89,22 +97,23 @@ export default function BandMerch() {
                   <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed font-sans mt-2">
                     {prod.desc}
                   </p>
-                </div>
+                </TiltLayer>
               </div>
 
-              {/* Botão de Compra */}
-              <div className="p-5 sm:p-6 pt-0">
+              {/* Botão de Compra em 3D (30px Z) */}
+              <TiltLayer depth={30} className="p-5 sm:p-6 pt-0">
                 <a
                   href={`https://wa.me/5527997207037?text=Ol%C3%A1,%20gostaria%20de%20adquirir%20o%20item:%20${encodeURIComponent(prod.title)}%20no%20valor%20de%20${encodeURIComponent(prod.price)}.`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block text-center bg-gradient-to-r from-red-600 via-red-500 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white w-full py-3.5 sm:py-4 rounded-xl uppercase font-bold tracking-widest font-mono text-xs shadow-[0_0_20px_rgba(239,68,68,0.35)] hover:shadow-[0_0_25px_rgba(220,38,38,0.5)] hover:border-red-500 transition-all duration-300 active:scale-95 border border-red-400/30"
                 >
-                  Comprar via WhatsApp ↗
+                  Comprar via WhatsApp ?
                 </a>
-              </div>
-            </div>
-          ))}
+              </TiltLayer>
+            </TiltCard>
+          </ScrollReveal>
+        ))}
         </div>
 
         {/* Rodapé da Loja */}

@@ -104,40 +104,40 @@ export default function HeroScrollytelling() {
 
         // ── SINCRONIA DOS PAINÉIS NARRATIVOS (0.0 até 1.0) ───────────────────
         
-        // PAINEL 1: A Origem (Início da descida: 5% a 28%)
+        // PAINEL 1: A Origem (Início da descida: 5% a 28%) — Ataque pesado power4.out
         tl.fromTo(
           panel1,
-          { opacity: 0, y: 40 },
-          { opacity: 1, y: 0, duration: 1.5, ease: "power2.out", pointerEvents: "auto" },
+          { opacity: 0, y: 60, scale: 0.95 },
+          { opacity: 1, y: 0, scale: 1, duration: 1.5, ease: "power4.out", pointerEvents: "auto" },
           0.5
         ).to(
           panel1,
-          { opacity: 0, y: -30, duration: 1.0, ease: "power2.in", pointerEvents: "none" },
+          { opacity: 0, y: -40, scale: 0.98, duration: 1.0, ease: "power2.in", pointerEvents: "none" },
           2.5
         );
 
         // PAINEL 2: A Máquina Rítmica (Meio do vídeo / caminhada: 38% a 65%)
         tl.fromTo(
           panel2,
-          { opacity: 0, x: -50 },
-          { opacity: 1, x: 0, duration: 1.5, ease: "power2.out", pointerEvents: "auto" },
+          { opacity: 0, x: -60, filter: "blur(4px)" },
+          { opacity: 1, x: 0, filter: "blur(0px)", duration: 1.5, ease: "power4.out", pointerEvents: "auto" },
           4.0
         ).to(
           panel2,
-          { opacity: 0, x: 50, duration: 1.0, ease: "power2.in", pointerEvents: "none" },
+          { opacity: 0, x: 60, filter: "blur(4px)", duration: 1.0, ease: "power2.in", pointerEvents: "none" },
           6.5
         );
 
         // PAINEL 3: CTA & Decolagem (Final / Salto: 75% até 100% - PERMANECE)
         tl.fromTo(
           panel3,
-          { opacity: 0, scale: 0.8, y: 30 },
+          { opacity: 0, scale: 0.85, y: 40 },
           {
             opacity: 1,
             scale: 1,
             y: 0,
             duration: 1.8,
-            ease: "back.out(1.5)",
+            ease: "power4.out",
             pointerEvents: "auto",
           },
           7.6
@@ -172,18 +172,21 @@ export default function HeroScrollytelling() {
           FASE 1 — Hero Inicial (Loop Estático)
           Vídeo com logo em chamas central sem interferência de texto
          ================================================================ */}
-      <section className="relative w-screen h-screen overflow-hidden bg-black select-none">
+      <section className="relative w-full h-[100svh] overflow-hidden overflow-x-hidden bg-black select-none flex items-center justify-center">
 
-        {/* Video em loop — logo em chamas (enquadramento mobile & desktop) */}
+        {/* Video em loop — logo em chamas (Art Direction: vertical no mobile, horizontal no desktop) */}
         <video
-          src="/hero_page.mp4"
           autoPlay
           loop
           muted
           playsInline
-          className="absolute inset-0 w-full h-full object-contain sm:object-cover object-center z-0 pointer-events-none"
+          className="absolute inset-0 w-full h-full object-cover object-center z-0 pointer-events-none"
           style={{ filter: "contrast(1.1) brightness(0.95)" }}
-        />
+        >
+          <source src="/hero1-mobile.mp4" media="(max-width: 767px)" type="video/mp4" />
+          <source src="/hero_page.mp4" media="(min-width: 768px)" type="video/mp4" />
+          <source src="/hero_page.mp4" type="video/mp4" />
+        </video>
 
         {/* UPGRADE VISUAL 1: Vignette / Gradiente Vertical */}
         <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-b from-black/80 via-transparent to-black/90" />
@@ -225,21 +228,27 @@ export default function HeroScrollytelling() {
          ================================================================ */}
       <section
         ref={phase2Ref}
-        className="relative w-screen h-screen overflow-hidden bg-black select-none"
+        className="relative w-full h-[75vh] sm:h-[85vh] md:h-screen overflow-hidden overflow-x-hidden bg-black select-none flex items-center justify-center"
       >
-        {/* Video de scrubbing — esqueleto pulando do aviao (enquadramento mobile & desktop) */}
-        <video
-          ref={video2Ref}
-          src="/hero_page2_scroll.mp4"
-          muted
-          playsInline
-          preload="auto"
-          className="absolute inset-0 w-full h-full object-contain sm:object-cover object-center z-0 pointer-events-none"
-          style={{ filter: "contrast(1.05) brightness(0.92)" }}
-        />
+        <div className="absolute inset-0 w-full h-full overflow-hidden bg-black">
+          <video
+            ref={video2Ref}
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            className="w-full h-full object-cover md:object-cover scale-105 sm:scale-100 transition-transform duration-700 select-none pointer-events-none"
+            style={{ filter: "contrast(1.05) brightness(0.92)" }}
+          >
+            <source src="/hero_page2_scroll.mp4" type="video/mp4" />
+            Seu navegador não suporta vídeos HTML5.
+          </video>
 
-        {/* Overlay atmosferico */}
-        <div className="absolute inset-0 z-10 pointer-events-none bg-black/45" />
+          {/* Gradientes de fusão Dark Cinematic */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black pointer-events-none opacity-90 z-10" />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-black/30 to-black pointer-events-none z-10" />
+        </div>
         <div
           className="absolute inset-0 z-10 pointer-events-none opacity-30"
           style={{
@@ -252,19 +261,19 @@ export default function HeroScrollytelling() {
         {/* ── PAINEL 1: A ORIGEM (GLASSMORPHISM ELEGANTE) ─────────────── */}
         <div
           ref={panel1Ref}
-          className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-6"
+          className="absolute inset-0 z-20 flex flex-col items-center justify-center text-center px-4 sm:px-6"
         >
-          <div className="bg-black/65 backdrop-blur-xl border border-white/10 rounded-2xl p-6 sm:p-10 shadow-[0_8px_32px_0_rgba(0,0,0,0.8)] max-w-xl flex flex-col items-center">
-            <span className="inline-block px-3.5 py-1 rounded-full bg-red-600/20 border border-red-500/30 font-mono text-[10px] font-bold tracking-[0.3em] uppercase text-red-400 mb-4">
+          <div className="bg-black/65 backdrop-blur-xl border border-white/10 rounded-2xl p-5 sm:p-10 shadow-[0_8px_32px_0_rgba(0,0,0,0.8)] w-full max-w-xl flex flex-col items-center">
+            <span className="inline-block px-3 py-1 rounded-full bg-red-600/20 border border-red-500/30 font-mono text-[10px] font-bold tracking-[0.3em] uppercase text-red-400 mb-3 sm:mb-4">
               // A ORIGEM
             </span>
-            <h2 className="text-3xl sm:text-5xl font-black uppercase text-white tracking-tight leading-tight mb-4">
+            <h2 className="text-2xl sm:text-5xl font-black uppercase text-white tracking-tight leading-tight mb-3 sm:mb-4">
               O Peso Brutal do{" "}
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-orange-400">
                 Metal Moderno
               </span>
             </h2>
-            <p className="text-zinc-300 text-sm sm:text-base leading-relaxed font-sans">
+            <p className="text-zinc-300 text-xs sm:text-base leading-relaxed font-sans">
               Forjado nas ruas de{" "}
               <strong className="text-white">Vila Velha / ES</strong>, o S.D.F.H.
               nasceu da colisão entre guitarras de 8 cordas afinadas no abismo e uma
@@ -276,20 +285,20 @@ export default function HeroScrollytelling() {
         {/* ── PAINEL 2: A MÁQUINA RÍTMICA (GLASSMORPHISM COMPACTO LATERAL) ── */}
         <div
           ref={panel2Ref}
-          className="absolute inset-0 z-20 flex flex-col justify-center items-start text-left px-6 sm:px-12 md:px-20 pointer-events-none"
+          className="absolute inset-0 z-20 flex flex-col justify-center items-start text-left px-4 sm:px-12 md:px-20 pointer-events-none"
         >
-          <div className="bg-black/70 backdrop-blur-xl border border-white/10 border-l-4 border-l-red-600 rounded-2xl p-6 sm:p-8 shadow-[0_12px_40px_0_rgba(0,0,0,0.85)] max-w-md lg:max-w-lg pointer-events-auto">
+          <div className="bg-black/70 backdrop-blur-xl border border-white/10 border-l-4 border-l-red-600 rounded-2xl p-5 sm:p-8 shadow-[0_12px_40px_0_rgba(0,0,0,0.85)] w-full max-w-sm sm:max-w-md lg:max-w-lg pointer-events-auto">
             <span className="inline-block px-3 py-1 rounded-full bg-red-600/20 border border-red-500/30 font-mono text-[10px] font-bold tracking-[0.3em] uppercase text-red-400 mb-3">
               // A MÁQUINA RÍTMICA
             </span>
-            <h2 className="text-2xl sm:text-4xl font-black uppercase text-white tracking-tight leading-tight mb-3">
+            <h2 className="text-xl sm:text-4xl font-black uppercase text-white tracking-tight leading-tight mb-3">
               Bumbos Duplos.
               <br />
               <span className="bg-clip-text text-transparent bg-gradient-to-r from-red-500 to-orange-400">
                 Groove Distorcido.
               </span>
             </h2>
-            <p className="text-zinc-300 text-sm sm:text-base leading-relaxed font-sans">
+            <p className="text-zinc-300 text-xs sm:text-base leading-relaxed font-sans">
               O coração da banda bate em{" "}
               <strong className="text-white">blast beats avassaladores</strong> e
               síncopas que transformam cada breakdown em um colapso sonoro
