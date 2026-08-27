@@ -70,11 +70,11 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/logo_sdfh_square.png", sizes: "192x192", type: "image/png" },
-      { url: "/logo_sdfh_square.png", sizes: "512x512", type: "image/png" },
+      { url: "/icon-192x192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512x512.png", sizes: "512x512", type: "image/png" },
     ],
     apple: [
-      { url: "/logo_sdfh_square.png", sizes: "180x180", type: "image/png" },
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
     ],
   },
 };
@@ -148,10 +148,10 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="S.D.F.H." />
-        <link rel="icon" type="image/png" sizes="192x192" href="/logo_sdfh_square.png" />
-        <link rel="icon" type="image/png" sizes="512x512" href="/logo_sdfh_square.png" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/logo_sdfh_square.png" />
-        <link rel="apple-touch-icon" href="/logo_sdfh_square.png" />
+        <link rel="icon" type="image/png" sizes="192x192" href="/icon-192x192.png" />
+        <link rel="icon" type="image/png" sizes="512x512" href="/icon-512x512.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 
         <script
           type="application/ld+json"
