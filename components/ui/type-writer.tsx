@@ -1,13 +1,7 @@
 "use client";
 
-/**
- * @author: @dorianbaffier (Kokonut UI) & Adapted for S.D.F.H.
- * @description: Typewriter text animation with customizable blinking cursor and auto loop
- * @website: https://kokonutui.com
- */
-
 import { motion } from "motion/react";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 
 export type TypewriterSequence = {
   text: string;
@@ -34,19 +28,19 @@ export type TypewriterTitleProps = {
 };
 
 const DEFAULT_SEQUENCES: TypewriterSequence[] = [
-  { text: "Typewriter", deleteAfter: true },
-  { text: "Multiple Words", deleteAfter: true },
-  { text: "Auto Loop", deleteAfter: false },
+  { text: "Skydiving From Hell", deleteAfter: true },
+  { text: "Metal Moderno & 8 Cordas", deleteAfter: true },
+  { text: "Vila Velha / ES", deleteAfter: true },
 ];
 
 export default function TypewriterTitle({
   sequences = DEFAULT_SEQUENCES,
-  typingSpeed = 50,
-  startDelay = 200,
+  typingSpeed = 40,
+  startDelay = 150,
   autoLoop = true,
   loopDelay = 1000,
-  deleteSpeed = 30,
-  pauseBeforeDelete = 1000,
+  deleteSpeed = 20,
+  pauseBeforeDelete = 1500,
   naturalVariance = true,
   className = "",
   textClassName = "",
@@ -62,56 +56,48 @@ export default function TypewriterTitle({
   const isDeletingRef = useRef(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Initialize with the sequences provided
-  const sequencesRef = useRef(sequences);
+  // Serializa as sequências para que re-renderizações da página (ex: áudio tocando) não reiniciem ou travem o efeito
+  const sequencesKey = useMemo(() => JSON.stringify(sequences), [sequences]);
+  const parsedSequences = useMemo<TypewriterSequence[]>(() => {
+    try {
+      return JSON.parse(sequencesKey);
+    } catch {
+      return DEFAULT_SEQUENCES;
+    }
+  }, [sequencesKey]);
+
   useEffect(() => {
-    sequencesRef.current = sequences;
     sequenceIndexRef.current = 0;
     charIndexRef.current = 0;
     isDeletingRef.current = false;
-  }, [sequences]);
+    setDisplayText("");
 
-  useEffect(() => {
     const getTypingDelay = () => {
-      if (!naturalVariance) {
-        return typingSpeed;
-      }
-
-      // More natural human typing pattern
+      if (!naturalVariance) return typingSpeed;
       const random = Math.random();
-
-      // 10% chance of a longer pause (thinking/hesitation)
-      if (random < 0.1) {
-        return typingSpeed * 2;
-      }
-
-      // 10% chance of a burst (fast typing)
-      if (random > 0.9) {
-        return typingSpeed * 0.5;
-      }
-
-      // Standard variance (+/- 40%)
-      const variance = 0.4;
-      const min = typingSpeed * (1 - variance);
-      const max = typingSpeed * (1 + variance);
-      return Math.random() * (max - min) + min;
+      if (random < 0.08) return typingSpeed * 1.8;
+      if (random > 0.92) return typingSpeed * 0.6;
+      return typingSpeed + (Math.random() * 8 - 4);
     };
 
     const runTypewriter = () => {
-      const currentSequence = sequencesRef.current[sequenceIndexRef.current];
-      if (!currentSequence) {
-        return;
-      }
+      const currentList = parsedSequences;
+      if (!currentList || currentList.length === 0) return;
+
+      const currentSeq = currentList[sequenceIndexRef.current % currentList.length];
+      if (!currentSeq) return;
+
+      const targetText = currentSeq.text || "";
 
       if (isDeletingRef.current) {
         if (charIndexRef.current > 0) {
           charIndexRef.current -= 1;
-          setDisplayText(currentSequence.text.slice(0, charIndexRef.current));
+          setDisplayText(targetText.slice(0, charIndexRef.current));
           timeoutRef.current = setTimeout(runTypewriter, deleteSpeed);
         } else {
           isDeletingRef.current = false;
           const isLastSequence =
-            sequenceIndexRef.current === sequencesRef.current.length - 1;
+            sequenceIndexRef.current === currentList.length - 1;
 
           if (isLastSequence && autoLoop) {
             timeoutRef.current = setTimeout(() => {
@@ -119,48 +105,48 @@ export default function TypewriterTitle({
               runTypewriter();
             }, loopDelay);
           } else if (!isLastSequence) {
-            timeoutRef.current = setTimeout(() => {
-              sequenceIndexRef.current += 1;
-              runTypewriter();
-            }, 100); // Quick transition to next word
+            sequenceIndexRef.current += 1;
+            timeoutRef.current = setTimeout(runTypewriter, 100);
           }
         }
-      } else if (charIndexRef.current < currentSequence.text.length) {
-        charIndexRef.current += 1;
-        setDisplayText(currentSequence.text.slice(0, charIndexRef.current));
-        timeoutRef.current = setTimeout(runTypewriter, getTypingDelay());
       } else {
-        const pauseDuration = currentSequence.pauseAfter ?? pauseBeforeDelete;
-
-        if (currentSequence.deleteAfter) {
-          timeoutRef.current = setTimeout(() => {
-            isDeletingRef.current = true;
-            runTypewriter();
-          }, pauseDuration);
+        if (charIndexRef.current < targetText.length) {
+          charIndexRef.current += 1;
+          setDisplayText(targetText.slice(0, charIndexRef.current));
+          timeoutRef.current = setTimeout(runTypewriter, getTypingDelay());
         } else {
-          const isLastSequence =
-            sequenceIndexRef.current === sequencesRef.current.length - 1;
+          const pauseDuration =
+            currentSeq.pauseAfter ?? pauseBeforeDelete;
 
-          if (isLastSequence && autoLoop) {
+          if (currentSeq.deleteAfter) {
             timeoutRef.current = setTimeout(() => {
-              sequenceIndexRef.current = 0;
-              charIndexRef.current = 0;
-              setDisplayText("");
-              runTypewriter();
-            }, loopDelay);
-          } else if (!isLastSequence) {
-            timeoutRef.current = setTimeout(() => {
-              sequenceIndexRef.current += 1;
-              charIndexRef.current = 0;
-              setDisplayText("");
+              isDeletingRef.current = true;
               runTypewriter();
             }, pauseDuration);
+          } else {
+            const isLastSequence =
+              sequenceIndexRef.current === currentList.length - 1;
+
+            if (isLastSequence && autoLoop) {
+              timeoutRef.current = setTimeout(() => {
+                sequenceIndexRef.current = 0;
+                charIndexRef.current = 0;
+                setDisplayText("");
+                runTypewriter();
+              }, loopDelay);
+            } else if (!isLastSequence) {
+              timeoutRef.current = setTimeout(() => {
+                sequenceIndexRef.current += 1;
+                charIndexRef.current = 0;
+                setDisplayText("");
+                runTypewriter();
+              }, pauseDuration);
+            }
           }
         }
       }
     };
 
-    // Start the loop
     timeoutRef.current = setTimeout(runTypewriter, startDelay);
 
     return () => {
@@ -169,6 +155,7 @@ export default function TypewriterTitle({
       }
     };
   }, [
+    sequencesKey,
     typingSpeed,
     deleteSpeed,
     pauseBeforeDelete,

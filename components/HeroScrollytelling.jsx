@@ -80,13 +80,26 @@ export default function HeroScrollytelling() {
         tl.to(indicator, { opacity: 0, y: -15, duration: 0.2, ease: "power2.in" }, 0);
       }
 
-      // Painel 1 (A Origem) — Diminui sutilmente a logo para evitar qualquer sobreposição
+      // ── LOGO OFICIAL CENTRAL: Mantém-se fixa e visível durante todos os cards no mobile ─
+      // Só faz fade out na transição final para o Manifesto
       if (logo) {
-        tl.to(logo, { opacity: 0.15, scale: 0.85, duration: 0.3 }, 0.15);
+        tl.to(
+          logo,
+          {
+            opacity: 0,
+            scale: 0.88,
+            y: -20,
+            duration: 0.45,
+            ease: "power2.inOut",
+          },
+          2.4
+        );
       }
+
+      // Painel 1 (A Origem) — Card entra no topo sem ocultar a logo central
       tl.fromTo(
         panel1,
-        { opacity: 0, scale: 0.92, y: 15 },
+        { opacity: 0, scale: 0.92, y: -15 },
         { opacity: 1, scale: 1, y: 0, duration: 0.5, ease: "power2.out", pointerEvents: "auto" },
         0.15
       );
@@ -97,7 +110,7 @@ export default function HeroScrollytelling() {
         1.1
       );
 
-      // Painel 2 (A Máquina Rítmica)
+      // Painel 2 (A Máquina Rítmica) — Card entra na parte inferior sem ocultar a logo central
       tl.fromTo(
         panel2,
         { opacity: 0, scale: 0.92, y: 15 },
@@ -107,14 +120,11 @@ export default function HeroScrollytelling() {
       tl.to(accent2, { scaleX: 1, duration: 0.35 }, 1.5);
       tl.to(
         panel2,
-        { opacity: 0, scale: 0.92, y: -10, duration: 0.35, ease: "power2.in", pointerEvents: "none" },
+        { opacity: 0, scale: 0.92, y: 10, duration: 0.35, ease: "power2.in", pointerEvents: "none" },
         2.3
       );
 
       // Transição final suave para o manifesto
-      if (logo) {
-        tl.to(logo, { opacity: 0, scale: 0.8, y: -20, duration: 0.4 }, 2.4);
-      }
       tl.to([smokeOverlay, darkFade], { opacity: 1, duration: 0.5 }, 2.5);
     });
 
