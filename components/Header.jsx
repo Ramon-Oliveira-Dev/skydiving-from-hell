@@ -86,15 +86,15 @@ export default function Header() {
           aria-label="Página inicial Skydiving From Hell"
           className="flex items-center gap-3 group cursor-pointer relative"
         >
-          <div className="relative h-11 sm:h-13 md:h-14 w-auto flex items-center overflow-hidden rounded-lg transition-transform duration-300 group-hover:scale-105">
+          <div className="relative flex items-center transition-transform duration-300 group-hover:scale-105">
             <Image
               src="/logo_cabecalho.png"
               alt="Logotipo oficial Skydiving From Hell (S.D.F.H.)"
               width={200}
               height={56}
               priority
-              style={{ width: "auto", height: "auto" }}
-              className="h-full w-auto object-contain filter drop-shadow-[0_0_15px_rgba(239,68,68,0.4)] group-hover:drop-shadow-[0_0_25px_rgba(239,68,68,0.8)] transition-all duration-300"
+              style={{ width: "auto" }}
+              className="h-10 sm:h-12 md:h-14 object-contain filter drop-shadow-[0_0_15px_rgba(239,68,68,0.4)] group-hover:drop-shadow-[0_0_25px_rgba(239,68,68,0.8)] transition-all duration-300"
             />
           </div>
         </a>
@@ -171,15 +171,15 @@ export default function Header() {
         }`}
       >
         <div className="w-full flex justify-start pt-2">
-          <div className="h-11 sm:h-13 w-auto flex items-center overflow-hidden rounded-lg">
+          <div className="flex items-center">
             <Image
               src="/logo_cabecalho.png"
               alt="Logotipo oficial Skydiving From Hell"
               width={180}
               height={50}
               loading="lazy"
-              style={{ width: "auto", height: "auto" }}
-              className="h-full w-auto object-contain drop-shadow-[0_0_20px_rgba(239,68,68,0.6)]"
+              style={{ width: "auto" }}
+              className="h-10 sm:h-12 object-contain drop-shadow-[0_0_20px_rgba(239,68,68,0.6)]"
             />
           </div>
         </div>
