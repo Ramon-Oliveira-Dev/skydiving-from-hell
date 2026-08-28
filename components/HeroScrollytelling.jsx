@@ -337,14 +337,14 @@ export default function HeroScrollytelling() {
         ref={logoRef}
         className="hero__logo absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center justify-center pointer-events-none px-3 sm:px-4 w-full max-w-5xl"
       >
-        <div className="relative w-full max-w-[220px] xs:max-w-[280px] sm:max-w-[500px] md:max-w-[700px] lg:max-w-[840px] flex items-center justify-center filter drop-shadow-[0_0_35px_rgba(239,68,68,0.45)] hover:drop-shadow-[0_0_55px_rgba(239,68,68,0.8)] transition-all duration-500">
+        <div className="relative w-full max-w-[190px] xs:max-w-[230px] sm:max-w-[380px] md:max-w-[520px] lg:max-w-[840px] flex items-center justify-center filter drop-shadow-[0_0_35px_rgba(239,68,68,0.45)] hover:drop-shadow-[0_0_55px_rgba(239,68,68,0.8)] transition-all duration-500">
           <Image
             src="/logo branca Skydiving From Hell.png"
             alt="Skydiving From Hell — Logotipo Oficial"
             width={960}
             height={320}
             priority
-            className="w-full h-auto object-contain max-h-[26vh] sm:max-h-[38vh] select-none"
+            className="w-full h-auto object-contain max-h-[16vh] xs:max-h-[20vh] sm:max-h-[28vh] lg:max-h-[42vh] select-none"
           />
         </div>
       </div>
@@ -388,14 +388,14 @@ export default function HeroScrollytelling() {
         </div>
       </div>
 
-      {/* ── PAINEL 1: A ORIGEM (Otimizado sem corte ou sobreposição) ──── */}
+      {/* ── PAINEL 1: A ORIGEM (NO TOPO, ACIMA DA LOGO NO MOBILE/TABLET) ──── */}
       <div
         ref={panel1Ref}
-        className="absolute inset-0 z-20 flex flex-col justify-center items-center md:justify-start md:items-end text-center md:text-right p-4 sm:p-8 md:p-12 pt-16 sm:pt-20 md:pt-24 pointer-events-none"
+        className="absolute inset-0 z-20 flex flex-col justify-start items-center lg:justify-start lg:items-end text-center lg:text-right p-3 xs:p-4 sm:p-6 lg:p-12 pt-14 xs:pt-16 sm:pt-20 lg:pt-24 pointer-events-none"
       >
-        <div className="w-full max-w-[92vw] xs:max-w-[340px] sm:max-w-md md:max-w-lg flex flex-col items-center md:items-end text-center md:text-right bg-zinc-950/92 border border-white/10 hover:border-red-500/30 p-3.5 xs:p-4.5 sm:p-6 md:p-7 rounded-2xl backdrop-blur-2xl shadow-[0_15px_40px_rgba(0,0,0,0.85)] transition-all">
+        <div className="w-full max-w-[92vw] xs:max-w-[340px] sm:max-w-md lg:max-w-lg flex flex-col items-center lg:items-end text-center lg:text-right bg-zinc-950/92 border border-white/10 hover:border-red-500/30 p-3.5 xs:p-4.5 sm:p-6 lg:p-7 rounded-2xl backdrop-blur-2xl shadow-[0_15px_40px_rgba(0,0,0,0.85)] transition-all">
           {/* Tag de contexto */}
-          <div className="mb-1.5 sm:mb-2.5 flex justify-center md:justify-end">
+          <div className="mb-1.5 sm:mb-2.5 flex justify-center lg:justify-end">
             <TypewriterTitle
               prefix="//"
               prefixClassName="text-red-500 font-mono font-medium text-[10px] sm:text-[11px]"
@@ -435,11 +435,11 @@ export default function HeroScrollytelling() {
           {/* Linha de acento */}
           <div
             ref={accent1Ref}
-            className="w-10 sm:w-20 h-0.5 bg-gradient-to-r from-orange-500 to-red-600 rounded-full mb-2 sm:mb-3 mx-auto md:ml-auto md:mr-0 opacity-80"
+            className="w-10 sm:w-20 h-0.5 bg-gradient-to-r from-orange-500 to-red-600 rounded-full mb-2 sm:mb-3 mx-auto lg:ml-auto lg:mr-0 opacity-80"
           />
 
           {/* Parágrafo com leitura natural */}
-          <div className="text-[11px] xs:text-xs sm:text-sm text-zinc-300 font-normal leading-relaxed text-center md:text-right max-w-md font-sans">
+          <div className="text-[11px] xs:text-xs sm:text-sm text-zinc-300 font-normal leading-relaxed text-center lg:text-right max-w-md font-sans">
             <TypewriterTitle
               sequences={[
                 { text: "Riffs cortantes, afinações pesadas e a energia crua do underground capixaba.", deleteAfter: true, pauseAfter: 4000 },
@@ -450,19 +450,19 @@ export default function HeroScrollytelling() {
               deleteSpeed={12}
               autoLoop={true}
               loopDelay={1000}
-              textClassName="text-zinc-300 text-center md:text-right"
+              textClassName="text-zinc-300 text-center lg:text-right"
               cursorClassName="bg-red-500 h-[1em] w-[1.5px]"
             />
           </div>
         </div>
       </div>
 
-      {/* ── PAINEL 2: A MÁQUINA RÍTMICA (Otimizado sem corte ou sobreposição) ── */}
+      {/* ── PAINEL 2: A MÁQUINA RÍTMICA (NA BASE, ABAIXO DA LOGO NO MOBILE/TABLET) ── */}
       <div
         ref={panel2Ref}
-        className="absolute inset-0 z-20 flex flex-col justify-center items-center md:justify-end md:items-start text-center md:text-left p-4 sm:p-8 md:p-12 pb-16 sm:pb-24 md:pb-36 pointer-events-none"
+        className="absolute inset-0 z-20 flex flex-col justify-end items-center lg:justify-end lg:items-start text-center lg:text-left p-3 xs:p-4 sm:p-6 lg:p-12 pb-14 xs:pb-16 sm:pb-20 lg:pb-36 pointer-events-none"
       >
-        <div className="w-full max-w-[92vw] xs:max-w-[340px] sm:max-w-md md:max-w-xl flex flex-col items-center md:items-start text-center md:text-left bg-zinc-950/92 border border-white/10 hover:border-red-500/30 p-3.5 xs:p-4.5 sm:p-6 md:p-7 rounded-2xl backdrop-blur-2xl shadow-[0_15px_40px_rgba(0,0,0,0.85)] transition-all">
+        <div className="w-full max-w-[92vw] xs:max-w-[340px] sm:max-w-md lg:max-w-xl flex flex-col items-center lg:items-start text-center lg:text-left bg-zinc-950/92 border border-white/10 hover:border-red-500/30 p-3.5 xs:p-4.5 sm:p-6 lg:p-7 rounded-2xl backdrop-blur-2xl shadow-[0_15px_40px_rgba(0,0,0,0.85)] transition-all">
           {/* Tag de contexto */}
           <div className="mb-1.5 sm:mb-2.5">
             <TypewriterTitle
