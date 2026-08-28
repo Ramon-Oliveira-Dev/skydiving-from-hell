@@ -3,6 +3,8 @@
 import ScrollReveal from "./ScrollReveal";
 import ParallaxLayer from "./ParallaxLayer";
 import ParallaxWatermark from "./ParallaxWatermark";
+import TypewriterTitle from "./ui/type-writer";
+import { BorderBeam } from "./ui/border-beam";
 import Image from "next/image";
 
 import React, { useRef, useCallback } from "react";
@@ -87,14 +89,43 @@ export default function BandPlayer() {
 
       <div className="relative z-10 w-full">
 
-        {/* Header da Seção com Texto em Gradiente */}
+        {/* Header da Seção com Efeito Dinâmico Typewriter */}
         <ScrollReveal direction="up" delay={0}>
-          <div className="mb-12 sm:mb-16 md:mb-24 text-center">
-            <span className="font-mono text-xs uppercase tracking-[0.4em] text-zinc-400 font-bold block mb-2 sm:mb-3">
-              DISCOGRAFIA & PLAYER
-            </span>
-            <h2 className="linha-mask text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-red-500 pb-2 leading-tight overflow-visible">
-              <span className="inline-block pb-1">Discografia & Player</span>
+          <div className="mb-12 sm:mb-16 md:mb-24 text-center flex flex-col items-center justify-center">
+            <div className="mb-2 sm:mb-3">
+              <TypewriterTitle
+                prefix="//"
+                prefixClassName="text-red-500 font-mono font-medium text-[11px]"
+                sequences={[
+                  { text: "DISCOGRAFIA & PLAYER", deleteAfter: true, pauseAfter: 3500 },
+                  { text: "STREAMING & SINGLES", deleteAfter: true, pauseAfter: 2500 },
+                  { text: "ÁUDIO EM ALTA DEFINIÇÃO", deleteAfter: true, pauseAfter: 2500 },
+                  { text: "S.D.F.H. OFFICIAL TRACKS", deleteAfter: true, pauseAfter: 2500 },
+                ]}
+                typingSpeed={38}
+                deleteSpeed={18}
+                autoLoop={true}
+                loopDelay={1000}
+                textClassName="font-mono text-xs uppercase tracking-[0.4em] text-zinc-400 font-bold"
+                cursorClassName="bg-red-500 h-[1em] w-[2px] shadow-[0_0_8px_rgba(239,68,68,0.8)]"
+              />
+            </div>
+            <h2 className="linha-mask text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight pb-2 leading-tight overflow-visible flex items-center justify-center">
+              <TypewriterTitle
+                sequences={[
+                  { text: "Discografia & Player", deleteAfter: true, pauseAfter: 4000 },
+                  { text: "Ouvir Black Flag", deleteAfter: true, pauseAfter: 2800 },
+                  { text: "Ouvir Amethyst", deleteAfter: true, pauseAfter: 2800 },
+                  { text: "Ouvir Unpatriot", deleteAfter: true, pauseAfter: 2800 },
+                  { text: "Ouvir Indigente", deleteAfter: true, pauseAfter: 2800 },
+                ]}
+                typingSpeed={42}
+                deleteSpeed={20}
+                autoLoop={true}
+                loopDelay={1200}
+                textClassName="bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-red-500 font-black tracking-tight"
+                cursorClassName="bg-red-500 h-[1em] w-[3px] shadow-[0_0_12px_rgba(239,68,68,0.9)] ml-1"
+              />
             </h2>
             <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-red-600 to-orange-500 mx-auto mt-3 rounded-full shadow-[0_0_12px_rgba(239,68,68,0.6)]" />
           </div>
@@ -104,16 +135,16 @@ export default function BandPlayer() {
         <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 items-stretch">
 
           {/* ================================================================
-              PLAYER PRINCIPAL (MODERN GLASSMORPHISM)
+              PLAYER PRINCIPAL (MODERN GLASSMORPHISM + BORDER BEAM)
              ================================================================ */}
-          <div className="flex-1 bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_0_rgba(255,0,0,0.15)] rounded-2xl p-5 sm:p-8 lg:p-10 flex flex-col justify-between gap-6 sm:gap-8 hover:border-red-500/30 transition-all duration-500">
+          <div className="relative overflow-hidden flex-1 bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_0_rgba(255,0,0,0.15)] rounded-2xl p-4 xs:p-6 sm:p-8 lg:p-10 flex flex-col justify-between gap-5 sm:gap-8 hover:border-red-500/30 transition-all duration-500">
 
-            <div className="flex flex-col sm:flex-row items-center gap-8">
+            <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
               
               {/* Capa do Single com Glow e Animação ao Tocar */}
               <div className="relative flex-shrink-0 group">
                 <div
-                  className={`relative w-48 h-48 sm:w-56 sm:h-56 rounded-xl overflow-hidden shadow-2xl transition-all duration-500 ${
+                  className={`relative w-40 h-40 xs:w-48 xs:h-48 sm:w-56 sm:h-56 rounded-xl overflow-hidden shadow-2xl transition-all duration-500 ${
                     isPlaying
                       ? "ring-4 ring-red-500/60 shadow-[0_0_40px_rgba(239,68,68,0.5)] scale-102"
                       : "ring-1 ring-white/10"
@@ -152,31 +183,31 @@ export default function BandPlayer() {
 
               {/* Informações da Faixa Atual */}
               <div className={`flex-1 text-center sm:text-left flex flex-col justify-center ${isPlaying ? "faixa-tocando" : ""}`}>
-                <span className="font-mono text-xs uppercase tracking-widest text-red-400 font-bold mb-1">
+                <span className="font-mono text-[10px] xs:text-xs uppercase tracking-widest text-red-400 font-bold mb-1">
                   {track.tag}
                 </span>
-                <h3 className="titulo text-3xl sm:text-4xl font-black uppercase tracking-tight text-white drop-shadow-md transition-colors duration-300">
+                <h3 className="titulo text-2xl xs:text-3xl sm:text-4xl font-black uppercase tracking-tight text-white drop-shadow-md transition-colors duration-300">
                   {track.title}
                 </h3>
-                <p className="text-sm text-zinc-400 font-mono tracking-wider mt-1">
+                <p className="text-xs xs:text-sm text-zinc-400 font-mono tracking-wider mt-1">
                   SKYDIVING FROM HELL
                 </p>
 
                 {/* Badges de Faixa e Modo de Reprodução com Hierarquia e Espaçamento Claros */}
-                <div className="mt-5 flex flex-wrap gap-2.5 justify-center sm:justify-start items-center">
-                  <span className="px-3.5 py-1 bg-white/5 border border-white/10 rounded-full text-[10px] font-mono uppercase tracking-widest text-zinc-300 shadow-sm">
+                <div className="mt-3.5 sm:mt-5 flex flex-wrap gap-2 sm:gap-2.5 justify-center sm:justify-start items-center">
+                  <span className="px-3 py-0.5 sm:px-3.5 sm:py-1 bg-white/5 border border-white/10 rounded-full text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-zinc-300 shadow-sm">
                     Faixa {track.number} de 0{TRACKS.length}
                   </span>
-                  <span className="px-3.5 py-1 bg-red-950/60 border border-red-800/60 rounded-full text-[10px] font-mono uppercase tracking-widest text-red-400 font-bold shadow-sm">
+                  <span className="px-3 py-0.5 sm:px-3.5 sm:py-1 bg-red-950/60 border border-red-800/60 rounded-full text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-red-400 font-bold shadow-sm">
                     FLAC / HD
                   </span>
                   {isShuffle && (
-                    <span className="px-3 py-1 bg-red-600/20 border border-red-500/40 rounded-full text-[10px] font-mono uppercase tracking-widest text-red-400 font-bold shadow-sm">
+                    <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 bg-red-600/20 border border-red-500/40 rounded-full text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-red-400 font-bold shadow-sm">
                       Shuffle Ativo
                     </span>
                   )}
                   {repeatMode !== "off" && (
-                    <span className="px-3 py-1 bg-orange-600/20 border border-orange-500/40 rounded-full text-[10px] font-mono uppercase tracking-widest text-orange-400 font-bold shadow-sm">
+                    <span className="px-2.5 py-0.5 sm:px-3 sm:py-1 bg-orange-600/20 border border-orange-500/40 rounded-full text-[9px] sm:text-[10px] font-mono uppercase tracking-widest text-orange-400 font-bold shadow-sm">
                       {repeatMode === "one" ? "Repetir Faixa" : "Repetir Tudo"}
                     </span>
                   )}
@@ -205,44 +236,44 @@ export default function BandPlayer() {
             {/* ================================================================
                 PAINEL INFERIOR: CONTROLES DE PLAYBACK & VOLUME
                ================================================================ */}
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-2">
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 pt-2">
               
               {/* Controles de Playback (Shuffle, Prev, Play/Pause, Next, Repeat) */}
-              <div className="flex items-center justify-center gap-3 sm:gap-4 md:gap-5 w-full sm:w-auto">
+              <div className="flex items-center justify-center gap-2.5 xs:gap-3 sm:gap-4 md:gap-5 w-full sm:w-auto">
                 
                 {/* Botão Shuffle (Aleatório) */}
                 <button
                   onClick={toggleShuffle}
                   aria-label={isShuffle ? "Desativar Aleatório" : "Ativar Aleatório"}
                   title={isShuffle ? "Aleatório: Ligado" : "Aleatório: Desligado"}
-                  className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all duration-300 active:scale-95 hover:scale-105 ${
+                  className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full border flex items-center justify-center transition-all duration-300 active:scale-95 hover:scale-105 ${
                     isShuffle
                       ? "bg-red-600/20 border-red-500 text-red-400 shadow-[0_0_15px_rgba(220,38,38,0.5)]"
                       : "bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10"
                   }`}
                 >
-                  <Shuffle className="w-4 h-4" />
+                  <Shuffle className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </button>
 
                 {/* Botão Faixa Anterior */}
                 <button
                   onClick={handlePrev}
                   aria-label="Faixa Anterior"
-                  className="w-11 h-11 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 text-zinc-300 hover:text-white flex items-center justify-center transition-all duration-300 active:scale-95 hover:scale-105 shadow-md"
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 text-zinc-300 hover:text-white flex items-center justify-center transition-all duration-300 active:scale-95 hover:scale-105 shadow-md"
                 >
-                  <SkipBack className="w-5 h-5" />
+                  <SkipBack className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
 
                 {/* Botão Play / Pause Principal */}
                 <button
                   onClick={togglePlay}
                   aria-label={isPlaying ? "Pausar" : "Reproduzir"}
-                  className="w-14 sm:w-16 h-14 sm:h-16 rounded-full bg-gradient-to-r from-red-700 via-red-600 to-orange-600 text-white flex items-center justify-center shadow-[0_0_30px_rgba(239,68,68,0.6)] hover:shadow-[0_0_45px_rgba(239,68,68,0.9)] hover:scale-108 active:scale-95 transition-all duration-300 border border-red-400/40"
+                  className="w-13 h-13 xs:w-14 xs:h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-r from-red-700 via-red-600 to-orange-600 text-white flex items-center justify-center shadow-[0_0_30px_rgba(239,68,68,0.6)] hover:shadow-[0_0_45px_rgba(239,68,68,0.9)] hover:scale-108 active:scale-95 transition-all duration-300 border border-red-400/40"
                 >
                   {isPlaying ? (
-                    <Pause className="w-6 sm:w-7 h-6 sm:h-7" />
+                    <Pause className="w-5 h-5 sm:w-7 sm:h-7" />
                   ) : (
-                    <Play className="w-6 sm:w-7 h-6 sm:h-7 ml-1" />
+                    <Play className="w-5 h-5 sm:w-7 sm:h-7 ml-1" />
                   )}
                 </button>
 
@@ -250,9 +281,9 @@ export default function BandPlayer() {
                 <button
                   onClick={handleNext}
                   aria-label="Próxima Faixa"
-                  className="w-11 h-11 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 text-zinc-300 hover:text-white flex items-center justify-center transition-all duration-300 active:scale-95 hover:scale-105 shadow-md"
+                  className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 text-zinc-300 hover:text-white flex items-center justify-center transition-all duration-300 active:scale-95 hover:scale-105 shadow-md"
                 >
-                  <SkipForward className="w-5 h-5" />
+                  <SkipForward className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
 
                 {/* Botão Repeat (Repetir) */}
@@ -266,16 +297,16 @@ export default function BandPlayer() {
                       ? "Repetir Lista Completa"
                       : "Repetição Desativada"
                   }
-                  className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all duration-300 active:scale-95 hover:scale-105 relative ${
+                  className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full border flex items-center justify-center transition-all duration-300 active:scale-95 hover:scale-105 relative ${
                     repeatMode !== "off"
                       ? "bg-red-600/20 border-red-500 text-red-400 shadow-[0_0_15px_rgba(220,38,38,0.5)]"
                       : "bg-white/5 border-white/10 text-zinc-400 hover:text-white hover:bg-white/10"
                   }`}
                 >
                   {repeatMode === "one" ? (
-                    <Repeat1 className="w-4 h-4 text-orange-400" />
+                    <Repeat1 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-orange-400" />
                   ) : (
-                    <Repeat className="w-4 h-4" />
+                    <Repeat className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   )}
                 </button>
 
@@ -314,12 +345,30 @@ export default function BandPlayer() {
               </div>
 
             </div>
+
+            {/* BorderBeam Efeitos de Borda Laser Dinâmica (Magic UI) */}
+            <BorderBeam
+              duration={4}
+              size={400}
+              colorFrom="#ef4444"
+              colorTo="#f97316"
+              borderWidth={2.5}
+            />
+            <BorderBeam
+              duration={4}
+              delay={2}
+              size={400}
+              colorFrom="#dc2626"
+              colorTo="#7f1d1d"
+              borderWidth={2.5}
+              reverse={true}
+            />
           </div>
 
           {/* ================================================================
-              TRACKLIST LATERAL GLASSMORPHISM
+              TRACKLIST LATERAL GLASSMORPHISM + BORDER BEAM
              ================================================================ */}
-          <div className="lg:w-80 bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_0_rgba(255,0,0,0.1)] rounded-2xl overflow-hidden flex flex-col justify-between hover:border-red-500/30 transition-all duration-500">
+          <div className="relative overflow-hidden lg:w-80 bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_0_rgba(255,0,0,0.1)] rounded-2xl flex flex-col justify-between hover:border-red-500/30 transition-all duration-500">
             <div>
               <div className="px-6 py-4 border-b border-white/10 bg-white/5 flex items-center justify-between">
                 <span className="font-mono text-xs uppercase tracking-[0.3em] text-zinc-400 font-bold">
@@ -394,6 +443,24 @@ export default function BandPlayer() {
                 SPOTIFY ↗
               </a>
             </div>
+
+            {/* BorderBeam Efeito de Borda Laser na Tracklist */}
+            <BorderBeam
+              duration={5}
+              size={320}
+              colorFrom="#ef4444"
+              colorTo="#ea580c"
+              borderWidth={2}
+            />
+            <BorderBeam
+              duration={5}
+              delay={2.5}
+              size={320}
+              colorFrom="#dc2626"
+              colorTo="#7f1d1d"
+              borderWidth={2}
+              reverse={true}
+            />
           </div>
 
         </div>

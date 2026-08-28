@@ -12,6 +12,7 @@ import GrainOverlay from "../components/GrainOverlay";
 import SpotlightGlow from "../components/SpotlightGlow";
 import FloatingPlayer from "../components/FloatingPlayer";
 import { AudioProvider } from "../context/AudioContext";
+import { ScrollStack } from "../components/ui/scroll-stack";
 
 export default function Home() {
   return (
@@ -21,14 +22,19 @@ export default function Home() {
         <SpotlightGlow />
         <Header />
         <HeroScrollytelling />
-        <BandPlayer />
-        <BandBio />
-        <BandLineup />
-        <BandVideos />
-        <BandTour />
-        <BandMerch />
-        <BandContact />
-        <BandFooter />
+
+        {/* ── TRANSIÇÃO STACKING 3D ENTRE AS SEÇÕES (SCROLL STACK) ──────── */}
+        <ScrollStack>
+          <BandPlayer />
+          <BandBio />
+          <BandLineup />
+          <BandVideos />
+          <BandTour />
+          <BandMerch />
+          <BandContact />
+          <BandFooter />
+        </ScrollStack>
+
         <FloatingPlayer />
       </main>
     </AudioProvider>

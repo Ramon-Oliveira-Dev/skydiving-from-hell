@@ -5,7 +5,8 @@ import Image from "next/image";
 import ScrollReveal from "./ScrollReveal";
 import ParallaxLayer from "./ParallaxLayer";
 import ParallaxWatermark from "./ParallaxWatermark";
-import TiltCard, { TiltLayer } from "./TiltCard";
+import GradientCarousel from "./ui/gradient-carousel";
+import TypewriterTitle from "./ui/type-writer";
 import {
   X,
   ExternalLink,
@@ -15,7 +16,9 @@ import {
   Sparkles,
   ChevronLeft,
   ChevronRight,
+  User,
 } from "lucide-react";
+import { MEMBERS } from "../lib/band-data";
 
 function IconInstagram({ className = "w-4 h-4" }) {
   return (
@@ -34,8 +37,6 @@ function IconInstagram({ className = "w-4 h-4" }) {
     </svg>
   );
 }
-
-import { MEMBERS } from "../lib/band-data";
 
 export default function BandLineup() {
   const [selectedMember, setSelectedMember] = useState(null);
@@ -124,11 +125,8 @@ export default function BandLineup() {
   return (
     <section
       id="lineup"
-      className="relative w-full bg-[url('/bg-placeholder.jpg')] bg-fixed bg-cover bg-center border-t border-white/10 scroll-mt-20 overflow-hidden py-20 sm:py-32 md:py-48 px-4 sm:px-8 lg:px-16 min-h-0"
+      className="relative w-full bg-zinc-950 border-t border-white/10 scroll-mt-20 overflow-hidden py-16 sm:py-24 md:py-36 px-4 sm:px-8 lg:px-12"
     >
-      {/* Overlay Escuro Profundo */}
-      <div className="absolute inset-0 bg-black/90 pointer-events-none" />
-
       {/* Marca d'água Parallax Monumental */}
       <ParallaxWatermark text="OPERADORES" speed={0.45} position="center" />
 
@@ -140,107 +138,150 @@ export default function BandLineup() {
         <div className="w-[300px] sm:w-[450px] h-[300px] sm:h-[450px] bg-orange-600/10 blur-[140px] rounded-full" />
       </ParallaxLayer>
 
-      <div className="relative z-10 w-full">
-        
+      <div className="relative z-10 w-full max-w-7xl mx-auto">
         {/* Header da Seção */}
         <ScrollReveal direction="up" delay={0}>
-          <div className="mb-12 sm:mb-16 md:mb-24 text-center">
-            <span className="font-mono text-xs uppercase tracking-[0.4em] text-zinc-400 font-bold block mb-2 sm:mb-3">
-              FORMAÇÃO OFICIAL
-            </span>
-            <h2 className="linha-mask text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-red-500 pb-2 leading-tight overflow-visible">
-              <span className="inline-block pb-1">Formação Oficial</span>
+          <div className="mb-6 sm:mb-10 text-center flex flex-col items-center justify-center">
+            <div className="mb-2 sm:mb-3">
+              <TypewriterTitle
+                prefix="//"
+                prefixClassName="text-red-500 font-mono font-medium text-[11px]"
+                sequences={[
+                  { text: "FORMAÇÃO OFICIAL", deleteAfter: true, pauseAfter: 3500 },
+                  { text: "OS OPERADORES DO SOM", deleteAfter: true, pauseAfter: 2500 },
+                  { text: "MÚSICOS & PERFORMANCE", deleteAfter: true, pauseAfter: 2500 },
+                  { text: "LINEUP ATUAL // S.D.F.H.", deleteAfter: true, pauseAfter: 2500 },
+                ]}
+                typingSpeed={38}
+                deleteSpeed={18}
+                autoLoop={true}
+                loopDelay={1000}
+                textClassName="font-mono text-xs uppercase tracking-[0.4em] text-zinc-400 font-bold"
+                cursorClassName="bg-red-500 h-[1em] w-[2px] shadow-[0_0_8px_rgba(239,68,68,0.8)]"
+              />
+            </div>
+            <h2 className="linha-mask text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight pb-2 leading-tight overflow-visible flex items-center justify-center">
+              <TypewriterTitle
+                sequences={[
+                  { text: "Formação Oficial", deleteAfter: true, pauseAfter: 4000 },
+                  { text: "Ramon • Bateria", deleteAfter: true, pauseAfter: 2600 },
+                  { text: "Davi • Guitarra", deleteAfter: true, pauseAfter: 2600 },
+                  { text: "Ingrid • Guitarra", deleteAfter: true, pauseAfter: 2600 },
+                  { text: "Jeffão • Vocal", deleteAfter: true, pauseAfter: 2600 },
+                  { text: "Trevas • Baixo", deleteAfter: true, pauseAfter: 2600 },
+                ]}
+                typingSpeed={42}
+                deleteSpeed={20}
+                autoLoop={true}
+                loopDelay={1200}
+                textClassName="bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-red-500 font-black tracking-tight"
+                cursorClassName="bg-red-500 h-[1em] w-[3px] shadow-[0_0_12px_rgba(239,68,68,0.9)] ml-1"
+              />
             </h2>
             <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-red-600 to-orange-500 mx-auto mt-3 rounded-full shadow-[0_0_12px_rgba(239,68,68,0.6)]" />
           </div>
         </ScrollReveal>
 
-        <ScrollReveal direction="up" stagger={0.25} duration={1500} threshold="top 80%">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6 lg:gap-8">
-          {MEMBERS.map((member) => {
-            const hasIndividualPortrait = member.id !== "trevas" && member.images && member.images[0] && !member.images[0].includes("band_group");
+        {/* ================================================================
+            GRADIENT CAROUSEL: CARROSSEL 3D COM GRADIENTES DINÂMICOS
+           ================================================================ */}
+        <ScrollReveal direction="up" delay={150}>
+          <div className="w-full">
+            <GradientCarousel
+              items={MEMBERS}
+              cardWidth={310}
+              cardHeight={460}
+              cardGap={36}
+              maxRotationDegrees={22}
+              maxDepthPx={130}
+              minScale={0.88}
+              gradientIntensity={0.35}
+              autoplay={!selectedMember}
+              autoplayInterval={3500}
+              pauseOnHover={true}
+              onCardClick={(member) => openMember(member)}
+              renderCard={(member, idx, isActive) => {
+                const hasIndividualPortrait =
+                  member.id !== "trevas" &&
+                  member.images &&
+                  member.images[0] &&
+                  !member.images[0].includes("band_group");
 
-            return (
-              <TiltCard
-                key={member.id}
-                onClick={() => openMember(member)}
-                data-ativo={selectedMember?.id === member.id ? "true" : "false"}
-                className="card-membro group bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-red-500/60 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_60px_rgba(220,38,38,0.45),_0_0_20px_rgba(220,38,38,0.15)] cursor-pointer h-full"
-              >
-                <div>
-                  {/* Foto / Visual do Integrante em 3D (20px Z) */}
-                  <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-zinc-950 flex items-center justify-center">
-                    {hasIndividualPortrait ? (
-                      <Image
-                        src={member.images[0]}
-                        alt={`Retrato oficial de ${member.name} — ${member.role}`}
-                        width={320}
-                        height={380}
-                        loading="lazy"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 20vw"
-                        className="foto w-full h-full object-cover object-top group-hover:scale-110 transition-all duration-700 filter grayscale group-hover:grayscale-0 group-hover:brightness-110 group-hover:contrast-110"
-                      />
-                    ) : (
-                      /* Fallback consistente de silhueta para Trevas (Tarefa 1.4) */
-                      <div className="foto w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-zinc-900 via-zinc-950 to-black text-zinc-600 group-hover:text-red-500 transition-colors relative p-6 text-center">
-                        <svg
-                          viewBox="0 0 24 24"
-                          fill="currentColor"
-                          className="w-20 h-20 opacity-30 group-hover:opacity-60 transition-opacity mb-2 text-zinc-500 group-hover:text-red-500"
-                          aria-hidden="true"
-                        >
-                          <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
-                        </svg>
-                        <span className="font-mono text-[10px] uppercase tracking-widest text-zinc-400 font-bold bg-black/60 px-2.5 py-1 rounded-full border border-white/10">
-                          RETRATO EM BREVE
-                        </span>
+                return (
+                  <div
+                    className={`w-full h-full rounded-2xl overflow-hidden backdrop-blur-xl border flex flex-col justify-between transition-all duration-500 select-none ${
+                      isActive
+                        ? "bg-zinc-950/95 border-red-500/80 shadow-[0_20px_50px_rgba(220,38,38,0.4),_0_0_25px_rgba(220,38,38,0.2)]"
+                        : "bg-zinc-950/80 border-white/10 opacity-70 hover:opacity-95 shadow-[0_10px_30px_rgba(0,0,0,0.8)]"
+                    }`}
+                  >
+                    <div>
+                      {/* Foto do Integrante */}
+                      <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-zinc-950 flex items-center justify-center">
+                        {hasIndividualPortrait ? (
+                          <Image
+                            src={member.images[0]}
+                            alt={`Retrato oficial de ${member.name} — ${member.role}`}
+                            width={320}
+                            height={360}
+                            priority={idx === 0}
+                            loading={idx === 0 ? "eager" : "lazy"}
+                            className={`w-full h-full object-cover object-top transition-all duration-700 ${
+                              isActive
+                                ? "scale-105 filter grayscale-0 brightness-105"
+                                : "scale-100 filter grayscale brightness-90"
+                            }`}
+                          />
+                        ) : (
+                          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-b from-zinc-900 to-black text-zinc-600 p-6 text-center">
+                            <User className="w-16 h-16 opacity-40 mb-2" />
+                            <span className="font-mono text-[9px] uppercase tracking-widest text-zinc-400 font-bold bg-black/60 px-2.5 py-1 rounded-full border border-white/10">
+                              RETRATO EM BREVE
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Gradiente de Fusão na Base */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/30 to-transparent pointer-events-none" />
+
+                        {/* Badge de Cargo */}
+                        <div className="absolute top-3 left-3 z-10">
+                          <span
+                            className={`inline-block px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider text-white bg-gradient-to-r ${member.tagColor} shadow-md`}
+                          >
+                            {member.role}
+                          </span>
+                        </div>
                       </div>
-                    )}
 
-                    {/* Gradiente de Fusão na Base da Imagem */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/20 to-transparent pointer-events-none" />
-
-                    {/* Overlay avermelhado agressivo no hover */}
-                    <div className="absolute inset-0 bg-red-600/0 group-hover:bg-red-600/15 transition-colors duration-500 pointer-events-none mix-blend-overlay" />
-
-                    {/* Badge de Função em 3D (25px Z) */}
-                    <TiltLayer depth={25} className="absolute top-3 left-3 pointer-events-none z-10">
-                      <span
-                        className={`inline-block px-3 py-1 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider text-white bg-gradient-to-r ${member.tagColor} shadow-md`}
-                      >
-                        {member.role}
-                      </span>
-                    </TiltLayer>
-                  </div>
-
-                  {/* Conteúdo do Card em 3D (15px Z) */}
-                  <TiltLayer depth={15} className="p-5 sm:p-6 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-xl sm:text-2xl font-black uppercase text-white tracking-tight group-hover:text-red-400 transition-colors">
-                        {member.name}
-                      </h3>
+                      {/* Conteúdo do Card */}
+                      <div className="p-4 sm:p-5 space-y-2 text-left">
+                        <h3 className="text-xl sm:text-2xl font-black uppercase text-white tracking-tight">
+                          {member.name}
+                        </h3>
+                        <p className="text-xs text-zinc-400 leading-relaxed font-sans line-clamp-2">
+                          {member.desc}
+                        </p>
+                      </div>
                     </div>
 
-                    <p className="text-xs text-zinc-400 leading-relaxed font-sans line-clamp-3">
-                      {member.desc}
-                    </p>
-                  </TiltLayer>
-                </div>
-
-                {/* Único CTA por Card em 3D (Tarefa 1.5) */}
-                <TiltLayer depth={20} className="px-5 sm:px-6 pb-5 pt-3 border-t border-white/5 flex items-center justify-between">
-                  <span className="font-mono text-xs text-zinc-300 group-hover:text-white font-bold uppercase tracking-wider transition-colors duration-300 flex items-center gap-1.5">
-                    <span>Ver dossiê</span>
-                    <span className="text-red-500 group-hover:translate-x-1 transition-transform duration-300">&rarr;</span>
-                  </span>
-                  <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
-                    S.D.F.H.
-                  </span>
-                </TiltLayer>
-              </TiltCard>
-            );
-          })}
-        </div>
+                    {/* CTA "Ver Dossiê" */}
+                    <div className="px-4 sm:px-5 pb-4 pt-2 border-t border-white/5 flex items-center justify-between">
+                      <span className="font-mono text-xs text-zinc-300 font-bold uppercase tracking-wider flex items-center gap-1.5 transition-colors">
+                        <span className={isActive ? "text-red-400" : "text-zinc-300"}>
+                          Ver dossiê
+                        </span>
+                        <span className="text-red-500">&rarr;</span>
+                      </span>
+                      <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-widest">
+                        S.D.F.H.
+                      </span>
+                    </div>
+                  </div>
+                );
+              }}
+            />
+          </div>
         </ScrollReveal>
       </div>
 
@@ -267,23 +308,20 @@ export default function BandLineup() {
             className="relative w-full max-w-6xl xl:max-w-7xl bg-zinc-950/90 border border-red-500/30 rounded-3xl p-6 sm:p-8 lg:p-12 shadow-[0_0_90px_rgba(220,38,38,0.3)] my-auto max-h-[92vh] overflow-y-auto"
           >
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-              
-              {/* ============================================================
-                  COLUNA ESQUERDA: CARROSSEL DE FOTOS AUTOMÁTICO
-                 ============================================================ */}
+              {/* COLUNA ESQUERDA: CARROSSEL DE FOTOS AUTOMÁTICO */}
               <div className="lg:col-span-5 flex flex-col items-center gap-4 w-full">
-                
                 <div
                   onMouseEnter={() => setIsPaused(true)}
                   onMouseLeave={() => setIsPaused(false)}
                   className="w-full h-80 sm:h-96 lg:h-[500px] xl:h-[540px] rounded-2xl overflow-hidden border-2 border-red-500/40 shadow-[0_0_50px_rgba(220,38,38,0.25)] bg-zinc-900 relative group/carousel select-none"
                 >
-                  {/* Foto Atual com Transição Suave */}
                   {selectedMember.images && selectedMember.images.length > 0 ? (
                     <Image
                       key={currentImgIndex}
                       src={selectedMember.images[currentImgIndex]}
-                      alt={`Foto de palco de ${selectedMember.name} (${currentImgIndex + 1} de ${selectedMember.images.length})`}
+                      alt={`Foto de palco de ${selectedMember.name} (${
+                        currentImgIndex + 1
+                      } de ${selectedMember.images.length})`}
                       width={600}
                       height={600}
                       loading="lazy"
@@ -361,11 +399,8 @@ export default function BandLineup() {
                 </a>
               </div>
 
-              {/* ============================================================
-                  COLUNA DIREITA: INFORMAÇÕES TÉCNICAS E TRAJETÓRIA
-                 ============================================================ */}
+              {/* COLUNA DIREITA: INFORMAÇÕES TÉCNICAS E TRAJETÓRIA */}
               <div className="lg:col-span-7 flex flex-col gap-6 w-full">
-                
                 {/* Header do Dossiê */}
                 <div className="border-b border-white/10 pb-5">
                   <div className="flex items-center gap-2 mb-1">
@@ -382,7 +417,7 @@ export default function BandLineup() {
                   </p>
                 </div>
 
-                {/* Seção 1: Trajetória & História Completa */}
+                {/* Seção 1: Trajetória */}
                 <div className="space-y-2">
                   <span className="font-mono text-xs font-bold uppercase tracking-widest text-red-400 flex items-center gap-1.5">
                     <Sparkles className="w-4 h-4 text-red-500" />
@@ -393,7 +428,7 @@ export default function BandLineup() {
                   </p>
                 </div>
 
-                {/* Seção 2: Setup Técnico & Afinação */}
+                {/* Seção 2: Setup Técnico */}
                 <div className="space-y-2">
                   <span className="font-mono text-xs font-bold uppercase tracking-widest text-red-400 flex items-center gap-1.5">
                     <Sliders className="w-4 h-4 text-red-500" />
@@ -404,7 +439,7 @@ export default function BandLineup() {
                   </div>
                 </div>
 
-                {/* Seção 3: Equipamentos e Marcas Utilizadas */}
+                {/* Seção 3: Equipamentos */}
                 <div className="space-y-2">
                   <span className="font-mono text-xs font-bold uppercase tracking-widest text-red-400 flex items-center gap-1.5">
                     <Radio className="w-4 h-4 text-red-500" />
@@ -422,9 +457,7 @@ export default function BandLineup() {
                     ))}
                   </div>
                 </div>
-
               </div>
-
             </div>
           </div>
         </div>

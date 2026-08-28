@@ -6,10 +6,10 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 /**
- * SmoothScroll - Provedor de Rolagem Suave de Alta Performance (Lenis + GSAP)
+ * SmoothScroll - Provedor de Rolagem Suave de Alta Performance (Lenis + GSAP ScrollTrigger)
  *
- * Aplica inércia ultra-suave na rolagem do mouse e touch, sincronizado a 60+ FPS
- * com as animações de ScrollTrigger e acionador de áudio no primeiro scroll.
+ * Aplica inércia ultra-suave na rolagem do mouse e touch, perfeitamente sincronizado a 60/120 FPS
+ * com as timelines do GSAP ScrollTrigger, transições de âncoras e disparos de áudio.
  */
 export default function SmoothScroll({ children }) {
   useEffect(() => {
@@ -23,13 +23,19 @@ export default function SmoothScroll({ children }) {
       smoothWheel: true,
       wheelMultiplier: 1.0,
       touchMultiplier: 1.5,
+      infinite: false,
     });
+
+    // Disponibiliza instância globalmente para chamadas programáticas (ex: scrollTo)
+    if (typeof window !== "undefined") {
+      window.lenis = lenis;
+    }
 
     let hasTriggeredAudio = false;
 
-    // Sincronização em tempo real do Lenis com o GSAP e reprodução de áudio no scroll
+    // Sincronização em tempo real do Lenis com o GSAP ScrollTrigger
     lenis.on("scroll", (e) => {
-      ScrollTrigger.update(e);
+      ScrollTrigger.update();
 
       if (!hasTriggeredAudio) {
         const audio = document.querySelector("audio");
@@ -46,6 +52,7 @@ export default function SmoothScroll({ children }) {
       }
     });
 
+    // Conecta o RAF do Lenis ao Ticker do GSAP (convertendo segundos para ms)
     const updateTicker = (time) => {
       lenis.raf(time * 1000);
     };
@@ -53,11 +60,49 @@ export default function SmoothScroll({ children }) {
     gsap.ticker.add(updateTicker);
     gsap.ticker.lagSmoothing(0);
 
+    // Suaviza navegação em links com âncoras (#player, #lineup, #bio, etc.)
+    const handleAnchorClick = (e) => {
+      const target = e.target.closest("a");
+      if (!target) return;
+
+      const href = target.getAttribute("href");
+      if (href && href.startsWith("#") && href.length > 1) {
+        const targetElement = document.querySelector(href);
+        if (targetElement) {
+          e.preventDefault();
+          lenis.scrollTo(targetElement, {
+            offset: -70,
+            duration: 1.4,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+          });
+        }
+      } else if (href === "#") {
+        e.preventDefault();
+        lenis.scrollTo(0, {
+          duration: 1.4,
+          easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        });
+      }
+    };
+
+    document.addEventListener("click", handleAnchorClick);
+
+    // Atualiza cálculos do ScrollTrigger quando a página carrega completamente
+    const timeout = setTimeout(() => {
+      ScrollTrigger.refresh();
+    }, 500);
+
     return () => {
+      clearTimeout(timeout);
+      document.removeEventListener("click", handleAnchorClick);
       gsap.ticker.remove(updateTicker);
       lenis.destroy();
+      if (typeof window !== "undefined") {
+        delete window.lenis;
+      }
     };
   }, []);
 
   return <>{children}</>;
 }
+

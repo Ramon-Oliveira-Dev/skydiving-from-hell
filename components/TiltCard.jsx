@@ -51,10 +51,11 @@ export default function TiltCard({
 
     const card = cardRef.current;
 
-    // Setters ultrarrápidos do GSAP quickTo usando as propriedades nativas de 3D do GSAP (rotationX, rotationY)
+    // Setters ultrarrápidos do GSAP quickTo usando as propriedades nativas de 3D do GSAP (rotationX, rotationY, scaleX, scaleY)
     const rotateXTo = gsap.quickTo(card, "rotationX", { duration: 0.45, ease: "power2.out" });
     const rotateYTo = gsap.quickTo(card, "rotationY", { duration: 0.45, ease: "power2.out" });
-    const scaleTo = gsap.quickTo(card, "scale", { duration: 0.45, ease: "power2.out" });
+    const scaleXTo = gsap.quickTo(card, "scaleX", { duration: 0.45, ease: "power2.out" });
+    const scaleYTo = gsap.quickTo(card, "scaleY", { duration: 0.45, ease: "power2.out" });
 
     let glareXTo = null;
     let glareYTo = null;
@@ -80,7 +81,8 @@ export default function TiltCard({
 
       rotateXTo(rotX);
       rotateYTo(rotY);
-      scaleTo(scale);
+      scaleXTo(scale);
+      scaleYTo(scale);
 
       if (glareXTo && glareYTo && glareOpacityTo) {
         glareXTo(mouseX * 120);
@@ -92,7 +94,8 @@ export default function TiltCard({
     const handleMouseLeave = () => {
       rotateXTo(0);
       rotateYTo(0);
-      scaleTo(1);
+      scaleXTo(1);
+      scaleYTo(1);
 
       if (glareOpacityTo) {
         glareOpacityTo(0);

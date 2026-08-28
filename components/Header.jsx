@@ -93,6 +93,7 @@ export default function Header() {
               width={200}
               height={56}
               priority
+              style={{ width: "auto", height: "auto" }}
               className="h-full w-auto object-contain filter drop-shadow-[0_0_15px_rgba(239,68,68,0.4)] group-hover:drop-shadow-[0_0_25px_rgba(239,68,68,0.8)] transition-all duration-300"
             />
           </div>
@@ -162,7 +163,7 @@ export default function Header() {
       <div
         id="mobile-navigation-menu"
         aria-hidden={!isOpen}
-        {...(!isOpen ? { inert: "" } : {})}
+        inert={!isOpen ? true : undefined}
         className={`fixed inset-0 h-screen w-screen bg-black/95 backdrop-blur-2xl md:hidden flex flex-col items-center justify-between p-6 sm:p-10 transition-all duration-500 ease-in-out z-40 overflow-y-auto ${
           isOpen
             ? "opacity-100 pointer-events-auto translate-y-0"
@@ -177,6 +178,7 @@ export default function Header() {
               width={180}
               height={50}
               loading="lazy"
+              style={{ width: "auto", height: "auto" }}
               className="h-full w-auto object-contain drop-shadow-[0_0_20px_rgba(239,68,68,0.6)]"
             />
           </div>

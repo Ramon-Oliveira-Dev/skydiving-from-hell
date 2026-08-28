@@ -6,6 +6,7 @@ import { MapPin, Clock, Gift, Sparkles, Disc, Share2, X, ExternalLink, Ticket } 
 import ScrollReveal from "./ScrollReveal";
 import ParallaxLayer from "./ParallaxLayer";
 import ParallaxWatermark from "./ParallaxWatermark";
+import TypewriterTitle from "./ui/type-writer";
 import { FEATURED_SHOW } from "../lib/band-data";
 
 const ATTRACTION_ICONS = {
@@ -84,12 +85,40 @@ export default function BandTour() {
         
         {/* Header da Seção */}
         <ScrollReveal direction="up" delay={0}>
-          <div className="mb-12 sm:mb-16 md:mb-24 text-center">
-            <span className="font-mono text-xs uppercase tracking-[0.4em] text-red-500 font-bold block mb-2 sm:mb-3">
-              // AGENDA DE SHOWS
-            </span>
-            <h2 className="linha-mask text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-red-500 pb-2 leading-tight overflow-visible">
-              <span className="inline-block pb-1">Datas & Festivais</span>
+          <div className="mb-12 sm:mb-16 md:mb-24 text-center flex flex-col items-center justify-center">
+            <div className="mb-2 sm:mb-3">
+              <TypewriterTitle
+                prefix="//"
+                prefixClassName="text-red-500 font-mono font-medium text-[11px]"
+                sequences={[
+                  { text: "AGENDA DE SHOWS", deleteAfter: true, pauseAfter: 3500 },
+                  { text: "TOUR & FESTIVAIS 2026", deleteAfter: true, pauseAfter: 2500 },
+                  { text: "AO VIVO NO CORRERIA", deleteAfter: true, pauseAfter: 2500 },
+                  { text: "INGRESSOS & INFORMAÇÕES", deleteAfter: true, pauseAfter: 2500 },
+                ]}
+                typingSpeed={38}
+                deleteSpeed={18}
+                autoLoop={true}
+                loopDelay={1000}
+                textClassName="font-mono text-xs uppercase tracking-[0.4em] text-red-500 font-bold"
+                cursorClassName="bg-red-500 h-[1em] w-[2px] shadow-[0_0_8px_rgba(239,68,68,0.8)]"
+              />
+            </div>
+            <h2 className="linha-mask text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black uppercase tracking-tight pb-2 leading-tight overflow-visible flex items-center justify-center">
+              <TypewriterTitle
+                sequences={[
+                  { text: "Datas & Festivais", deleteAfter: true, pauseAfter: 4000 },
+                  { text: "05/10 • Correria Music Bar", deleteAfter: true, pauseAfter: 2800 },
+                  { text: "Espírito Santo • Brasil", deleteAfter: true, pauseAfter: 2800 },
+                  { text: "Garanta Seu Ingresso", deleteAfter: true, pauseAfter: 2800 },
+                ]}
+                typingSpeed={42}
+                deleteSpeed={20}
+                autoLoop={true}
+                loopDelay={1200}
+                textClassName="bg-clip-text text-transparent bg-gradient-to-r from-white via-zinc-200 to-red-500 font-black tracking-tight"
+                cursorClassName="bg-red-500 h-[1em] w-[3px] shadow-[0_0_12px_rgba(239,68,68,0.9)] ml-1"
+              />
             </h2>
             <div className="w-16 sm:w-24 h-1 bg-gradient-to-r from-red-600 to-orange-500 mx-auto mt-3 rounded-full shadow-[0_0_12px_rgba(239,68,68,0.6)]" />
           </div>

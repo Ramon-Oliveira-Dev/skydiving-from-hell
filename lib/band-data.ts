@@ -10,6 +10,7 @@ export interface Member {
   images: string[];
   desc: string;
   tagColor: string;
+  gradientColors?: [string, string];
   fullHistory: string;
   setup: string;
   equipment: string[];
@@ -86,18 +87,97 @@ export const FEATURED_SHOW: ShowInfo = {
 
 export const MEMBERS: Member[] = [
   {
+    id: "ramon",
+    name: "Ramon",
+    role: "Bateria",
+    images: [
+      "/member_ramon.jpg",
+      "/live_ramon_blue.jpg",
+      "/live_ramon_bw.jpg",
+    ],
+    desc: "A máquina rítmica da S.D.F.H. Bumbos duplos avassaladores, precisão polirrítmica e pegada destruidora.",
+    tagColor: "from-amber-600 to-orange-600",
+    gradientColors: ["#d97706", "#ea580c"],
+    fullHistory:
+      "Baterista de técnica fulminante, Ramon é o motor propulsor da banda. Especialista em polirritmias, pedal duplo de alta velocidade e viradas métricas complexas que sustentam a identidade brutal da S.D.F.H.",
+    setup: "Kit Custom Double Bass & Pratos Dark / Raw",
+    equipment: [
+      "Bateria Tama Superstar Hyper-Drive",
+      "Pedais Duplos Trick Pro 1-V BigFoot",
+      "Pratos Meinl Byzance Extra Dry & Dual",
+      "Triggers Roland TM-2 & Baquetas ProMark 5B",
+    ],
+    socials: {
+      instagram: "https://instagram.com/ramonlucasdedeoliveira",
+      handle: "@ramonlucasdedeoliveira",
+    },
+  },
+  {
+    id: "davi",
+    name: "Davi",
+    role: "Guitarra",
+    images: [
+      "/member_davier.jpg",
+      "/live_red_stage.jpg",
+      "/band_group.jpg",
+    ],
+    desc: "Harmonia pesada e parede sonora, modelando a atmosfera com distorções massivas e afinações graves.",
+    tagColor: "from-blue-600 to-cyan-600",
+    gradientColors: ["#2563eb", "#06b6d4"],
+    fullHistory:
+      "Davi constrói a muralha rítmica e a camada densa da S.D.F.H. Com domínio de timbres de alto ganho e passagens dinâmicas, sincroniza com precisão milimétrica cada palhetada aos bumbos da bateria.",
+    setup: "Afinação Estendida Drop E / Double Drop",
+    equipment: [
+      "Guitarra Schecter Omen-8 Custom",
+      "Line 6 Helix LT / Cab IRs Fortin",
+      "Captadores Seymour Duncan Nazgûl/Sentient",
+      "Cordas Ernie Ball Skinny Top Heavy Bottom",
+    ],
+    socials: {
+      instagram: "https://instagram.com/davier.cirino",
+      handle: "@davier.cirino",
+    },
+  },
+  {
+    id: "ingrid",
+    name: "Ingrid",
+    role: "Guitarra",
+    images: [
+      "/member_ingrid.jpg",
+      "/live_jeffao_ingrid.jpg",
+      "/band_live_bw.jpg",
+    ],
+    desc: "Arquiteta de riffs cortantes, velocidade e precisão cirúrgica. Traz influências técnicas para o peso extremo.",
+    tagColor: "from-purple-600 to-red-600",
+    gradientColors: ["#9333ea", "#dc2626"],
+    fullHistory:
+      "Referência no metal moderno capixaba, Ingrid conduz a guitarra com agressividade técnica e sofisticação harmônica. É a mente por trás de breakdowns assimétricos e timbres hiper-definidos gravados nos singles da banda.",
+    setup: "Afinação Drop E / E Standard",
+    equipment: [
+      "Guitarra Ibanez RG8 8-String Custom",
+      "Modelador Neural DSP Quad Cortex",
+      "Captadores Fishman Fluence Modern",
+      "Cordas D'Addario NYXL",
+    ],
+    socials: {
+      instagram: "https://instagram.com/ingridguitar",
+      handle: "@ingridguitar",
+    },
+  },
+  {
     id: "jeffao",
     name: "Jeffão",
-    role: "Vocal / Frontman",
+    role: "Vocal",
     images: [
       "/member_jeffao.jpg",
       "/live_jeffao_ingrid.jpg",
       "/band_live_color.jpg",
     ],
-    desc: "Liderando os palcos desde 2016. Vocais viscerais, presença intimidadora e guturais que comandam as multidões.",
+    desc: "Vocais viscerais, presença intimidadora e guturais profundos que comandam os palcos e a plateia.",
     tagColor: "from-red-600 to-orange-600",
+    gradientColors: ["#dc2626", "#ea580c"],
     fullHistory:
-      "Fundador e voz da S.D.F.H., Jeffão transformou angústias urbanas e críticas sociais em linhas vocais devastadoras. Com técnicas de gutural profundo, false cord e vocal screams, comanda a banda com energia inesgotável em palcos de todo o Espírito Santo.",
+      "Voz e presença marcante da S.D.F.H., Jeffão transformou angústias urbanas e críticas sociais em linhas vocais devastadoras. Com técnicas de gutural profundo, false cord e vocal screams, comanda a banda com energia inesgotável em palcos de todo o país.",
     setup: "Vocal Dinâmico & Processamento de Efeitos em Tempo Real",
     equipment: [
       "Microfone Shure SM7B & Beta 58A",
@@ -111,69 +191,19 @@ export const MEMBERS: Member[] = [
     },
   },
   {
-    id: "ingrid",
-    name: "Ingrid",
-    role: "Guitarra 8 Cordas",
-    images: [
-      "/member_ingrid.jpg",
-      "/live_jeffao_ingrid.jpg",
-      "/band_live_bw.jpg",
-    ],
-    desc: "Arquiteta de riffs pesados, velocidade e precisão cirúrgica. Traz influências progressivas para o peso extremo.",
-    tagColor: "from-purple-600 to-red-600",
-    fullHistory:
-      "Referência no metal moderno capixaba, Ingrid conduz a afinação estendida de 8 cordas com agressividade técnica e sofisticação harmônica. É a mente por trás de breakdowns assimétricos e timbres hiper-definidos gravados nos singles da banda.",
-    setup: "Afinação Drop E / E Standard (8 Cordas)",
-    equipment: [
-      "Guitarra Ibanez RG8 8-String Custom",
-      "Modelador Neural DSP Quad Cortex",
-      "Captadores Fishman Fluence Modern",
-      "Cordas D'Addario NYXL (.009 - .080)",
-    ],
-    socials: {
-      instagram: "https://instagram.com/ingridguitar",
-      handle: "@ingridguitar",
-    },
-  },
-  {
-    id: "davier",
-    name: "Davier",
-    role: "Guitarra 8 Cordas",
-    images: [
-      "/member_davier.jpg",
-      "/live_red_stage.jpg",
-      "/band_group.jpg",
-    ],
-    desc: "Harmonia pesada e parede sonora, modelando a atmosfera com distorções massivas e texturas industriais.",
-    tagColor: "from-blue-600 to-cyan-600",
-    fullHistory:
-      "Davier constrói a muralha rítmica e a camada densa da S.D.F.H. Com domínio de timbres de alto ganho e passagens dinâmicas, sincroniza com precisão milimétrica cada palhetada aos bumbos da bateria.",
-    setup: "Afinação Drop E / Double Drop (8 Cordas)",
-    equipment: [
-      "Guitarra Schecter Omen-8 Custom",
-      "Line 6 Helix LT / Cab IRs Fortin",
-      "Captadores Seymour Duncan Nazgûl/Sentient",
-      "Cordas Ernie Ball Skinny Top Heavy Bottom 8",
-    ],
-    socials: {
-      instagram: "https://instagram.com/davier.cirino",
-      handle: "@davier.cirino",
-    },
-  },
-  {
     id: "trevas",
     name: "Trevas",
-    role: "Baixo / Groove",
-    // Não há retrato individual disponível ainda; usa fallback com silhueta no card
+    role: "Baixo",
     images: [
       "/band_group.jpg",
       "/live_red_stage.jpg",
       "/band_live_bw.jpg",
     ],
-    desc: "Pilar do ritmo e sustentação sonora. Linhas distorcidas, ataque direto e o groove brutal que faz tremer o chão.",
+    desc: "Pilar do ritmo e peso sub-grave. Linhas distorcidas, ataque direto e o groove brutal que faz tremer o chão.",
     tagColor: "from-emerald-600 to-teal-600",
+    gradientColors: ["#059669", "#0d9488"],
     fullHistory:
-      "A espinha dorsal das frequências sub-graves da S.D.F.H. Trevas funde distorção Darkglass com ataque rítmico percussivo, garantindo que cada acorde de 8 cordas tenha impacto físico na plateia.",
+      "A espinha dorsal das frequências sub-graves da S.D.F.H. Trevas funde distorção Darkglass com ataque rítmico percussivo, garantindo que cada acorde tenha impacto físico na plateia.",
     setup: "Afinação Drop E / F# (5 Cordas Super Low)",
     equipment: [
       "Baixo Dingwall NG3 5-String Multi-Scale",
@@ -184,31 +214,6 @@ export const MEMBERS: Member[] = [
     socials: {
       instagram: "https://instagram.com/philserpa",
       handle: "@philserpa",
-    },
-  },
-  {
-    id: "ramon",
-    name: "Ramon",
-    role: "Bateria / Máquina Rítmica",
-    images: [
-      "/member_ramon.jpg",
-      "/live_ramon_blue.jpg",
-      "/live_ramon_bw.jpg",
-    ],
-    desc: "Máquina rítmica de alta precisão. Bumbos duplos avassaladores, blast beats velozes e dinamismo destrutivo.",
-    tagColor: "from-amber-600 to-orange-600",
-    fullHistory:
-      "Baterista de técnica fulminante, Ramon é o motor propulsor da banda. Especialista em polirritmias, pedal duplo de alta velocidade e viradas métricas complexas que sustentam a identidade brutal da S.D.F.H.",
-    setup: "Kit Custom Double Bass & Pratos Dark / Raw",
-    equipment: [
-      "Bateria Tama Superstar Hyper-Drive",
-      "Pedais Duplos Trick Pro 1-V BigFoot",
-      "Pratos Meinl Byzance Extra Dry & Dual",
-      "Triggers Roland TM-2 & Baquetas ProMark 5B",
-    ],
-    socials: {
-      instagram: "https://instagram.com/ramonlucasdedeoliveira",
-      handle: "@ramonlucasdedeoliveira",
     },
   },
 ];
