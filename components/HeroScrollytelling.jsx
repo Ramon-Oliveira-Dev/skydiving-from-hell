@@ -388,12 +388,12 @@ export default function HeroScrollytelling() {
         </div>
       </div>
 
-      {/* ── PAINEL 1: A ORIGEM (ACIMA DA LOGO, MAIS PRÓXIMO E SEM SOBREPOR NO MOBILE/TABLET) ──── */}
+      {/* ── PAINEL 1: A ORIGEM (POSICIONADO ACIMA DA LOGO COM ESPAÇAMENTO SEGURO) ──── */}
       <div
         ref={panel1Ref}
-        className="absolute inset-0 z-20 flex flex-col justify-center items-center lg:justify-start lg:items-end text-center lg:text-right p-3 xs:p-4 sm:p-6 lg:p-12 -translate-y-[14vh] xs:-translate-y-[16vh] sm:-translate-y-[18vh] lg:translate-y-0 lg:pt-24 pointer-events-none"
+        className="absolute top-16 xs:top-20 sm:top-24 left-0 right-0 z-20 flex flex-col items-center justify-start pointer-events-none px-3 xs:px-4 sm:px-6 lg:inset-0 lg:top-0 lg:justify-start lg:items-end lg:pt-24 lg:px-12"
       >
-        <div className="w-full max-w-[92vw] xs:max-w-[340px] sm:max-w-md lg:max-w-lg flex flex-col items-center lg:items-end text-center lg:text-right bg-zinc-950/92 border border-white/10 hover:border-red-500/30 p-3.5 xs:p-4.5 sm:p-6 lg:p-7 rounded-2xl backdrop-blur-2xl shadow-[0_15px_40px_rgba(0,0,0,0.85)] transition-all">
+        <div className="w-full max-w-[92vw] xs:max-w-[340px] sm:max-w-md lg:max-w-lg flex flex-col items-center lg:items-end text-center lg:text-right bg-zinc-950/95 border border-white/10 hover:border-red-500/30 p-3.5 xs:p-4.5 sm:p-6 lg:p-7 rounded-2xl backdrop-blur-2xl shadow-[0_15px_40px_rgba(0,0,0,0.95)] transition-all">
           {/* Tag de contexto */}
           <div className="mb-1.5 sm:mb-2.5 flex justify-center lg:justify-end">
             <TypewriterTitle
@@ -457,12 +457,12 @@ export default function HeroScrollytelling() {
         </div>
       </div>
 
-      {/* ── PAINEL 2: A MÁQUINA RÍTMICA (ABAIXO DA LOGO, MAIS PRÓXIMO E SEM SOBREPOR NO MOBILE/TABLET) ── */}
+      {/* ── PAINEL 2: A MÁQUINA RÍTMICA (POSICIONADO ABAIXO DA LOGO COM ESPAÇAMENTO SEGURO) ── */}
       <div
         ref={panel2Ref}
-        className="absolute inset-0 z-20 flex flex-col justify-center items-center lg:justify-end lg:items-start text-center lg:text-left p-3 xs:p-4 sm:p-6 lg:p-12 translate-y-[14vh] xs:translate-y-[16vh] sm:translate-y-[18vh] lg:translate-y-0 lg:pb-36 pointer-events-none"
+        className="absolute bottom-16 xs:bottom-20 sm:bottom-24 left-0 right-0 z-20 flex flex-col items-center justify-end pointer-events-none px-3 xs:px-4 sm:px-6 lg:inset-0 lg:bottom-0 lg:justify-end lg:items-start lg:pb-36 lg:px-12"
       >
-        <div className="w-full max-w-[92vw] xs:max-w-[340px] sm:max-w-md lg:max-w-xl flex flex-col items-center lg:items-start text-center lg:text-left bg-zinc-950/92 border border-white/10 hover:border-red-500/30 p-3.5 xs:p-4.5 sm:p-6 lg:p-7 rounded-2xl backdrop-blur-2xl shadow-[0_15px_40px_rgba(0,0,0,0.85)] transition-all">
+        <div className="w-full max-w-[92vw] xs:max-w-[340px] sm:max-w-md lg:max-w-xl flex flex-col items-center lg:items-start text-center lg:text-left bg-zinc-950/95 border border-white/10 hover:border-red-500/30 p-3.5 xs:p-4.5 sm:p-6 lg:p-7 rounded-2xl backdrop-blur-2xl shadow-[0_15px_40px_rgba(0,0,0,0.95)] transition-all">
           {/* Tag de contexto */}
           <div className="mb-1.5 sm:mb-2.5">
             <TypewriterTitle
