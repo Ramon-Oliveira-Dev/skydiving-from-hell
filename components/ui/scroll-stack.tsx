@@ -1,10 +1,13 @@
 "use client";
 
 /**
- * ScrollStack Component — React Bits (@reactbits-starter/scroll-stack-tw)
- * Creates a 3D sticky stacking card effect on screen transitions as the user scrolls.
+ * ScrollStack Component — Skiper17 3D Stacking & Rotate Transitions Edition
  *
- * S.D.F.H. Dark Metal Edition
+ * Implements the @skiper-ui/skiper17 effect across full-page section transitions:
+ * - GSAP & Motion-powered 3D perspective stack
+ * - Dynamic scroll-based scale down (1 -> 0.93)
+ * - Alternating subtle 3D rotation (-1.2deg / +1.2deg)
+ * - Progressive depth darkening & crimson rim lighting
  */
 
 import React, { useRef } from "react";
@@ -21,23 +24,25 @@ export interface ScrollStackItemProps {
   index?: number;
   topOffset?: number;
   scaleStep?: number;
+  rotateStep?: number;
   dimStep?: number;
   id?: string;
   className?: string;
 }
 
 export function ScrollStack({ children, className = "" }: ScrollStackProps) {
+  const validChildren = React.Children.toArray(children).filter(React.isValidElement);
+
   return (
-    <div className={cn("relative w-full flex flex-col", className)}>
-      {React.Children.map(children, (child, index) => {
-        if (!React.isValidElement(child)) return child;
+    <div className={cn("relative w-full flex flex-col perspective-[1200px]", className)}>
+      {validChildren.map((child, index) => {
         return (
           <ScrollStackItem
             index={index}
-            key={child.key || `stack-item-${index}`}
-            {...(child.props as any)}
+            key={(child as React.ReactElement).key || `stack-item-${index}`}
+            {...((child as React.ReactElement).props as any)}
           >
-            {(child.props as any)?.children || child}
+            {((child as React.ReactElement).props as any)?.children || child}
           </ScrollStackItem>
         );
       })}
@@ -49,8 +54,9 @@ export function ScrollStackItem({
   children,
   index = 0,
   topOffset = 0,
-  scaleStep = 0.03,
-  dimStep = 0.08,
+  scaleStep = 0.07,
+  rotateStep = 1.4,
+  dimStep = 0.22,
   id,
   className = "",
 }: ScrollStackItemProps) {
@@ -61,9 +67,16 @@ export function ScrollStackItem({
     offset: ["start start", "end start"],
   });
 
-  // Conforme a próxima seção sobe e sobrepõe, esta escala sutilmente para trás e escurece com profundidade
+  // Skiper17 dynamic transforms:
+  // Alterna a rotação para criar o efeito realista de cartas empilhadas (Skiper17)
+  const rotationDirection = index % 2 === 0 ? -1 : 1;
+  const targetRotation = rotationDirection * rotateStep;
+
   const scale = useTransform(scrollYProgress, [0, 1], [1, 1 - scaleStep]);
-  const opacity = useTransform(scrollYProgress, [0, 0.85, 1], [1, 1 - dimStep, 0.88]);
+  const rotateZ = useTransform(scrollYProgress, [0, 1], [0, targetRotation]);
+  const rotateX = useTransform(scrollYProgress, [0, 1], [0, 1.8]);
+  const yShift = useTransform(scrollYProgress, [0, 1], ["0%", "-3%"]);
+  const overlayOpacity = useTransform(scrollYProgress, [0, 0.7, 1], [0, dimStep * 0.6, dimStep]);
 
   return (
     <div
@@ -82,11 +95,24 @@ export function ScrollStackItem({
       <motion.div
         style={{
           scale,
-          opacity,
+          rotateZ,
+          rotateX,
+          y: yShift,
+          transformPerspective: 1200,
+          transformStyle: "preserve-3d",
         }}
-        className="w-full h-full rounded-t-[28px] sm:rounded-t-[36px] bg-black shadow-[0_-25px_60px_rgba(0,0,0,0.95),_0_0_30px_rgba(220,38,38,0.08)] border-t border-white/10"
+        className="relative w-full h-full rounded-t-[28px] sm:rounded-t-[38px] bg-black shadow-[0_-25px_60px_rgba(0,0,0,0.95),_0_0_30px_rgba(220,38,38,0.1)] border-t border-red-500/20 overflow-hidden"
       >
-        {children}
+        {/* Camada de conteúdo da seção */}
+        <div className="relative z-10 w-full">
+          {children}
+        </div>
+
+        {/* Camada de escurecimento e profundidade 3D (Skiper17 Depth Overlay) */}
+        <motion.div
+          style={{ opacity: overlayOpacity }}
+          className="pointer-events-none absolute inset-0 z-30 bg-gradient-to-b from-black/80 via-black/40 to-black/90 mix-blend-multiply"
+        />
       </motion.div>
     </div>
   );

@@ -131,8 +131,9 @@ export default function BandPlayer() {
           </div>
         </ScrollReveal>
 
-        <ScrollReveal direction="up" delay={150}>
-        <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 items-stretch">
+        {/* Fade & Slide Up Suave: O card do player de música ("Unpatriot") entra de baixo para cima com leve atraso emergindo do fundo do abismo */}
+        <ScrollReveal direction="up" delay={200} duration={1000} threshold="top 90%">
+          <div className="flex flex-col lg:flex-row gap-6 sm:gap-8 items-stretch">
 
           {/* ================================================================
               PLAYER PRINCIPAL (MODERN GLASSMORPHISM + BORDER BEAM)
