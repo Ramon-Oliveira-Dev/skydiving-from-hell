@@ -56,7 +56,7 @@ export default function TypewriterTitle({
   const isDeletingRef = useRef(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Serializa as sequências para que re-renderizações da página (ex: áudio tocando) não reiniciem ou travem o efeito
+  // Serializa as sequências para evitar re-renderizações desnecessárias
   const sequencesKey = useMemo(() => JSON.stringify(sequences), [sequences]);
   const parsedSequences = useMemo<TypewriterSequence[]>(() => {
     try {
@@ -65,6 +65,15 @@ export default function TypewriterTitle({
       return DEFAULT_SEQUENCES;
     }
   }, [sequencesKey]);
+
+  // Encontra a sequência mais longa para reservar o espaço físico e evitar Layout Shift no mobile
+  const longestText = useMemo(() => {
+    if (!parsedSequences || parsedSequences.length === 0) return "";
+    return parsedSequences.reduce((longest, seq) => {
+      const text = seq.text || "";
+      return text.length > longest.length ? text : longest;
+    }, "");
+  }, [parsedSequences]);
 
   useEffect(() => {
     sequenceIndexRef.current = 0;
@@ -166,32 +175,44 @@ export default function TypewriterTitle({
   ]);
 
   return (
-    <Component className={`relative inline-flex items-center ${className}`}>
-      {prefix && <span className={`mr-2 select-none ${prefixClassName}`}>{prefix}</span>}
-      <motion.span
-        animate={{ opacity: 1 }}
-        className={`inline-flex items-center gap-1 font-mono tracking-tight ${textClassName}`}
-        initial={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
-      >
-        <span className="inline-block min-h-[1.2em] whitespace-pre-wrap">
-          {displayText}
+    <Component className={`relative inline-flex items-center align-baseline ${className}`}>
+      {prefix && <span className={`mr-2 select-none flex-shrink-0 ${prefixClassName}`}>{prefix}</span>}
+
+      {/* Grid container com altura travada e Zero Layout Shift (CLS = 0) */}
+      <span className="relative inline-grid grid-cols-1 grid-rows-1 items-center align-baseline">
+        {/* Ghost layer invisível: reserva o espaço do texto mais longo para que o layout mobile nunca pule */}
+        <span
+          aria-hidden="true"
+          className={`invisible pointer-events-none select-none col-start-1 row-start-1 font-mono tracking-tight ${textClassName}`}
+        >
+          {longestText}
+          {showCursor && <span className="inline-block w-[3px] ml-1">_</span>}
         </span>
-        {showCursor && (
-          <motion.span
-            animate={{
-              opacity: [1, 1, 0, 0],
-            }}
-            className={`inline-block h-[1em] w-[3px] bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] ${cursorClassName}`}
-            transition={{
-              duration: 0.9,
-              repeat: Number.POSITIVE_INFINITY,
-              repeatType: "loop",
-              ease: "linear",
-            }}
-          />
-        )}
-      </motion.span>
+
+        {/* Camada visível de digitação ativa */}
+        <motion.span
+          animate={{ opacity: 1 }}
+          className={`col-start-1 row-start-1 inline-flex items-center font-mono tracking-tight whitespace-pre-wrap ${textClassName}`}
+          initial={{ opacity: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          <span>{displayText || "\u00A0"}</span>
+          {showCursor && (
+            <motion.span
+              animate={{
+                opacity: [1, 1, 0, 0],
+              }}
+              className={`inline-block h-[1em] w-[3px] bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.8)] ml-0.5 flex-shrink-0 align-middle ${cursorClassName}`}
+              transition={{
+                duration: 0.9,
+                repeat: Number.POSITIVE_INFINITY,
+                repeatType: "loop",
+                ease: "linear",
+              }}
+            />
+          )}
+        </motion.span>
+      </span>
     </Component>
   );
 }
