@@ -329,31 +329,10 @@ export default function BandLineup() {
               }}
             />
 
-            {/* BARRA SUPERIOR UNIFICADA (HEADER DO DOSSIÊ COM INTEGRANTES + FECHAR) */}
-            <div className="sticky top-0 z-50 w-full bg-[#08070a]/95 backdrop-blur-2xl border-b border-white/10 px-3 sm:px-6 py-2.5 sm:py-3 flex flex-col md:flex-row items-center justify-between gap-2.5 sm:gap-3 shadow-2xl">
-              {/* Lado Esquerdo: Identificação Tática */}
-              <div className="w-full md:w-auto flex items-center justify-between md:justify-start gap-3">
-                <div className="flex items-center gap-2 font-mono text-xs sm:text-sm uppercase tracking-wider">
-                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping inline-block flex-shrink-0" />
-                  <span className="text-red-500 font-bold hidden xs:inline">// DOSSIÊ:</span>
-                  <span className="text-white font-black tracking-tight">{selectedMember.name}</span>
-                  <span className="text-zinc-600 hidden sm:inline">&bull;</span>
-                  <span className="text-zinc-400 hidden sm:inline text-xs font-mono">{selectedMember.role}</span>
-                </div>
-
-                {/* Botão Fechar no Mobile */}
-                <button
-                  onClick={closeModal}
-                  aria-label="Fechar Dossiê"
-                  className="md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-600 hover:bg-red-500 text-white font-mono text-xs font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(220,38,38,0.7)] cursor-pointer active:scale-95"
-                >
-                  <span>Fechar</span>
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              {/* Centro: Seletor com os botões dos integrantes */}
-              <div className="w-full md:w-auto overflow-x-auto scrollbar-none flex items-center justify-start md:justify-center gap-1.5 sm:gap-2 py-0.5">
+            {/* BARRA SUPERIOR COMPACTA (SELETOR DE INTEGRANTES + BOTÃO [X]) */}
+            <div className="sticky top-0 z-50 w-full bg-[#08070a]/95 backdrop-blur-2xl border-b border-white/10 px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-3 shadow-2xl">
+              {/* Seletor com os botões dos integrantes */}
+              <div className="flex-1 overflow-x-auto scrollbar-none flex items-center justify-start sm:justify-center gap-1.5 sm:gap-2.5 py-0.5">
                 {MEMBERS.map((m) => {
                   const isActive = m.id === selectedMember.id;
                   return (
@@ -363,7 +342,7 @@ export default function BandLineup() {
                         setSelectedMember(m);
                         setCurrentImgIndex(0);
                       }}
-                      className={`px-3 py-1.5 rounded-xl font-mono text-xs uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${
+                      className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl font-mono text-xs sm:text-xs uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${
                         isActive
                           ? "bg-red-600 text-white font-bold shadow-[0_0_15px_rgba(220,38,38,0.6)] scale-105 border border-red-400/40"
                           : "bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 border border-white/5"
@@ -371,7 +350,7 @@ export default function BandLineup() {
                     >
                       <span
                         className={`w-1.5 h-1.5 rounded-full ${
-                          isActive ? "bg-white" : "bg-zinc-600"
+                          isActive ? "bg-white shadow-[0_0_6px_rgba(255,255,255,0.9)]" : "bg-zinc-600"
                         }`}
                       />
                       <span>{m.name}</span>
@@ -380,17 +359,14 @@ export default function BandLineup() {
                 })}
               </div>
 
-              {/* Lado Direito: Botão Fechar no Desktop */}
-              <div className="hidden md:flex items-center">
-                <button
-                  onClick={closeModal}
-                  aria-label="Fechar Dossiê"
-                  className="group flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full bg-red-600 hover:bg-red-500 text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(220,38,38,0.7)] cursor-pointer"
-                >
-                  <span>Fechar</span>
-                  <X className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300 text-white" />
-                </button>
-              </div>
+              {/* Botão Fechar compacto somente [X] */}
+              <button
+                onClick={closeModal}
+                aria-label="Fechar Dossiê"
+                className="flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-red-600 hover:bg-red-500 text-white flex items-center justify-center shadow-[0_0_20px_rgba(220,38,38,0.7)] hover:scale-110 active:scale-95 transition-all duration-300 cursor-pointer"
+              >
+                <X className="w-5 h-5 hover:rotate-90 transition-transform duration-300" />
+              </button>
             </div>
 
             {/* CONTEÚDO PRINCIPAL DO INTEGRANTE EM TELA CHEIA */}
