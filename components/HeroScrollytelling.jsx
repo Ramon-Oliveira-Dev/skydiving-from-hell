@@ -282,16 +282,16 @@ export default function HeroScrollytelling() {
         tl.to(particles, { scale: 1.15, opacity: 0.45, y: -25, ease: "none" }, 0);
       }
 
-      // ── ETAPA 2: Transição Parallax Z-Scale entre Hero 1 e Hero 2 (0.02 a 0.35) ──
+      // ── ETAPA 2: CROSSFADE CINEMATOGRÁFICO ENTRE HERO 1 E HERO 2 (0.02 a 0.40) ──
+      // Opacidade cruzada suave (Crossfade cinematográfico de 1–1.5s) entre os vídeos sobrepostos
       if (hero1Container) {
         tl.to(
           hero1Container,
           {
-            yPercent: -18,
-            scale: 1.25, // Z-Scale 125%
             opacity: 0,
-            duration: 0.35,
-            ease: "power2.inOut",
+            scale: 1.06,
+            duration: 0.4,
+            ease: "power1.inOut",
           },
           0.02
         );
@@ -300,18 +300,18 @@ export default function HeroScrollytelling() {
       if (sheen) {
         tl.fromTo(
           sheen,
-          { opacity: 0, yPercent: 25 },
-          { opacity: 0.65, yPercent: 0, duration: 0.2, ease: "power2.out" },
-          0.08
+          { opacity: 0, yPercent: 18 },
+          { opacity: 0.5, yPercent: 0, duration: 0.22, ease: "power2.out" },
+          0.06
         );
-        tl.to(sheen, { opacity: 0, yPercent: -25, duration: 0.2, ease: "power2.in" }, 0.25);
+        tl.to(sheen, { opacity: 0, yPercent: -18, duration: 0.22, ease: "power2.in" }, 0.26);
       }
 
       if (hero2Container) {
         tl.fromTo(
           hero2Container,
-          { opacity: 0, yPercent: 18, scale: 1.08 },
-          { opacity: 1, yPercent: 0, scale: 1.0, duration: 0.35, ease: "power2.inOut" },
+          { opacity: 0, scale: 1.03 },
+          { opacity: 1, scale: 1.0, duration: 0.4, ease: "power1.inOut" },
           0.02
         );
       }
@@ -430,7 +430,7 @@ export default function HeroScrollytelling() {
           muted
           playsInline
           preload="auto"
-          className="absolute inset-0 w-full h-full object-cover filter brightness-95 contrast-[1.08]"
+          className="absolute inset-0 w-full h-full object-cover filter brightness-95 contrast-[1.08] animate-ken-burns will-change-transform"
         />
         {/* Vinheta cinematográfica */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/30 to-black/85 pointer-events-none" />
@@ -456,7 +456,7 @@ export default function HeroScrollytelling() {
       >
         <canvas
           ref={canvasRef}
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover animate-ken-burns will-change-transform"
         />
 
         {/* Vinheta de contraste */}
