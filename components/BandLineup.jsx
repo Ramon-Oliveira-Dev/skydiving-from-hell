@@ -329,10 +329,10 @@ export default function BandLineup() {
               }}
             />
 
-            {/* BARRA SUPERIOR FIXA DO DOSSIÊ (TACTICAL HUD HEADER) */}
-            <div className="sticky top-0 z-50 w-full bg-[#08070a]/95 backdrop-blur-2xl border-b border-white/10 px-4 sm:px-8 py-3 sm:py-3.5 flex items-center justify-between shadow-2xl">
-              {/* Identificação Tática e Seletor Rápido de Músicos */}
-              <div className="flex items-center gap-3">
+            {/* BARRA SUPERIOR UNIFICADA (HEADER DO DOSSIÊ COM INTEGRANTES + FECHAR) */}
+            <div className="sticky top-0 z-50 w-full bg-[#08070a]/95 backdrop-blur-2xl border-b border-white/10 px-3 sm:px-6 py-2.5 sm:py-3 flex flex-col md:flex-row items-center justify-between gap-2.5 sm:gap-3 shadow-2xl">
+              {/* Lado Esquerdo: Identificação Tática */}
+              <div className="w-full md:w-auto flex items-center justify-between md:justify-start gap-3">
                 <div className="flex items-center gap-2 font-mono text-xs sm:text-sm uppercase tracking-wider">
                   <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping inline-block flex-shrink-0" />
                   <span className="text-red-500 font-bold hidden xs:inline">// DOSSIÊ:</span>
@@ -340,83 +340,61 @@ export default function BandLineup() {
                   <span className="text-zinc-600 hidden sm:inline">&bull;</span>
                   <span className="text-zinc-400 hidden sm:inline text-xs font-mono">{selectedMember.role}</span>
                 </div>
+
+                {/* Botão Fechar no Mobile */}
+                <button
+                  onClick={closeModal}
+                  aria-label="Fechar Dossiê"
+                  className="md:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-red-600 hover:bg-red-500 text-white font-mono text-xs font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(220,38,38,0.7)] cursor-pointer active:scale-95"
+                >
+                  <span>Fechar</span>
+                  <X className="w-3.5 h-3.5" />
+                </button>
               </div>
 
-              {/* Ações do Topo: Navegação Anterior/Próximo + Botão Fechar */}
-              <div className="flex items-center gap-2 sm:gap-3">
-                {/* Botões de Navegação Entre Integrantes (Desktop/Tablet) */}
-                <div className="hidden md:flex items-center bg-white/5 border border-white/10 rounded-full p-1 gap-1">
-                  <button
-                    onClick={() => {
-                      const currentIdx = MEMBERS.findIndex((m) => m.id === selectedMember.id);
-                      const prevIdx = (currentIdx - 1 + MEMBERS.length) % MEMBERS.length;
-                      setSelectedMember(MEMBERS[prevIdx]);
-                      setCurrentImgIndex(0);
-                    }}
-                    aria-label="Integrante Anterior"
-                    className="px-3 py-1 text-[11px] font-mono uppercase text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-colors flex items-center gap-1 cursor-pointer"
-                  >
-                    <ChevronLeft className="w-3.5 h-3.5" />
-                    <span>Anterior</span>
-                  </button>
-                  <span className="text-zinc-700 text-xs">|</span>
-                  <button
-                    onClick={() => {
-                      const currentIdx = MEMBERS.findIndex((m) => m.id === selectedMember.id);
-                      const nextIdx = (currentIdx + 1) % MEMBERS.length;
-                      setSelectedMember(MEMBERS[nextIdx]);
-                      setCurrentImgIndex(0);
-                    }}
-                    aria-label="Próximo Integrante"
-                    className="px-3 py-1 text-[11px] font-mono uppercase text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-colors flex items-center gap-1 cursor-pointer"
-                  >
-                    <span>Próximo</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+              {/* Centro: Seletor com os botões dos integrantes */}
+              <div className="w-full md:w-auto overflow-x-auto scrollbar-none flex items-center justify-start md:justify-center gap-1.5 sm:gap-2 py-0.5">
+                {MEMBERS.map((m) => {
+                  const isActive = m.id === selectedMember.id;
+                  return (
+                    <button
+                      key={m.id}
+                      onClick={() => {
+                        setSelectedMember(m);
+                        setCurrentImgIndex(0);
+                      }}
+                      className={`px-3 py-1.5 rounded-xl font-mono text-xs uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${
+                        isActive
+                          ? "bg-red-600 text-white font-bold shadow-[0_0_15px_rgba(220,38,38,0.6)] scale-105 border border-red-400/40"
+                          : "bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 border border-white/5"
+                      }`}
+                    >
+                      <span
+                        className={`w-1.5 h-1.5 rounded-full ${
+                          isActive ? "bg-white" : "bg-zinc-600"
+                        }`}
+                      />
+                      <span>{m.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
 
-                {/* Botão Fechar Proeminente com Glow */}
+              {/* Lado Direito: Botão Fechar no Desktop */}
+              <div className="hidden md:flex items-center">
                 <button
                   onClick={closeModal}
                   aria-label="Fechar Dossiê"
                   className="group flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full bg-red-600 hover:bg-red-500 text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(220,38,38,0.7)] cursor-pointer"
                 >
                   <span>Fechar</span>
-                  <X className="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-90 transition-transform duration-300 text-white" />
+                  <X className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300 text-white" />
                 </button>
               </div>
             </div>
 
-            {/* BARRA DE ATALHO ENTRE INTEGRANTES (MOBILE / TABLET / DESKTOP STRIP) */}
-            <div className="sticky top-[49px] sm:top-[55px] z-40 w-full bg-[#0d0c10]/95 backdrop-blur-md border-b border-white/5 px-4 py-2 overflow-x-auto scrollbar-none flex items-center justify-start sm:justify-center gap-2 sm:gap-3">
-              {MEMBERS.map((m) => {
-                const isActive = m.id === selectedMember.id;
-                return (
-                  <button
-                    key={m.id}
-                    onClick={() => {
-                      setSelectedMember(m);
-                      setCurrentImgIndex(0);
-                    }}
-                    className={`px-3 py-1.5 rounded-xl font-mono text-xs uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${
-                      isActive
-                        ? "bg-red-600 text-white font-bold shadow-[0_0_15px_rgba(220,38,38,0.6)] scale-105 border border-red-400/40"
-                        : "bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 border border-white/5"
-                    }`}
-                  >
-                    <span
-                      className={`w-1.5 h-1.5 rounded-full ${
-                        isActive ? "bg-white" : "bg-zinc-600"
-                      }`}
-                    />
-                    <span>{m.name}</span>
-                  </button>
-                );
-              })}
-            </div>
-
             {/* CONTEÚDO PRINCIPAL DO INTEGRANTE EM TELA CHEIA */}
-            <div className="flex-1 w-full max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-6 sm:py-10 flex flex-col justify-between z-10 pb-28 sm:pb-20">
+            <div className="flex-1 w-full max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-6 sm:py-10 flex flex-col justify-between z-10 pb-16 sm:pb-12">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
                 {/* COLUNA ESQUERDA: CARROSSEL DE FOTOS EM ALTA RESOLUÇÃO COM TOUCH SWIPE */}
                 <div className="lg:col-span-5 flex flex-col items-center gap-4 w-full">
@@ -503,131 +481,93 @@ export default function BandLineup() {
                                   ? "w-6 bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]"
                                   : "w-2 bg-white/40 hover:bg-white/80"
                               }`}
-                          />
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                {/* Botão de Rede Social Instagram */}
-                <a
-                  href={selectedMember.socials.instagram}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full py-3.5 px-5 rounded-xl bg-white/5 hover:bg-gradient-to-r hover:from-purple-600/40 hover:to-red-600/40 border border-white/10 hover:border-red-500/40 text-zinc-200 hover:text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all duration-300 shadow-md active:scale-95"
-                >
-                  <IconInstagram className="w-4 h-4 text-red-400" />
-                  <span>Seguir {selectedMember.socials.handle}</span>
-                  <ExternalLink className="w-3.5 h-3.5 text-zinc-400" />
-                </a>
-              </div>
-
-              {/* COLUNA DIREITA: INFORMAÇÕES TÉCNICAS E TRAJETÓRIA */}
-              <div className="lg:col-span-7 flex flex-col gap-6 w-full">
-                {/* Header do Dossiê */}
-                <div className="border-b border-white/10 pb-5">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="w-2 h-2 rounded-full bg-red-500 animate-ping inline-block" />
-                    <span className="font-mono text-xs text-red-500 uppercase tracking-[0.3em] font-bold">
-                      DOSSIÊ DE INTEGRANTE OFICIAL
-                    </span>
+                            />
+                          ))}
+                        </div>
+                      </>
+                    )}
                   </div>
-                  <h3
-                    id="dossier-member-name"
-                    className="text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-white"
+
+                  {/* Botão de Rede Social Instagram */}
+                  <a
+                    href={selectedMember.socials.instagram}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-3.5 px-5 rounded-xl bg-white/5 hover:bg-gradient-to-r hover:from-purple-600/40 hover:to-red-600/40 border border-white/10 hover:border-red-500/40 text-zinc-200 hover:text-white font-mono text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 transition-all duration-300 shadow-md active:scale-95"
                   >
-                    {selectedMember.name}
-                  </h3>
-                  <p className="font-mono text-sm sm:text-base text-zinc-400 mt-1">
-                    Operador Oficial &bull; {selectedMember.role}
-                  </p>
+                    <IconInstagram className="w-4 h-4 text-red-400" />
+                    <span>Seguir {selectedMember.socials.handle}</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-zinc-400" />
+                  </a>
                 </div>
 
-                {/* Seção 1: Trajetória */}
-                <div className="space-y-2">
-                  <span className="font-mono text-xs font-bold uppercase tracking-widest text-red-400 flex items-center gap-1.5">
-                    <Sparkles className="w-4 h-4 text-red-500" />
-                    <span>TRAJETÓRIA NO METAL</span>
-                  </span>
-                  <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-sans bg-white/[0.02] p-4 sm:p-5 rounded-2xl border border-white/5">
-                    {selectedMember.fullHistory}
-                  </p>
-                </div>
-
-                {/* Seção 2: Setup Técnico */}
-                <div className="space-y-2">
-                  <span className="font-mono text-xs font-bold uppercase tracking-widest text-red-400 flex items-center gap-1.5">
-                    <Sliders className="w-4 h-4 text-red-500" />
-                    <span>SETUP & AFINAÇÃO</span>
-                  </span>
-                  <div className="bg-white/5 border border-white/10 rounded-2xl p-4 font-mono text-xs sm:text-sm text-zinc-200 shadow-inner">
-                    {selectedMember.setup}
+                {/* COLUNA DIREITA: INFORMAÇÕES TÉCNICAS E TRAJETÓRIA */}
+                <div className="lg:col-span-7 flex flex-col gap-6 w-full">
+                  {/* Header do Dossiê */}
+                  <div className="border-b border-white/10 pb-5">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="w-2 h-2 rounded-full bg-red-500 animate-ping inline-block" />
+                      <span className="font-mono text-xs text-red-500 uppercase tracking-[0.3em] font-bold">
+                        DOSSIÊ DE INTEGRANTE OFICIAL
+                      </span>
+                    </div>
+                    <h3
+                      id="dossier-member-name"
+                      className="text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-white"
+                    >
+                      {selectedMember.name}
+                    </h3>
+                    <p className="font-mono text-sm sm:text-base text-zinc-400 mt-1">
+                      Operador Oficial &bull; {selectedMember.role}
+                    </p>
                   </div>
-                </div>
 
-                {/* Seção 3: Equipamentos */}
-                <div className="space-y-2">
-                  <span className="font-mono text-xs font-bold uppercase tracking-widest text-red-400 flex items-center gap-1.5">
-                    <Radio className="w-4 h-4 text-red-500" />
-                    <span>EQUIPAMENTO OFICIAL</span>
-                  </span>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                    {selectedMember.equipment.map((item) => (
-                      <div
-                        key={item}
-                        className="px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 font-mono text-xs text-zinc-300 flex items-center gap-2.5 hover:border-red-500/40 hover:bg-white/[0.06] transition-colors"
-                      >
-                        <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0 shadow-[0_0_6px_rgba(239,68,68,0.8)]" />
-                        <span className="truncate">{item}</span>
-                      </div>
-                    ))}
+                  {/* Seção 1: Trajetória */}
+                  <div className="space-y-2">
+                    <span className="font-mono text-xs font-bold uppercase tracking-widest text-red-400 flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-red-500" />
+                      <span>TRAJETÓRIA NO METAL</span>
+                    </span>
+                    <p className="text-sm sm:text-base text-zinc-300 leading-relaxed font-sans bg-white/[0.02] p-4 sm:p-5 rounded-2xl border border-white/5">
+                      {selectedMember.fullHistory}
+                    </p>
+                  </div>
+
+                  {/* Seção 2: Setup Técnico */}
+                  <div className="space-y-2">
+                    <span className="font-mono text-xs font-bold uppercase tracking-widest text-red-400 flex items-center gap-1.5">
+                      <Sliders className="w-4 h-4 text-red-500" />
+                      <span>SETUP & AFINAÇÃO</span>
+                    </span>
+                    <div className="bg-white/5 border border-white/10 rounded-2xl p-4 font-mono text-xs sm:text-sm text-zinc-200 shadow-inner">
+                      {selectedMember.setup}
+                    </div>
+                  </div>
+
+                  {/* Seção 3: Equipamentos */}
+                  <div className="space-y-2">
+                    <span className="font-mono text-xs font-bold uppercase tracking-widest text-red-400 flex items-center gap-1.5">
+                      <Radio className="w-4 h-4 text-red-500" />
+                      <span>EQUIPAMENTO OFICIAL</span>
+                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                      {selectedMember.equipment.map((item) => (
+                        <div
+                          key={item}
+                          className="px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 font-mono text-xs text-zinc-300 flex items-center gap-2.5 hover:border-red-500/40 hover:bg-white/[0.06] transition-colors"
+                        >
+                          <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0 shadow-[0_0_6px_rgba(239,68,68,0.8)]" />
+                          <span className="truncate">{item}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* BOTÃO FECHAR INFERIOR & NAVEGAÇÃO ENTRE INTEGRANTES */}
-            <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => {
-                    const currentIdx = MEMBERS.findIndex((m) => m.id === selectedMember.id);
-                    const prevIdx = (currentIdx - 1 + MEMBERS.length) % MEMBERS.length;
-                    setSelectedMember(MEMBERS[prevIdx]);
-                    setCurrentImgIndex(0);
-                  }}
-                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono uppercase text-zinc-300 hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
-                >
-                  <ChevronLeft className="w-4 h-4 text-red-500" />
-                  <span>Anterior</span>
-                </button>
-                <button
-                  onClick={() => {
-                    const currentIdx = MEMBERS.findIndex((m) => m.id === selectedMember.id);
-                    const nextIdx = (currentIdx + 1) % MEMBERS.length;
-                    setSelectedMember(MEMBERS[nextIdx]);
-                    setCurrentImgIndex(0);
-                  }}
-                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono uppercase text-zinc-300 hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
-                >
-                  <span>Próximo</span>
-                  <ChevronRight className="w-4 h-4 text-red-500" />
-                </button>
-              </div>
-
-              <button
-                onClick={closeModal}
-                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-white/10 hover:bg-red-600 border border-white/20 hover:border-red-500 text-white font-mono text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <X className="w-4 h-4" />
-                <span>Fechar Dossiê</span>
-              </button>
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
-    </section>
-  );
-}
+          </div>,
+          document.body
+        )}
+      </section>
+    );
+  }
