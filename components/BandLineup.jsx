@@ -72,21 +72,33 @@ export default function BandLineup() {
     }
   }, []);
 
-  // Fechar com a tecla ESC e travar rolagem da página
+  // Fechar com a tecla ESC e travar rolagem da página (Lenis + HTML/Body Scroll Lock)
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") closeModal();
     };
 
     if (selectedMember) {
+      if (typeof window !== "undefined" && window.lenis) {
+        window.lenis.stop();
+      }
+      document.documentElement.style.overflow = "hidden";
       document.body.style.overflow = "hidden";
       window.addEventListener("keydown", handleKeyDown);
     } else {
-      document.body.style.overflow = "auto";
+      if (typeof window !== "undefined" && window.lenis) {
+        window.lenis.start();
+      }
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
     }
 
     return () => {
-      document.body.style.overflow = "auto";
+      if (typeof window !== "undefined" && window.lenis) {
+        window.lenis.start();
+      }
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [selectedMember, closeModal]);
@@ -287,38 +299,31 @@ export default function BandLineup() {
       </div>
 
       {/* ================================================================
-      {/* ================================================================
-          MODAL DE DOSSIÊ COMPLETO EM TELA CHEIA (FULLSCREEN EXPERIÊNCIA TOTAL)
+          MODAL DE DOSSIÊ COMPLETO EM TELA CHEIA (FULLSCREEN ISOLADO)
          ================================================================ */}
       {selectedMember && (
         <div
           role="dialog"
           aria-modal="true"
+          data-lenis-prevent="true"
           aria-label={`Dossiê de ${selectedMember.name}`}
-          className="fixed inset-0 z-[9999] w-screen h-[100dvh] bg-black/95 backdrop-blur-3xl flex flex-col overflow-y-auto overscroll-contain animate-fadeIn text-white"
+          className="fixed inset-0 z-[99999] w-screen h-[100dvh] bg-black/98 backdrop-blur-3xl flex flex-col overflow-y-auto overscroll-contain animate-fadeIn text-white"
         >
-          {/* BARRA SUPERIOR FIXA (HEADER DO DOSSIÊ COM BOTÃO FECHAR) */}
-          <div className="sticky top-0 z-50 w-full bg-black/90 backdrop-blur-2xl border-b border-white/10 px-4 sm:px-8 py-3 sm:py-4 flex items-center justify-between shadow-2xl">
-            <div className="flex items-center gap-3">
-              <Image
-                src="/logo_cabecalho.png"
-                alt="Logotipo oficial Skydiving From Hell"
-                width={140}
-                height={38}
-                style={{ width: "auto" }}
-                className="h-7 sm:h-8 object-contain drop-shadow-[0_0_15px_rgba(239,68,68,0.6)]"
-              />
-              <div className="hidden sm:flex items-center gap-2 pl-3 border-l border-white/10 font-mono text-xs text-red-500 font-bold uppercase tracking-[0.25em]">
-                <span className="w-2 h-2 rounded-full bg-red-500 animate-ping inline-block" />
-                <span>DOSSIÊ OFICIAL // {selectedMember.role}</span>
-              </div>
+          {/* BARRA SUPERIOR FIXA DO DOSSIÊ (SEM REDUNDÂNCIA DE LOGO) */}
+          <div className="sticky top-0 z-50 w-full bg-black/95 backdrop-blur-2xl border-b border-white/10 px-4 sm:px-8 py-3.5 sm:py-4 flex items-center justify-between shadow-2xl">
+            <div className="flex items-center gap-2 font-mono text-xs sm:text-sm uppercase tracking-wider">
+              <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping inline-block flex-shrink-0" />
+              <span className="text-red-500 font-bold">// DOSSIÊ:</span>
+              <span className="text-white font-black tracking-tight">{selectedMember.name}</span>
+              <span className="text-zinc-600 hidden sm:inline">&bull;</span>
+              <span className="text-zinc-400 hidden sm:inline text-xs font-mono">{selectedMember.role}</span>
             </div>
 
             {/* BOTÃO FECHAR PROEMINENTE */}
             <button
               onClick={closeModal}
               aria-label="Fechar Dossiê"
-              className="group flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/10 hover:bg-red-600 border border-white/20 hover:border-red-500 text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(220,38,38,0.5)] cursor-pointer"
+              className="group flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2 rounded-full bg-white/10 hover:bg-red-600 border border-white/20 hover:border-red-500 text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(220,38,38,0.5)] cursor-pointer"
             >
               <span>Fechar</span>
               <X className="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-90 transition-transform duration-300 text-red-400 group-hover:text-white" />
