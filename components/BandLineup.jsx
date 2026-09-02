@@ -287,34 +287,53 @@ export default function BandLineup() {
       </div>
 
       {/* ================================================================
-          MODAL DE DOSSIÊ COMPLETO EM TELA CHEIA (FULLSCREEN CAROUSEL)
+      {/* ================================================================
+          MODAL DE DOSSIÊ COMPLETO EM TELA CHEIA (FULLSCREEN EXPERIÊNCIA TOTAL)
          ================================================================ */}
       {selectedMember && (
         <div
-          onClick={closeModal}
-          className="fixed inset-0 z-50 w-screen h-screen bg-black/95 backdrop-blur-2xl flex items-center justify-center p-4 sm:p-6 lg:p-10 overflow-y-auto animate-fadeIn"
+          role="dialog"
+          aria-modal="true"
+          aria-label={`Dossiê de ${selectedMember.name}`}
+          className="fixed inset-0 z-[9999] w-screen h-[100dvh] bg-black/95 backdrop-blur-3xl flex flex-col overflow-y-auto overscroll-contain animate-fadeIn text-white"
         >
-          {/* Botão Fechar Flutuante Fixo no Canto Superior Direito */}
-          <button
-            onClick={closeModal}
-            aria-label="Fechar Dossiê"
-            className="fixed top-4 right-4 sm:top-6 sm:right-6 z-[60] w-12 h-12 rounded-full bg-black/90 hover:bg-red-600 border border-white/20 hover:border-red-500 text-white flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-[0_0_20px_rgba(220,38,38,0.5)]"
-          >
-            <X className="w-6 h-6" />
-          </button>
+          {/* BARRA SUPERIOR FIXA (HEADER DO DOSSIÊ COM BOTÃO FECHAR) */}
+          <div className="sticky top-0 z-50 w-full bg-black/90 backdrop-blur-2xl border-b border-white/10 px-4 sm:px-8 py-3 sm:py-4 flex items-center justify-between shadow-2xl">
+            <div className="flex items-center gap-3">
+              <Image
+                src="/logo_cabecalho.png"
+                alt="Logotipo oficial Skydiving From Hell"
+                width={140}
+                height={38}
+                style={{ width: "auto" }}
+                className="h-7 sm:h-8 object-contain drop-shadow-[0_0_15px_rgba(239,68,68,0.6)]"
+              />
+              <div className="hidden sm:flex items-center gap-2 pl-3 border-l border-white/10 font-mono text-xs text-red-500 font-bold uppercase tracking-[0.25em]">
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-ping inline-block" />
+                <span>DOSSIÊ OFICIAL // {selectedMember.role}</span>
+              </div>
+            </div>
 
-          {/* Container Interno Fluido de Alta Definição */}
-          <div
-            onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-6xl xl:max-w-7xl bg-zinc-950/90 border border-red-500/30 rounded-3xl p-6 sm:p-8 lg:p-12 shadow-[0_0_90px_rgba(220,38,38,0.3)] my-auto max-h-[92vh] overflow-y-auto"
-          >
+            {/* BOTÃO FECHAR PROEMINENTE */}
+            <button
+              onClick={closeModal}
+              aria-label="Fechar Dossiê"
+              className="group flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/10 hover:bg-red-600 border border-white/20 hover:border-red-500 text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(220,38,38,0.5)] cursor-pointer"
+            >
+              <span>Fechar</span>
+              <X className="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-90 transition-transform duration-300 text-red-400 group-hover:text-white" />
+            </button>
+          </div>
+
+          {/* CONTEÚDO PRINCIPAL DO INTEGRANTE EM TELA CHEIA */}
+          <div className="flex-1 w-full max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-6 sm:py-10 flex flex-col justify-between">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-              {/* COLUNA ESQUERDA: CARROSSEL DE FOTOS AUTOMÁTICO */}
+              {/* COLUNA ESQUERDA: CARROSSEL DE FOTOS EM ALTA RESOLUÇÃO */}
               <div className="lg:col-span-5 flex flex-col items-center gap-4 w-full">
                 <div
                   onMouseEnter={() => setIsPaused(true)}
                   onMouseLeave={() => setIsPaused(false)}
-                  className="w-full h-80 sm:h-96 lg:h-[500px] xl:h-[540px] rounded-2xl overflow-hidden border-2 border-red-500/40 shadow-[0_0_50px_rgba(220,38,38,0.25)] bg-zinc-900 relative group/carousel select-none"
+                  className="w-full h-80 sm:h-96 lg:h-[500px] xl:h-[540px] rounded-2xl overflow-hidden border-2 border-red-500/40 shadow-[0_0_50px_rgba(220,38,38,0.3)] bg-zinc-900 relative group/carousel select-none"
                 >
                   {selectedMember.images && selectedMember.images.length > 0 ? (
                     <Image
@@ -352,7 +371,7 @@ export default function BandLineup() {
                       <button
                         onClick={prevImage}
                         aria-label="Foto Anterior"
-                        className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/70 hover:bg-red-600 border border-white/20 hover:border-red-500 text-white flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-all duration-300 shadow-lg active:scale-95 z-20"
+                        className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/70 hover:bg-red-600 border border-white/20 hover:border-red-500 text-white flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-all duration-300 shadow-lg active:scale-95 z-20 cursor-pointer"
                       >
                         <ChevronLeft className="w-5 h-5" />
                       </button>
@@ -360,7 +379,7 @@ export default function BandLineup() {
                       <button
                         onClick={nextImage}
                         aria-label="Próxima Foto"
-                        className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/70 hover:bg-red-600 border border-white/20 hover:border-red-500 text-white flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-all duration-300 shadow-lg active:scale-95 z-20"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/70 hover:bg-red-600 border border-white/20 hover:border-red-500 text-white flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-all duration-300 shadow-lg active:scale-95 z-20 cursor-pointer"
                       >
                         <ChevronRight className="w-5 h-5" />
                       </button>
@@ -375,7 +394,7 @@ export default function BandLineup() {
                               setCurrentImgIndex(idx);
                             }}
                             aria-label={`Ir para foto ${idx + 1}`}
-                            className={`h-2 rounded-full transition-all duration-300 ${
+                            className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
                               idx === currentImgIndex
                                 ? "w-6 bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]"
                                 : "w-2 bg-white/40 hover:bg-white/80"
@@ -387,7 +406,7 @@ export default function BandLineup() {
                   )}
                 </div>
 
-                {/* Botão de Rede Social */}
+                {/* Botão de Rede Social Instagram */}
                 <a
                   href={selectedMember.socials.instagram}
                   target="_blank"
@@ -459,6 +478,20 @@ export default function BandLineup() {
                   </div>
                 </div>
               </div>
+            </div>
+
+            {/* BOTÃO FECHAR INFERIOR (FACILITA FECHAR APÓS ROLAR ATÉ O FIM) */}
+            <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="font-mono text-xs text-zinc-500 uppercase tracking-widest">
+                Skydiving From Hell &bull; Linha de Frente
+              </div>
+              <button
+                onClick={closeModal}
+                className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-white/10 hover:bg-red-600 border border-white/20 hover:border-red-500 text-white font-mono text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+                <span>Fechar Dossiê</span>
+              </button>
             </div>
           </div>
         </div>
