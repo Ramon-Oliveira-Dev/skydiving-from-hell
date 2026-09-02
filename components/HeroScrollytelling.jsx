@@ -335,65 +335,49 @@ export default function HeroScrollytelling() {
         tl.to(hero2Container, { yPercent: -3, duration: 1.0, ease: "none" }, 0.35);
       }
 
-      // ── ETAPA 4: TRANSIÇÃO RÁPIDA Z-SCALE, FUMAÇA E PARTÍCULAS PARA O PLAYER (1.35 a 2.0) ──
-      // 1. Z-Scale no vídeo hero_2 (avanço rápido para dentro da cena)
+      // ── ETAPA 4: TRANSIÇÃO PARALLAX Z-SCALE DE HERO 2 PARA A PRÓXIMA TELA (PLAYER) (1.35 a 1.70) ──
+      // Aplica exatamente o mesmo efeito de transição de Hero 1 -> Hero 2 na saída para o player
       if (hero2Container) {
         tl.to(
           hero2Container,
           {
-            scale: 1.25,
-            filter: "blur(4px) brightness(0.65)",
+            yPercent: -18,
+            scale: 1.25, // Z-Scale 125%
             opacity: 0,
-            duration: 0.65,
-            ease: "power2.in",
+            duration: 0.35,
+            ease: "power2.inOut",
           },
           1.35
         );
       }
 
-      // 2. Particle Fade Zoom (rush frontal das partículas e dissipação)
+      if (sheen) {
+        tl.fromTo(
+          sheen,
+          { opacity: 0, yPercent: 25 },
+          { opacity: 0.65, yPercent: 0, duration: 0.2, ease: "power2.out" },
+          1.40
+        );
+        tl.to(sheen, { opacity: 0, yPercent: -25, duration: 0.2, ease: "power2.in" }, 1.55);
+      }
+
       if (particles) {
         tl.to(
           particles,
           {
-            scale: 2.8,
-            opacity: 1,
-            duration: 0.35,
-            ease: "power2.in",
-          },
-          1.35
-        );
-        tl.to(
-          particles,
-          {
-            scale: 4.5,
+            scale: 1.35,
             opacity: 0,
-            filter: "blur(6px)",
-            duration: 0.3,
-            ease: "power3.out",
+            y: -35,
+            duration: 0.35,
+            ease: "power2.inOut",
           },
-          1.7
-        );
-      }
-
-      // 3. Névoa Volumétrica Escura (Smoke Burst) cobrindo brevemente a tela
-      if (smokeBurst) {
-        tl.fromTo(
-          smokeBurst,
-          { scale: 0.45, opacity: 0 },
-          { scale: 1.6, opacity: 0.95, duration: 0.45, ease: "power2.inOut" },
           1.35
         );
-        tl.to(
-          smokeBurst,
-          { scale: 2.6, opacity: 0, duration: 0.2, ease: "power2.out" },
-          1.8
-        );
       }
 
-      // 4. Escurecimento final rápido e liberação imediata da página do player
-      tl.to(smokeOverlay, { opacity: 1, duration: 0.4, ease: "power2.inOut" }, 1.55);
-      tl.to(darkFade, { opacity: 1, duration: 0.35, ease: "power2.inOut" }, 1.65);
+      // Escurecimento suave final para conectar com o fundo da seção do player (#08070a)
+      tl.to(smokeOverlay, { opacity: 1, duration: 0.25, ease: "power2.inOut" }, 1.45);
+      tl.to(darkFade, { opacity: 1, duration: 0.25, ease: "power2.inOut" }, 1.50);
     };
 
     // Mobile (< 768px): 700px (1 swipe rápido)
