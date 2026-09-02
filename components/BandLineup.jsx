@@ -109,22 +109,16 @@ export default function BandLineup() {
     };
   }, [selectedMember, closeModal]);
 
-  // Carrossel Automático de Fotos (3500ms com pausa no hover)
+  // Carrossel Automático Contínuo de Fotos (Troca a cada 3200ms)
   useEffect(() => {
-    if (
-      !selectedMember ||
-      !selectedMember.images ||
-      selectedMember.images.length <= 1 ||
-      isPaused
-    )
-      return;
+    if (!selectedMember?.images || selectedMember.images.length <= 1) return;
 
     const timer = setInterval(() => {
       setCurrentImgIndex((prev) => (prev + 1) % selectedMember.images.length);
-    }, 3500);
+    }, 3200);
 
     return () => clearInterval(timer);
-  }, [selectedMember, isPaused]);
+  }, [selectedMember]);
 
   // Ações Manuais do Carrossel
   const nextImage = (e) => {
@@ -394,17 +388,27 @@ export default function BandLineup() {
                     className="w-full h-80 sm:h-96 lg:h-[500px] xl:h-[540px] rounded-2xl overflow-hidden border-2 border-red-500/40 shadow-[0_0_50px_rgba(220,38,38,0.3)] bg-zinc-900 relative group/carousel select-none touch-pan-y"
                   >
                     {selectedMember.images && selectedMember.images.length > 0 ? (
-                      <Image
-                        key={currentImgIndex}
-                        src={selectedMember.images[currentImgIndex]}
-                        alt={`Foto de palco de ${selectedMember.name} (${
-                          currentImgIndex + 1
-                        } de ${selectedMember.images.length})`}
-                        width={600}
-                        height={600}
-                        loading="lazy"
-                        className="w-full h-full object-cover object-top transition-opacity duration-700 animate-fadeIn"
-                      />
+                      selectedMember.images.map((imgSrc, idx) => (
+                        <div
+                          key={imgSrc + idx}
+                          className={`absolute inset-0 w-full h-full transition-opacity duration-1000 ease-in-out ${
+                            idx === currentImgIndex
+                              ? "opacity-100 pointer-events-auto z-10"
+                              : "opacity-0 pointer-events-none z-0"
+                          }`}
+                        >
+                          <Image
+                            src={imgSrc}
+                            alt={`Foto de palco de ${selectedMember.name} (${
+                              idx + 1
+                            } de ${selectedMember.images.length})`}
+                            fill
+                            priority={idx === 0}
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            className="w-full h-full object-cover object-top filter brightness-95 contrast-[1.05]"
+                          />
+                        </div>
+                      ))
                     ) : (
                       <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-zinc-900 to-black text-zinc-600">
                         <Music className="w-20 h-20 mb-3 opacity-40 text-red-500" />
