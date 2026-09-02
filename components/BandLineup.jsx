@@ -299,46 +299,136 @@ export default function BandLineup() {
       </div>
 
       {/* ================================================================
-          MODAL DE DOSSIÊ COMPLETO EM TELA CHEIA (FULLSCREEN ISOLADO)
+          MODAL DE DOSSIÊ COMPLETO EM TELA CHEIA (FULLSCREEN HUD IMERSIVO)
          ================================================================ */}
       {selectedMember && (
         <div
           role="dialog"
           aria-modal="true"
           data-lenis-prevent="true"
-          aria-label={`Dossiê de ${selectedMember.name}`}
-          className="fixed inset-0 z-[99999] w-screen h-[100dvh] bg-black/98 backdrop-blur-3xl flex flex-col overflow-y-auto overscroll-contain animate-fadeIn text-white"
+          aria-labelledby="dossier-member-name"
+          className="fixed inset-0 z-[99999] w-screen h-[100dvh] bg-black/98 backdrop-blur-3xl flex flex-col overflow-y-auto overscroll-contain animate-fadeIn text-white select-none"
         >
-          {/* BARRA SUPERIOR FIXA DO DOSSIÊ (SEM REDUNDÂNCIA DE LOGO) */}
-          <div className="sticky top-0 z-50 w-full bg-black/95 backdrop-blur-2xl border-b border-white/10 px-4 sm:px-8 py-3.5 sm:py-4 flex items-center justify-between shadow-2xl">
-            <div className="flex items-center gap-2 font-mono text-xs sm:text-sm uppercase tracking-wider">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping inline-block flex-shrink-0" />
-              <span className="text-red-500 font-bold">// DOSSIÊ:</span>
-              <span className="text-white font-black tracking-tight">{selectedMember.name}</span>
-              <span className="text-zinc-600 hidden sm:inline">&bull;</span>
-              <span className="text-zinc-400 hidden sm:inline text-xs font-mono">{selectedMember.role}</span>
+          {/* Efeito de Cinzas e Brasas no Fundo do Dossiê */}
+          <AshParticles count={25} className="opacity-60" />
+
+          {/* Iluminação Ambiente Dinâmica com a Cor do Integrante */}
+          <div
+            className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-[160px] pointer-events-none opacity-20 transition-colors duration-700 -z-0"
+            style={{
+              backgroundColor: selectedMember.gradientColors ? selectedMember.gradientColors[0] : "#ef4444",
+            }}
+          />
+
+          {/* BARRA SUPERIOR FIXA DO DOSSIÊ (TACTICAL HUD HEADER) */}
+          <div className="sticky top-0 z-50 w-full bg-black/95 backdrop-blur-2xl border-b border-white/10 px-4 sm:px-8 py-3 sm:py-3.5 flex items-center justify-between shadow-2xl">
+            {/* Identificação Tática e Seletor Rápido de Músicos */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 font-mono text-xs sm:text-sm uppercase tracking-wider">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping inline-block flex-shrink-0" />
+                <span className="text-red-500 font-bold hidden xs:inline">// DOSSIÊ:</span>
+                <span className="text-white font-black tracking-tight">{selectedMember.name}</span>
+                <span className="text-zinc-600 hidden sm:inline">&bull;</span>
+                <span className="text-zinc-400 hidden sm:inline text-xs font-mono">{selectedMember.role}</span>
+              </div>
             </div>
 
-            {/* BOTÃO FECHAR PROEMINENTE */}
-            <button
-              onClick={closeModal}
-              aria-label="Fechar Dossiê"
-              className="group flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2 rounded-full bg-white/10 hover:bg-red-600 border border-white/20 hover:border-red-500 text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(220,38,38,0.5)] cursor-pointer"
-            >
-              <span>Fechar</span>
-              <X className="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-90 transition-transform duration-300 text-red-400 group-hover:text-white" />
-            </button>
+            {/* Ações do Topo: Navegação Anterior/Próximo + Botão Fechar */}
+            <div className="flex items-center gap-2 sm:gap-3">
+              {/* Botões de Navegação Entre Integrantes (Desktop/Tablet) */}
+              <div className="hidden md:flex items-center bg-white/5 border border-white/10 rounded-full p-1 gap-1">
+                <button
+                  onClick={() => {
+                    const currentIdx = MEMBERS.findIndex((m) => m.id === selectedMember.id);
+                    const prevIdx = (currentIdx - 1 + MEMBERS.length) % MEMBERS.length;
+                    setSelectedMember(MEMBERS[prevIdx]);
+                    setCurrentImgIndex(0);
+                  }}
+                  aria-label="Integrante Anterior"
+                  className="px-3 py-1 text-[11px] font-mono uppercase text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <span>Anterior</span>
+                </button>
+                <span className="text-zinc-700 text-xs">|</span>
+                <button
+                  onClick={() => {
+                    const currentIdx = MEMBERS.findIndex((m) => m.id === selectedMember.id);
+                    const nextIdx = (currentIdx + 1) % MEMBERS.length;
+                    setSelectedMember(MEMBERS[nextIdx]);
+                    setCurrentImgIndex(0);
+                  }}
+                  aria-label="Próximo Integrante"
+                  className="px-3 py-1 text-[11px] font-mono uppercase text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                  <span>Próximo</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+
+              {/* Botão Fechar Proeminente com Glow */}
+              <button
+                onClick={closeModal}
+                aria-label="Fechar Dossiê"
+                className="group flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full bg-white/10 hover:bg-red-600 border border-white/20 hover:border-red-500 text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(220,38,38,0.5)] cursor-pointer"
+              >
+                <span>Fechar</span>
+                <X className="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-90 transition-transform duration-300 text-red-400 group-hover:text-white" />
+              </button>
+            </div>
+          </div>
+
+          {/* BARRA DE ATALHO ENTRE INTEGRANTES (MOBILE / TABLET / DESKTOP STRIP) */}
+          <div className="w-full bg-zinc-950/80 border-b border-white/5 px-4 py-2 overflow-x-auto scrollbar-none flex items-center justify-center gap-2 sm:gap-3 z-40">
+            {MEMBERS.map((m) => {
+              const isActive = m.id === selectedMember.id;
+              return (
+                <button
+                  key={m.id}
+                  onClick={() => {
+                    setSelectedMember(m);
+                    setCurrentImgIndex(0);
+                  }}
+                  className={`px-3 py-1.5 rounded-xl font-mono text-xs uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${
+                    isActive
+                      ? "bg-red-600 text-white font-bold shadow-[0_0_15px_rgba(220,38,38,0.6)] scale-105 border border-red-400/40"
+                      : "bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 border border-white/5"
+                  }`}
+                >
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full ${
+                      isActive ? "bg-white" : "bg-zinc-600"
+                    }`}
+                  />
+                  <span>{m.name}</span>
+                </button>
+              );
+            })}
           </div>
 
           {/* CONTEÚDO PRINCIPAL DO INTEGRANTE EM TELA CHEIA */}
-          <div className="flex-1 w-full max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-6 sm:py-10 flex flex-col justify-between">
+          <div className="flex-1 w-full max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-6 sm:py-10 flex flex-col justify-between z-10">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-              {/* COLUNA ESQUERDA: CARROSSEL DE FOTOS EM ALTA RESOLUÇÃO */}
+              {/* COLUNA ESQUERDA: CARROSSEL DE FOTOS EM ALTA RESOLUÇÃO COM TOUCH SWIPE */}
               <div className="lg:col-span-5 flex flex-col items-center gap-4 w-full">
                 <div
                   onMouseEnter={() => setIsPaused(true)}
                   onMouseLeave={() => setIsPaused(false)}
-                  className="w-full h-80 sm:h-96 lg:h-[500px] xl:h-[540px] rounded-2xl overflow-hidden border-2 border-red-500/40 shadow-[0_0_50px_rgba(220,38,38,0.3)] bg-zinc-900 relative group/carousel select-none"
+                  onTouchStart={(e) => {
+                    const startX = e.touches[0].clientX;
+                    e.currentTarget.dataset.touchStartX = String(startX);
+                  }}
+                  onTouchEnd={(e) => {
+                    const startX = Number(e.currentTarget.dataset.touchStartX || 0);
+                    const endX = e.changedTouches[0].clientX;
+                    const diff = startX - endX;
+                    if (diff > 45) {
+                      nextImage(e);
+                    } else if (diff < -45) {
+                      prevImage(e);
+                    }
+                  }}
+                  className="w-full h-80 sm:h-96 lg:h-[500px] xl:h-[540px] rounded-2xl overflow-hidden border-2 border-red-500/40 shadow-[0_0_50px_rgba(220,38,38,0.3)] bg-zinc-900 relative group/carousel select-none touch-pan-y"
                 >
                   {selectedMember.images && selectedMember.images.length > 0 ? (
                     <Image
@@ -434,7 +524,10 @@ export default function BandLineup() {
                       DOSSIÊ DE INTEGRANTE OFICIAL
                     </span>
                   </div>
-                  <h3 className="text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-white">
+                  <h3
+                    id="dossier-member-name"
+                    className="text-3xl sm:text-4xl lg:text-5xl font-black uppercase tracking-tight text-white"
+                  >
                     {selectedMember.name}
                   </h3>
                   <p className="font-mono text-sm sm:text-base text-zinc-400 mt-1">
@@ -474,7 +567,7 @@ export default function BandLineup() {
                     {selectedMember.equipment.map((item) => (
                       <div
                         key={item}
-                        className="px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 font-mono text-xs text-zinc-300 flex items-center gap-2.5"
+                        className="px-3.5 py-2.5 rounded-xl bg-white/[0.03] border border-white/10 font-mono text-xs text-zinc-300 flex items-center gap-2.5 hover:border-red-500/40 hover:bg-white/[0.06] transition-colors"
                       >
                         <span className="w-2 h-2 rounded-full bg-red-500 flex-shrink-0 shadow-[0_0_6px_rgba(239,68,68,0.8)]" />
                         <span className="truncate">{item}</span>
@@ -485,11 +578,35 @@ export default function BandLineup() {
               </div>
             </div>
 
-            {/* BOTÃO FECHAR INFERIOR (FACILITA FECHAR APÓS ROLAR ATÉ O FIM) */}
+            {/* BOTÃO FECHAR INFERIOR & NAVEGAÇÃO ENTRE INTEGRANTES */}
             <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="font-mono text-xs text-zinc-500 uppercase tracking-widest">
-                Skydiving From Hell &bull; Linha de Frente
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    const currentIdx = MEMBERS.findIndex((m) => m.id === selectedMember.id);
+                    const prevIdx = (currentIdx - 1 + MEMBERS.length) % MEMBERS.length;
+                    setSelectedMember(MEMBERS[prevIdx]);
+                    setCurrentImgIndex(0);
+                  }}
+                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono uppercase text-zinc-300 hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <ChevronLeft className="w-4 h-4 text-red-500" />
+                  <span>Anterior</span>
+                </button>
+                <button
+                  onClick={() => {
+                    const currentIdx = MEMBERS.findIndex((m) => m.id === selectedMember.id);
+                    const nextIdx = (currentIdx + 1) % MEMBERS.length;
+                    setSelectedMember(MEMBERS[nextIdx]);
+                    setCurrentImgIndex(0);
+                  }}
+                  className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-mono uppercase text-zinc-300 hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
+                >
+                  <span>Próximo</span>
+                  <ChevronRight className="w-4 h-4 text-red-500" />
+                </button>
               </div>
+
               <button
                 onClick={closeModal}
                 className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-white/10 hover:bg-red-600 border border-white/20 hover:border-red-500 text-white font-mono text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg flex items-center justify-center gap-2 cursor-pointer"
