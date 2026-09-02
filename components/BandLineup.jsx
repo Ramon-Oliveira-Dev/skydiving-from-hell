@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import ScrollReveal from "./ScrollReveal";
 import ParallaxLayer from "./ParallaxLayer";
@@ -43,6 +44,11 @@ export default function BandLineup() {
   const [selectedMember, setSelectedMember] = useState(null);
   const [currentImgIndex, setCurrentImgIndex] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const openMember = (member) => {
     if (typeof document !== "undefined" && document.startViewTransition) {
@@ -299,201 +305,204 @@ export default function BandLineup() {
       </div>
 
       {/* ================================================================
-          MODAL DE DOSSIÊ COMPLETO EM TELA CHEIA (FULLSCREEN HUD IMERSIVO)
+          MODAL DE DOSSIÊ COMPLETO EM TELA CHEIA (PORTAL GLOBAL NO BODY)
          ================================================================ */}
-      {selectedMember && (
-        <div
-          role="dialog"
-          aria-modal="true"
-          data-lenis-prevent="true"
-          aria-labelledby="dossier-member-name"
-          className="fixed inset-0 z-[99999] w-screen h-[100dvh] bg-black/98 backdrop-blur-3xl flex flex-col overflow-y-auto overscroll-contain animate-fadeIn text-white select-none"
-        >
-          {/* Efeito de Cinzas e Brasas no Fundo do Dossiê */}
-          <AshParticles count={25} className="opacity-60" />
-
-          {/* Iluminação Ambiente Dinâmica com a Cor do Integrante */}
+      {isMounted &&
+        selectedMember &&
+        typeof document !== "undefined" &&
+        createPortal(
           <div
-            className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-[160px] pointer-events-none opacity-20 transition-colors duration-700 -z-0"
-            style={{
-              backgroundColor: selectedMember.gradientColors ? selectedMember.gradientColors[0] : "#ef4444",
-            }}
-          />
+            role="dialog"
+            aria-modal="true"
+            data-lenis-prevent="true"
+            aria-labelledby="dossier-member-name"
+            className="fixed inset-0 z-[999999] w-screen h-[100dvh] bg-[#08070a] backdrop-blur-3xl flex flex-col overflow-y-auto overscroll-contain animate-fadeIn text-white select-none"
+          >
+            {/* Efeito de Cinzas e Brasas no Fundo do Dossiê */}
+            <AshParticles count={25} className="opacity-60" />
 
-          {/* BARRA SUPERIOR FIXA DO DOSSIÊ (TACTICAL HUD HEADER) */}
-          <div className="sticky top-0 z-50 w-full bg-black/95 backdrop-blur-2xl border-b border-white/10 px-4 sm:px-8 py-3 sm:py-3.5 flex items-center justify-between shadow-2xl">
-            {/* Identificação Tática e Seletor Rápido de Músicos */}
-            <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 font-mono text-xs sm:text-sm uppercase tracking-wider">
-                <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping inline-block flex-shrink-0" />
-                <span className="text-red-500 font-bold hidden xs:inline">// DOSSIÊ:</span>
-                <span className="text-white font-black tracking-tight">{selectedMember.name}</span>
-                <span className="text-zinc-600 hidden sm:inline">&bull;</span>
-                <span className="text-zinc-400 hidden sm:inline text-xs font-mono">{selectedMember.role}</span>
+            {/* Iluminação Ambiente Dinâmica com a Cor do Integrante */}
+            <div
+              className="absolute top-1/4 left-1/4 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full blur-[160px] pointer-events-none opacity-20 transition-colors duration-700 -z-0"
+              style={{
+                backgroundColor: selectedMember.gradientColors ? selectedMember.gradientColors[0] : "#ef4444",
+              }}
+            />
+
+            {/* BARRA SUPERIOR FIXA DO DOSSIÊ (TACTICAL HUD HEADER) */}
+            <div className="sticky top-0 z-50 w-full bg-[#08070a]/95 backdrop-blur-2xl border-b border-white/10 px-4 sm:px-8 py-3 sm:py-3.5 flex items-center justify-between shadow-2xl">
+              {/* Identificação Tática e Seletor Rápido de Músicos */}
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 font-mono text-xs sm:text-sm uppercase tracking-wider">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping inline-block flex-shrink-0" />
+                  <span className="text-red-500 font-bold hidden xs:inline">// DOSSIÊ:</span>
+                  <span className="text-white font-black tracking-tight">{selectedMember.name}</span>
+                  <span className="text-zinc-600 hidden sm:inline">&bull;</span>
+                  <span className="text-zinc-400 hidden sm:inline text-xs font-mono">{selectedMember.role}</span>
+                </div>
+              </div>
+
+              {/* Ações do Topo: Navegação Anterior/Próximo + Botão Fechar */}
+              <div className="flex items-center gap-2 sm:gap-3">
+                {/* Botões de Navegação Entre Integrantes (Desktop/Tablet) */}
+                <div className="hidden md:flex items-center bg-white/5 border border-white/10 rounded-full p-1 gap-1">
+                  <button
+                    onClick={() => {
+                      const currentIdx = MEMBERS.findIndex((m) => m.id === selectedMember.id);
+                      const prevIdx = (currentIdx - 1 + MEMBERS.length) % MEMBERS.length;
+                      setSelectedMember(MEMBERS[prevIdx]);
+                      setCurrentImgIndex(0);
+                    }}
+                    aria-label="Integrante Anterior"
+                    className="px-3 py-1 text-[11px] font-mono uppercase text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-colors flex items-center gap-1 cursor-pointer"
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                    <span>Anterior</span>
+                  </button>
+                  <span className="text-zinc-700 text-xs">|</span>
+                  <button
+                    onClick={() => {
+                      const currentIdx = MEMBERS.findIndex((m) => m.id === selectedMember.id);
+                      const nextIdx = (currentIdx + 1) % MEMBERS.length;
+                      setSelectedMember(MEMBERS[nextIdx]);
+                      setCurrentImgIndex(0);
+                    }}
+                    aria-label="Próximo Integrante"
+                    className="px-3 py-1 text-[11px] font-mono uppercase text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-colors flex items-center gap-1 cursor-pointer"
+                  >
+                    <span>Próximo</span>
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+
+                {/* Botão Fechar Proeminente com Glow */}
+                <button
+                  onClick={closeModal}
+                  aria-label="Fechar Dossiê"
+                  className="group flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full bg-red-600 hover:bg-red-500 text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(220,38,38,0.7)] cursor-pointer"
+                >
+                  <span>Fechar</span>
+                  <X className="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-90 transition-transform duration-300 text-white" />
+                </button>
               </div>
             </div>
 
-            {/* Ações do Topo: Navegação Anterior/Próximo + Botão Fechar */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              {/* Botões de Navegação Entre Integrantes (Desktop/Tablet) */}
-              <div className="hidden md:flex items-center bg-white/5 border border-white/10 rounded-full p-1 gap-1">
-                <button
-                  onClick={() => {
-                    const currentIdx = MEMBERS.findIndex((m) => m.id === selectedMember.id);
-                    const prevIdx = (currentIdx - 1 + MEMBERS.length) % MEMBERS.length;
-                    setSelectedMember(MEMBERS[prevIdx]);
-                    setCurrentImgIndex(0);
-                  }}
-                  aria-label="Integrante Anterior"
-                  className="px-3 py-1 text-[11px] font-mono uppercase text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-colors flex items-center gap-1 cursor-pointer"
-                >
-                  <ChevronLeft className="w-3.5 h-3.5" />
-                  <span>Anterior</span>
-                </button>
-                <span className="text-zinc-700 text-xs">|</span>
-                <button
-                  onClick={() => {
-                    const currentIdx = MEMBERS.findIndex((m) => m.id === selectedMember.id);
-                    const nextIdx = (currentIdx + 1) % MEMBERS.length;
-                    setSelectedMember(MEMBERS[nextIdx]);
-                    setCurrentImgIndex(0);
-                  }}
-                  aria-label="Próximo Integrante"
-                  className="px-3 py-1 text-[11px] font-mono uppercase text-zinc-400 hover:text-white hover:bg-white/10 rounded-full transition-colors flex items-center gap-1 cursor-pointer"
-                >
-                  <span>Próximo</span>
-                  <ChevronRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-
-              {/* Botão Fechar Proeminente com Glow */}
-              <button
-                onClick={closeModal}
-                aria-label="Fechar Dossiê"
-                className="group flex items-center gap-2 px-4 sm:px-5 py-2 rounded-full bg-white/10 hover:bg-red-600 border border-white/20 hover:border-red-500 text-white font-mono text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 hover:scale-105 active:scale-95 shadow-[0_0_25px_rgba(220,38,38,0.5)] cursor-pointer"
-              >
-                <span>Fechar</span>
-                <X className="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-90 transition-transform duration-300 text-red-400 group-hover:text-white" />
-              </button>
-            </div>
-          </div>
-
-          {/* BARRA DE ATALHO ENTRE INTEGRANTES (MOBILE / TABLET / DESKTOP STRIP) */}
-          <div className="w-full bg-zinc-950/80 border-b border-white/5 px-4 py-2 overflow-x-auto scrollbar-none flex items-center justify-center gap-2 sm:gap-3 z-40">
-            {MEMBERS.map((m) => {
-              const isActive = m.id === selectedMember.id;
-              return (
-                <button
-                  key={m.id}
-                  onClick={() => {
-                    setSelectedMember(m);
-                    setCurrentImgIndex(0);
-                  }}
-                  className={`px-3 py-1.5 rounded-xl font-mono text-xs uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${
-                    isActive
-                      ? "bg-red-600 text-white font-bold shadow-[0_0_15px_rgba(220,38,38,0.6)] scale-105 border border-red-400/40"
-                      : "bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 border border-white/5"
-                  }`}
-                >
-                  <span
-                    className={`w-1.5 h-1.5 rounded-full ${
-                      isActive ? "bg-white" : "bg-zinc-600"
+            {/* BARRA DE ATALHO ENTRE INTEGRANTES (MOBILE / TABLET / DESKTOP STRIP) */}
+            <div className="sticky top-[49px] sm:top-[55px] z-40 w-full bg-[#0d0c10]/95 backdrop-blur-md border-b border-white/5 px-4 py-2 overflow-x-auto scrollbar-none flex items-center justify-start sm:justify-center gap-2 sm:gap-3">
+              {MEMBERS.map((m) => {
+                const isActive = m.id === selectedMember.id;
+                return (
+                  <button
+                    key={m.id}
+                    onClick={() => {
+                      setSelectedMember(m);
+                      setCurrentImgIndex(0);
+                    }}
+                    className={`px-3 py-1.5 rounded-xl font-mono text-xs uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 flex-shrink-0 cursor-pointer ${
+                      isActive
+                        ? "bg-red-600 text-white font-bold shadow-[0_0_15px_rgba(220,38,38,0.6)] scale-105 border border-red-400/40"
+                        : "bg-white/5 text-zinc-400 hover:text-white hover:bg-white/10 border border-white/5"
                     }`}
-                  />
-                  <span>{m.name}</span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* CONTEÚDO PRINCIPAL DO INTEGRANTE EM TELA CHEIA */}
-          <div className="flex-1 w-full max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-6 sm:py-10 flex flex-col justify-between z-10">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-              {/* COLUNA ESQUERDA: CARROSSEL DE FOTOS EM ALTA RESOLUÇÃO COM TOUCH SWIPE */}
-              <div className="lg:col-span-5 flex flex-col items-center gap-4 w-full">
-                <div
-                  onMouseEnter={() => setIsPaused(true)}
-                  onMouseLeave={() => setIsPaused(false)}
-                  onTouchStart={(e) => {
-                    const startX = e.touches[0].clientX;
-                    e.currentTarget.dataset.touchStartX = String(startX);
-                  }}
-                  onTouchEnd={(e) => {
-                    const startX = Number(e.currentTarget.dataset.touchStartX || 0);
-                    const endX = e.changedTouches[0].clientX;
-                    const diff = startX - endX;
-                    if (diff > 45) {
-                      nextImage(e);
-                    } else if (diff < -45) {
-                      prevImage(e);
-                    }
-                  }}
-                  className="w-full h-80 sm:h-96 lg:h-[500px] xl:h-[540px] rounded-2xl overflow-hidden border-2 border-red-500/40 shadow-[0_0_50px_rgba(220,38,38,0.3)] bg-zinc-900 relative group/carousel select-none touch-pan-y"
-                >
-                  {selectedMember.images && selectedMember.images.length > 0 ? (
-                    <Image
-                      key={currentImgIndex}
-                      src={selectedMember.images[currentImgIndex]}
-                      alt={`Foto de palco de ${selectedMember.name} (${
-                        currentImgIndex + 1
-                      } de ${selectedMember.images.length})`}
-                      width={600}
-                      height={600}
-                      loading="lazy"
-                      className="w-full h-full object-cover object-top transition-opacity duration-700 animate-fadeIn"
+                  >
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        isActive ? "bg-white" : "bg-zinc-600"
+                      }`}
                     />
-                  ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-zinc-900 to-black text-zinc-600">
-                      <Music className="w-20 h-20 mb-3 opacity-40 text-red-500" />
-                      <span className="font-mono text-xs uppercase tracking-widest text-zinc-400">
-                        FOTO OFICIAL EM ATUALIZAÇÃO
+                    <span>{m.name}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* CONTEÚDO PRINCIPAL DO INTEGRANTE EM TELA CHEIA */}
+            <div className="flex-1 w-full max-w-6xl xl:max-w-7xl mx-auto px-4 sm:px-8 lg:px-12 py-6 sm:py-10 flex flex-col justify-between z-10 pb-28 sm:pb-20">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+                {/* COLUNA ESQUERDA: CARROSSEL DE FOTOS EM ALTA RESOLUÇÃO COM TOUCH SWIPE */}
+                <div className="lg:col-span-5 flex flex-col items-center gap-4 w-full">
+                  <div
+                    onMouseEnter={() => setIsPaused(true)}
+                    onMouseLeave={() => setIsPaused(false)}
+                    onTouchStart={(e) => {
+                      const startX = e.touches[0].clientX;
+                      e.currentTarget.dataset.touchStartX = String(startX);
+                    }}
+                    onTouchEnd={(e) => {
+                      const startX = Number(e.currentTarget.dataset.touchStartX || 0);
+                      const endX = e.changedTouches[0].clientX;
+                      const diff = startX - endX;
+                      if (diff > 45) {
+                        nextImage(e);
+                      } else if (diff < -45) {
+                        prevImage(e);
+                      }
+                    }}
+                    className="w-full h-80 sm:h-96 lg:h-[500px] xl:h-[540px] rounded-2xl overflow-hidden border-2 border-red-500/40 shadow-[0_0_50px_rgba(220,38,38,0.3)] bg-zinc-900 relative group/carousel select-none touch-pan-y"
+                  >
+                    {selectedMember.images && selectedMember.images.length > 0 ? (
+                      <Image
+                        key={currentImgIndex}
+                        src={selectedMember.images[currentImgIndex]}
+                        alt={`Foto de palco de ${selectedMember.name} (${
+                          currentImgIndex + 1
+                        } de ${selectedMember.images.length})`}
+                        width={600}
+                        height={600}
+                        loading="lazy"
+                        className="w-full h-full object-cover object-top transition-opacity duration-700 animate-fadeIn"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-zinc-900 to-black text-zinc-600">
+                        <Music className="w-20 h-20 mb-3 opacity-40 text-red-500" />
+                        <span className="font-mono text-xs uppercase tracking-widest text-zinc-400">
+                          FOTO OFICIAL EM ATUALIZAÇÃO
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Badge de Cargo Fixo na Foto */}
+                    <div className="absolute top-4 left-4 z-20">
+                      <span
+                        className={`inline-block px-3.5 py-1.5 rounded-full text-xs font-mono font-black uppercase tracking-wider text-white bg-gradient-to-r ${selectedMember.tagColor} shadow-lg`}
+                      >
+                        {selectedMember.role}
                       </span>
                     </div>
-                  )}
 
-                  {/* Badge de Cargo Fixo na Foto */}
-                  <div className="absolute top-4 left-4 z-20">
-                    <span
-                      className={`inline-block px-3.5 py-1.5 rounded-full text-xs font-mono font-black uppercase tracking-wider text-white bg-gradient-to-r ${selectedMember.tagColor} shadow-lg`}
-                    >
-                      {selectedMember.role}
-                    </span>
-                  </div>
+                    {/* Setas Manuais de Navegação */}
+                    {selectedMember.images && selectedMember.images.length > 1 && (
+                      <>
+                        <button
+                          onClick={prevImage}
+                          aria-label="Foto Anterior"
+                          className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/70 hover:bg-red-600 border border-white/20 hover:border-red-500 text-white flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-all duration-300 shadow-lg active:scale-95 z-20 cursor-pointer"
+                        >
+                          <ChevronLeft className="w-5 h-5" />
+                        </button>
 
-                  {/* Setas Manuais de Navegação */}
-                  {selectedMember.images && selectedMember.images.length > 1 && (
-                    <>
-                      <button
-                        onClick={prevImage}
-                        aria-label="Foto Anterior"
-                        className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/70 hover:bg-red-600 border border-white/20 hover:border-red-500 text-white flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-all duration-300 shadow-lg active:scale-95 z-20 cursor-pointer"
-                      >
-                        <ChevronLeft className="w-5 h-5" />
-                      </button>
+                        <button
+                          onClick={nextImage}
+                          aria-label="Próxima Foto"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/70 hover:bg-red-600 border border-white/20 hover:border-red-500 text-white flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-all duration-300 shadow-lg active:scale-95 z-20 cursor-pointer"
+                        >
+                          <ChevronRight className="w-5 h-5" />
+                        </button>
 
-                      <button
-                        onClick={nextImage}
-                        aria-label="Próxima Foto"
-                        className="absolute right-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-black/70 hover:bg-red-600 border border-white/20 hover:border-red-500 text-white flex items-center justify-center opacity-0 group-hover/carousel:opacity-100 transition-all duration-300 shadow-lg active:scale-95 z-20 cursor-pointer"
-                      >
-                        <ChevronRight className="w-5 h-5" />
-                      </button>
-
-                      {/* Indicadores de Pontos (Dots) */}
-                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
-                        {selectedMember.images.map((_, idx) => (
-                          <button
-                            key={idx}
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setCurrentImgIndex(idx);
-                            }}
-                            aria-label={`Ir para foto ${idx + 1}`}
-                            className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                              idx === currentImgIndex
-                                ? "w-6 bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]"
-                                : "w-2 bg-white/40 hover:bg-white/80"
-                            }`}
+                        {/* Indicadores de Pontos (Dots) */}
+                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-full border border-white/10">
+                          {selectedMember.images.map((_, idx) => (
+                            <button
+                              key={idx}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setCurrentImgIndex(idx);
+                              }}
+                              aria-label={`Ir para foto ${idx + 1}`}
+                              className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                                idx === currentImgIndex
+                                  ? "w-6 bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.8)]"
+                                  : "w-2 bg-white/40 hover:bg-white/80"
+                              }`}
                           />
                         ))}
                       </div>
@@ -616,7 +625,8 @@ export default function BandLineup() {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </section>
   );
