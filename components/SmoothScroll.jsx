@@ -22,7 +22,7 @@ export default function SmoothScroll({ children }) {
       gestureOrientation: "vertical",
       smoothWheel: true,
       wheelMultiplier: 1.0,
-      touchMultiplier: 1.5,
+      syncTouch: true,
       infinite: false,
     });
 
@@ -34,7 +34,7 @@ export default function SmoothScroll({ children }) {
     let hasTriggeredAudio = false;
 
     // Sincronização em tempo real do Lenis com o GSAP ScrollTrigger
-    lenis.on("scroll", (e) => {
+    const handleScrollSync = () => {
       ScrollTrigger.update();
 
       if (!hasTriggeredAudio) {
@@ -50,7 +50,10 @@ export default function SmoothScroll({ children }) {
           }
         }
       }
-    });
+    };
+
+    lenis.on("scroll", handleScrollSync);
+    window.addEventListener("scroll", handleScrollSync, { passive: true });
 
     // Conecta o RAF do Lenis ao Ticker do GSAP (convertendo segundos para ms)
     const updateTicker = (time) => {

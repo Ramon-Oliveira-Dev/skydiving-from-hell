@@ -17,7 +17,7 @@ import { ScrollStack } from "../components/ui/scroll-stack";
 export default function Home() {
   return (
     <AudioProvider>
-      <main className="bg-black text-white font-sans min-h-screen w-full overflow-x-hidden relative">
+      <main className="bg-black text-white font-sans min-h-screen w-full overflow-x-clip relative touch-pan-y">
         <GrainOverlay />
         <SpotlightGlow />
         <Header />

@@ -160,6 +160,7 @@ export default function HeroScrollytelling() {
 
       framesCacheRef.current = bitmaps;
       renderHero2Frame(0);
+      ScrollTrigger.refresh();
     } catch {
       // Fallback automático
     } finally {
@@ -419,7 +420,8 @@ export default function HeroScrollytelling() {
     <section
       id="hero"
       ref={phase2Ref}
-      className="relative w-full h-[100svh] min-h-[100svh] overflow-hidden bg-black select-none flex items-center justify-center overscroll-none"
+      className="relative w-full h-[100svh] min-h-[100svh] overflow-hidden bg-black select-none flex items-center justify-center touch-pan-y"
+      style={{ touchAction: "pan-y" }}
     >
       {/* ── ELEMENTO DE VÍDEO OFFSCREEN PARA HERO_2 (FONTE DE DECODIFICAÇÃO) ── */}
       <video
