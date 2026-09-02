@@ -113,25 +113,33 @@ html.lenis, html.lenis body {
 }
 
 /* ==========================================================================
-   GRÃO DE FILME CINEMATOGRÁFICO (Tarefa 3.7)
+   GRÃO DE FILME CINEMATOGRÁFICO (Apenas Desktop / GPU Potente)
    ========================================================================== */
-.grao::after {
-  content: "";
-  position: fixed;
-  inset: -50%;
-  pointer-events: none;
-  z-index: 9999;
-  opacity: 0.05;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  animation: tremer 0.5s steps(3) infinite;
+@media (min-width: 1024px) and (hover: hover) {
+  .grao::after {
+    content: "";
+    position: fixed;
+    inset: -50%;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.04;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    animation: tremer 0.6s steps(3) infinite;
+  }
+
+  @keyframes tremer {
+    0%   { transform: translate(0, 0); }
+    33%  { transform: translate(-2%, 1%); }
+    66%  { transform: translate(1%, -2%); }
+    100% { transform: translate(0, 0); }
+  }
 }
 
-@keyframes tremer {
-  0%   { transform: translate(0, 0); }
-  33%  { transform: translate(-2%, 1%); }
-  66%  { transform: translate(1%, -2%); }
-  100% { transform: translate(0, 0); }
+@media (max-width: 1023px) {
+  .grao::after {
+    display: none !important;
+  }
 }
 
 /* ==========================================================================

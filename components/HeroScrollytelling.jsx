@@ -20,7 +20,7 @@ gsap.registerPlugin(ScrollTrigger);
  *    de fumaça escura antes de revelar o player "Unpatriot" emergindo do fundo do abismo.
  */
 
-const TARGET_FRAME_COUNT = 72; // Amostragem de alta fidelidade
+const TARGET_FRAME_COUNT = 32; // Amostragem otimizada de alta fidelidade
 const VIDEO_2_DURATION = 9.95;  // Duração útil de hero_2.mp4
 
 /**
@@ -109,9 +109,13 @@ export default function HeroScrollytelling() {
   }, []);
 
   // ─────────────────────────────────────────────────────────────────────────
-  // 2. EXTRAÇÃO EM MEMÓRIA VRAM (ImageBitmap)
+  // 2. EXTRAÇÃO EM MEMÓRIA VRAM (Apenas Desktop Potente)
   // ─────────────────────────────────────────────────────────────────────────
   const extractFrames = useCallback(async (video) => {
+    if (typeof window === "undefined") return;
+    const isMobile = window.innerWidth < 768 || window.matchMedia("(pointer: coarse)").matches;
+    if (isMobile) return; // No mobile, evita sobrecarga de VRAM e decodificação contínua
+
     if (isExtractingRef.current || framesCacheRef.current.length >= TARGET_FRAME_COUNT) return;
     isExtractingRef.current = true;
 
@@ -119,14 +123,10 @@ export default function HeroScrollytelling() {
     const step = duration / (TARGET_FRAME_COUNT - 1);
     const bitmaps = [];
 
-    let offscreenCanvas = null;
-    let offscreenCtx = null;
-    if (typeof window !== "undefined") {
-      offscreenCanvas = document.createElement("canvas");
-      offscreenCanvas.width = video.videoWidth || 720;
-      offscreenCanvas.height = video.videoHeight || 1280;
-      offscreenCtx = offscreenCanvas.getContext("2d", { alpha: false });
-    }
+    let offscreenCanvas = document.createElement("canvas");
+    offscreenCanvas.width = 640;
+    offscreenCanvas.height = 360;
+    let offscreenCtx = offscreenCanvas.getContext("2d", { alpha: false });
 
     try {
       for (let i = 0; i < TARGET_FRAME_COUNT; i++) {
@@ -171,11 +171,12 @@ export default function HeroScrollytelling() {
   }, [renderHero2Frame]);
 
   // ─────────────────────────────────────────────────────────────────────────
-  // 3. INICIALIZAÇÃO DOS VÍDEOS
+  // 3. INICIALIZAÇÃO DOS VÍDEOS & PAUSA FORA DO VIEWPORT
   // ─────────────────────────────────────────────────────────────────────────
   useEffect(() => {
     const v1 = video1Ref.current;
     const v2 = video2Ref.current;
+    const container = phase2Ref.current;
 
     if (v1) {
       v1.muted = true;
@@ -198,7 +199,25 @@ export default function HeroScrollytelling() {
       }
     }
 
+    // Observer para pausar decodificação do vídeo 1 quando o usuário navegar para outras seções
+    let observer = null;
+    if (container && typeof IntersectionObserver !== "undefined") {
+      observer = new IntersectionObserver(
+        (entries) => {
+          const [entry] = entries;
+          if (entry.isIntersecting) {
+            if (v1 && v1.paused) v1.play().catch(() => {});
+          } else {
+            if (v1 && !v1.paused) v1.pause();
+          }
+        },
+        { threshold: 0.05 }
+      );
+      observer.observe(container);
+    }
+
     return () => {
+      if (observer) observer.disconnect();
       framesCacheRef.current.forEach((bitmap) => {
         if (bitmap && typeof bitmap.close === "function") {
           bitmap.close();

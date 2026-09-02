@@ -25,10 +25,13 @@ export default function AshParticles({
     const ctx = canvas.getContext("2d", { alpha: true });
     if (!ctx) return;
 
+    const isMobile = typeof window !== "undefined" && (window.innerWidth < 768 || window.matchMedia("(pointer: coarse)").matches);
+    const particleCount = isMobile ? Math.min(14, count) : Math.min(45, count);
+
     let width = (canvas.width = canvas.offsetWidth || window.innerWidth);
     let height = (canvas.height = canvas.offsetHeight || window.innerHeight);
     let animationFrameId;
-    let isVisible = true;
+    let isVisible = false;
 
     // Paleta de Cinzas Vulcânicas e Brasas Incandescentes
     const colors = [
@@ -48,14 +51,14 @@ export default function AshParticles({
       reset(init = false) {
         this.x = Math.random() * width;
         this.y = init ? Math.random() * height : height + 10;
-        this.size = Math.random() * 2.5 + 1.2;
-        this.baseAlpha = Math.random() * 0.5 + 0.2;
+        this.size = Math.random() * 2.2 + 1.0;
+        this.baseAlpha = Math.random() * 0.45 + 0.15;
         this.alpha = this.baseAlpha;
         this.color = colors[Math.floor(Math.random() * colors.length)];
-        this.speedY = -(Math.random() * 0.6 + 0.25); // Flutua lentamente para cima
-        this.speedX = (Math.random() - 0.5) * 0.35;
+        this.speedY = -(Math.random() * 0.5 + 0.2); // Flutua lentamente para cima
+        this.speedX = (Math.random() - 0.5) * 0.3;
         this.oscillationSpeed = Math.random() * 0.02 + 0.01;
-        this.oscillationDistance = Math.random() * 1.5 + 0.5;
+        this.oscillationDistance = Math.random() * 1.2 + 0.4;
         this.angle = Math.random() * Math.PI * 2;
         this.rotation = Math.random() * Math.PI * 2;
         this.rotationSpeed = (Math.random() - 0.5) * 0.02;
@@ -67,12 +70,10 @@ export default function AshParticles({
         this.x += Math.sin(this.angle) * this.oscillationDistance + this.speedX;
         this.rotation += this.rotationSpeed;
 
-        // Efeito de pulso de brilho nas brasas
         if (this.color.isEmber) {
-          this.alpha = this.baseAlpha + Math.sin(this.angle * 2) * 0.15;
+          this.alpha = this.baseAlpha + Math.sin(this.angle * 2) * 0.12;
         }
 
-        // Reposiciona quando sai pelo topo ou laterais
         if (this.y < -15 || this.x < -20 || this.x > width + 20) {
           this.reset(false);
         }
@@ -85,14 +86,13 @@ export default function AshParticles({
 
         ctx.fillStyle = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, ${Math.max(0, this.alpha)})`;
 
-        if (this.color.isEmber) {
-          // Glow sutil para brasas incandescentes
-          ctx.shadowColor = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, 0.8)`;
-          ctx.shadowBlur = this.size * 3;
+        // No desktop adiciona glow; no mobile mantém preenchimento leve direto sem shadowBlur
+        if (!isMobile && this.color.isEmber) {
+          ctx.shadowColor = `rgba(${this.color.r}, ${this.color.g}, ${this.color.b}, 0.6)`;
+          ctx.shadowBlur = this.size * 2.5;
         }
 
         ctx.beginPath();
-        // Desenha formato irregular levemente achatado simulando folha de cinza
         ctx.ellipse(0, 0, this.size, this.size * 0.65, this.rotation, 0, Math.PI * 2);
         ctx.fill();
 
@@ -100,7 +100,7 @@ export default function AshParticles({
       }
     }
 
-    const particles = Array.from({ length: count }, () => new Ash());
+    const particles = Array.from({ length: particleCount }, () => new Ash());
 
     const render = () => {
       if (!isVisible) return;
@@ -114,6 +114,25 @@ export default function AshParticles({
       animationFrameId = requestAnimationFrame(render);
     };
 
+    // IntersectionObserver para pausar totalmente quando a seção estiver fora de vista
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry.isIntersecting) {
+          if (!isVisible) {
+            isVisible = true;
+            render();
+          }
+        } else {
+          isVisible = false;
+          cancelAnimationFrame(animationFrameId);
+        }
+      },
+      { threshold: 0.05 }
+    );
+
+    observer.observe(canvas);
+
     const handleResize = () => {
       width = canvas.width = canvas.offsetWidth || window.innerWidth;
       height = canvas.height = canvas.offsetHeight || window.innerHeight;
@@ -123,19 +142,18 @@ export default function AshParticles({
       if (document.hidden) {
         isVisible = false;
         cancelAnimationFrame(animationFrameId);
-      } else {
-        isVisible = true;
-        render();
+      } else if (canvas && observer) {
+        // Observer cuidará de reiniciar se visível
       }
     };
 
     window.addEventListener("resize", handleResize, { passive: true });
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
-    render();
-
     return () => {
+      isVisible = false;
       cancelAnimationFrame(animationFrameId);
+      observer.disconnect();
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
