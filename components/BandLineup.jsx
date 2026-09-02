@@ -7,6 +7,7 @@ import ParallaxLayer from "./ParallaxLayer";
 import ParallaxWatermark from "./ParallaxWatermark";
 import GradientCarousel from "./ui/gradient-carousel";
 import TypewriterTitle from "./ui/type-writer";
+import AshParticles from "./AshParticles";
 import {
   X,
   ExternalLink,
@@ -127,8 +128,8 @@ export default function BandLineup() {
       id="lineup"
       className="relative w-full bg-zinc-950 border-t border-white/10 scroll-mt-20 overflow-hidden py-16 sm:py-24 md:py-36 px-4 sm:px-8 lg:px-12"
     >
-      {/* Marca d'água Parallax Monumental */}
-      <ParallaxWatermark text="OPERADORES" speed={0.45} position="center" />
+      {/* Efeito Atmosférico de Cinzas e Brasas em Movimento de Fundo */}
+      <AshParticles count={40} />
 
       {/* Iluminação Ambiente em Parallax */}
       <ParallaxLayer speed={0.4} className="absolute top-1/4 left-1/4 pointer-events-none -z-10">

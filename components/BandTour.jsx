@@ -7,6 +7,7 @@ import ScrollReveal from "./ScrollReveal";
 import ParallaxLayer from "./ParallaxLayer";
 import ParallaxWatermark from "./ParallaxWatermark";
 import TypewriterTitle from "./ui/type-writer";
+import AshParticles from "./AshParticles";
 import { FEATURED_SHOW } from "../lib/band-data";
 
 const ATTRACTION_ICONS = {
@@ -73,8 +74,8 @@ export default function BandTour() {
       {/* Overlay Escuro Profundo */}
       <div className="absolute inset-0 bg-black/90 pointer-events-none" />
 
-      {/* Marca d'água Parallax Monumental */}
-      <ParallaxWatermark text="AO VIVO" speed={0.4} position="center" />
+      {/* Efeito Atmosférico de Cinzas e Brasas em Movimento de Fundo */}
+      <AshParticles count={40} />
 
       {/* Iluminação Ambiente em Parallax */}
       <ParallaxLayer speed={0.35} className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none -z-10">

@@ -3,8 +3,8 @@
 import React from "react";
 import ScrollReveal from "./ScrollReveal";
 import ParallaxLayer from "./ParallaxLayer";
-import ParallaxWatermark from "./ParallaxWatermark";
 import TypewriterTitle from "./ui/type-writer";
+import AshParticles from "./AshParticles";
 
 export default function BandBio() {
   return (
@@ -12,8 +12,8 @@ export default function BandBio() {
       id="bio"
       className="relative w-full bg-zinc-950 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-900 via-zinc-950 to-black overflow-hidden py-20 sm:py-32 md:py-48 px-4 sm:px-8 lg:px-16 border-t border-white/10 scroll-mt-20 min-h-0"
     >
-      {/* Marca d'água Parallax Monumental */}
-      <ParallaxWatermark text="MANIFESTO" speed={0.4} position="center" />
+      {/* Efeito Atmosférico de Cinzas e Brasas em Movimento de Fundo */}
+      <AshParticles count={40} />
 
       {/* Iluminação de Palco em Parallax */}
       <ParallaxLayer speed={0.35} className="absolute top-1/2 left-1/4 -translate-y-1/2 pointer-events-none -z-10">

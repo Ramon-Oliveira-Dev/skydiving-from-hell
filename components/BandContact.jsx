@@ -3,8 +3,8 @@
 import React from "react";
 import ScrollReveal from "./ScrollReveal";
 import ParallaxLayer from "./ParallaxLayer";
-import ParallaxWatermark from "./ParallaxWatermark";
 import TypewriterTitle from "./ui/type-writer";
+import AshParticles from "./AshParticles";
 
 // ─── SVG Icons (Monocromáticos e Táticos) ────────────────────────────────────
 const ICONS = {
@@ -76,8 +76,8 @@ export default function BandContact() {
         }}
       />
 
-      {/* Marca d'água Parallax Monumental */}
-      <ParallaxWatermark text="S.D.F.H." speed={0.4} position="center" />
+      {/* Efeito Atmosférico de Cinzas e Brasas em Movimento de Fundo */}
+      <AshParticles count={40} />
 
       {/* ─── Iluminação Ambiente em Parallax ───────────────────────────── */}
       <ParallaxLayer speed={0.35} className="absolute top-1/3 left-1/4 pointer-events-none -z-10">
@@ -148,7 +148,7 @@ export default function BandContact() {
                 href="https://wa.me/5527997207037"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group relative flex items-center gap-4 p-4 rounded-lg bg-zinc-950/40 backdrop-blur-md border border-white/5 overflow-hidden transition-all duration-300 hover:bg-zinc-900/80 hover:border-red-900/50 hover:shadow-[0_0_25px_rgba(220,38,38,0.2)] hover:translate-x-2 hover:-translate-y-0.5"
+                className="group relative flex items-center gap-4 p-4 rounded-lg bg-zinc-950/40 backdrop-blur-md border border-white/5 overflow-hidden transition-all duration-300 hover:bg-zinc-900/80 hover:border-red-900/50 hover:shadow-[0_0_25px_rgba(220,38,38,0.2)] lg:hover:translate-x-1.5"
               >
                 <span className="w-10 h-10 rounded-md bg-zinc-900/80 border border-white/10 text-zinc-400 group-hover:text-red-400 group-hover:border-red-600/50 group-hover:bg-red-950/30 group-hover:scale-110 transition-all flex items-center justify-center flex-shrink-0">
                   {ICONS.whatsapp}
@@ -169,7 +169,7 @@ export default function BandContact() {
               {/* Card E-mail Oficial com Slide Hover */}
               <a
                 href="mailto:sdfhband@gmail.com"
-                className="group relative flex items-center gap-4 p-4 rounded-lg bg-zinc-950/40 backdrop-blur-md border border-white/5 overflow-hidden transition-all duration-300 hover:bg-zinc-900/80 hover:border-red-900/50 hover:shadow-[0_0_25px_rgba(220,38,38,0.2)] hover:translate-x-2 hover:-translate-y-0.5"
+                className="group relative flex items-center gap-4 p-4 rounded-lg bg-zinc-950/40 backdrop-blur-md border border-white/5 overflow-hidden transition-all duration-300 hover:bg-zinc-900/80 hover:border-red-900/50 hover:shadow-[0_0_25px_rgba(220,38,38,0.2)] lg:hover:translate-x-1.5"
               >
                 <span className="w-10 h-10 rounded-md bg-zinc-900/80 border border-white/10 text-zinc-400 group-hover:text-red-400 group-hover:border-red-600/50 group-hover:bg-red-950/30 group-hover:scale-110 transition-all flex items-center justify-center flex-shrink-0">
                   {ICONS.mail}
@@ -206,7 +206,7 @@ export default function BandContact() {
                     href={item.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group relative flex items-center gap-4 p-4 rounded-lg bg-zinc-950/40 backdrop-blur-md border border-white/5 overflow-hidden transition-all duration-300 hover:bg-zinc-900/80 hover:border-red-900/50 hover:shadow-[0_0_25px_rgba(220,38,38,0.2)] hover:translate-x-2 hover:-translate-y-0.5"
+                    className="group relative flex items-center gap-4 p-4 rounded-lg bg-zinc-950/40 backdrop-blur-md border border-white/5 overflow-hidden transition-all duration-300 hover:bg-zinc-900/80 hover:border-red-900/50 hover:shadow-[0_0_25px_rgba(220,38,38,0.2)] lg:hover:translate-x-1.5"
                   >
                     <span className="w-10 h-10 rounded-md bg-zinc-900/80 border border-white/10 text-zinc-400 group-hover:text-red-400 group-hover:border-red-600/50 group-hover:bg-red-950/30 group-hover:scale-110 transition-all flex items-center justify-center flex-shrink-0">
                       {item.icon}
@@ -240,7 +240,7 @@ export default function BandContact() {
                     href={item.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="group relative flex items-center gap-4 p-4 rounded-lg bg-zinc-950/40 backdrop-blur-md border border-white/5 overflow-hidden transition-all duration-300 hover:bg-zinc-900/80 hover:border-red-900/50 hover:shadow-[0_0_25px_rgba(220,38,38,0.2)] hover:translate-x-2 hover:-translate-y-0.5"
+                    className="group relative flex items-center gap-4 p-4 rounded-lg bg-zinc-950/40 backdrop-blur-md border border-white/5 overflow-hidden transition-all duration-300 hover:bg-zinc-900/80 hover:border-red-900/50 hover:shadow-[0_0_25px_rgba(220,38,38,0.2)] lg:hover:translate-x-1.5"
                   >
                     <span className="w-10 h-10 rounded-md bg-zinc-900/80 border border-white/10 text-zinc-400 group-hover:text-red-400 group-hover:border-red-600/50 group-hover:bg-red-950/30 group-hover:scale-110 transition-all flex items-center justify-center flex-shrink-0">
                       {item.icon}

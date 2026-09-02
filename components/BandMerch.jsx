@@ -4,10 +4,10 @@ import React from "react";
 import Image from "next/image";
 import ScrollReveal from "./ScrollReveal";
 import ParallaxLayer from "./ParallaxLayer";
-import ParallaxWatermark from "./ParallaxWatermark";
 import TypewriterTitle from "./ui/type-writer";
 import TiltCard, { TiltLayer } from "./TiltCard";
 import BotaoMagnetico from "./BotaoMagnetico";
+import AshParticles from "./AshParticles";
 
 const PRODUCTS = [
   {
@@ -45,8 +45,8 @@ export default function BandMerch() {
       {/* Overlay Escuro Profundo */}
       <div className="absolute inset-0 bg-black/90 pointer-events-none" />
 
-      {/* Marca d'água Parallax Monumental */}
-      <ParallaxWatermark text="ARMAMENTO" speed={0.45} position="center" />
+      {/* Efeito Atmosférico de Cinzas e Brasas em Movimento de Fundo */}
+      <AshParticles count={40} />
 
       {/* Iluminação Ambiente em Parallax */}
       <ParallaxLayer speed={0.4} className="absolute top-1/3 right-1/4 pointer-events-none -z-10">

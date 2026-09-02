@@ -6,6 +6,7 @@ import ParallaxWatermark from "./ParallaxWatermark";
 import TypewriterTitle from "./ui/type-writer";
 import { BorderBeam } from "./ui/border-beam";
 import Image from "next/image";
+import AshParticles from "./AshParticles";
 
 import React, { useRef, useCallback } from "react";
 import {
@@ -76,8 +77,8 @@ export default function BandPlayer() {
       {/* Overlay de Fundo com Blur Atmosférico */}
       <div className="absolute inset-0 bg-black/85 backdrop-blur-sm" />
 
-      {/* Marca d'água Parallax Monumental */}
-      <ParallaxWatermark text="DISCOGRAFIA" speed={0.4} position="center" />
+      {/* Efeito Atmosférico de Cinzas e Brasas em Movimento de Fundo */}
+      <AshParticles count={40} />
 
       {/* Luzes Gradientes de Fundo em Parallax (Glow Effect) */}
       <ParallaxLayer speed={0.45} className="absolute top-1/4 left-1/4 pointer-events-none -z-0">

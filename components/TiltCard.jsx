@@ -37,13 +37,20 @@ export default function TiltCard({
 }) {
   const cardRef = useRef(null);
   const glareRef = useRef(null);
-  const [isTouchDevice, setIsTouchDevice] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(true); // Padrão seguro para evitar tilt indesejado no mobile
 
   useEffect(() => {
-    // Detecta touch screens ou preferência por menos movimento
-    const touch = window.matchMedia("(pointer: coarse)").matches;
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setIsTouchDevice(touch || reducedMotion);
+    // Detecta touch screens, mobile ou preferência por menos movimento
+    const checkMobileOrTouch = () => {
+      const touch = window.matchMedia("(pointer: coarse)").matches;
+      const isMobile = window.innerWidth < 1024;
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      setIsTouchDevice(touch || isMobile || reducedMotion);
+    };
+
+    checkMobileOrTouch();
+    window.addEventListener("resize", checkMobileOrTouch);
+    return () => window.removeEventListener("resize", checkMobileOrTouch);
   }, []);
 
   useEffect(() => {
@@ -68,6 +75,7 @@ export default function TiltCard({
     }
 
     const handleMouseMove = (e) => {
+      if (window.innerWidth < 1024) return;
       const rect = card.getBoundingClientRect();
       const width = rect.width;
       const height = rect.height;

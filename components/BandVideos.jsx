@@ -3,8 +3,8 @@
 import React, { useState } from "react";
 import ScrollReveal from "./ScrollReveal";
 import ParallaxLayer from "./ParallaxLayer";
-import ParallaxWatermark from "./ParallaxWatermark";
 import TypewriterTitle from "./ui/type-writer";
+import AshParticles from "./AshParticles";
 import SocialButton, {
   WhatsappIcon,
   InstagramIcon,
@@ -132,8 +132,8 @@ export default function BandVideos() {
       id="videos"
       className="relative w-full bg-zinc-950 border-t border-white/10 scroll-mt-20 overflow-hidden py-20 sm:py-32 md:py-48 px-4 sm:px-8 lg:px-16"
     >
-      {/* Marca d'água Parallax Monumental */}
-      <ParallaxWatermark text="AUDIOVISUAL" speed={0.4} position="center" />
+      {/* Efeito Atmosférico de Cinzas e Brasas em Movimento de Fundo */}
+      <AshParticles count={40} />
 
       {/* ── Iluminação Ambiente em Parallax ──────────────────────────────── */}
       <ParallaxLayer
